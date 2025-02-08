@@ -5,29 +5,29 @@ import { Button } from "@/components/ui/button";
 import { Carousel, CarouselItem, CarouselContent, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 const services = [
-  { id: 1, category: "AC Services", name: "AC Installation", description: "Expert AC installation at your convenience.", image: "", price: 1200 },
-  { id: 2, category: "AC Services", name: "AC Cleaning", description: "Thorough AC cleaning services for better efficiency.", image: "", price: 800 },
-  { id: 3, category: "AC Services", name: "AC Repair", description: "Reliable AC repair services at your doorstep.", image: "", price: 1500 },
-  { id: 4, category: "AC Services", name: "AC Gas Refill", description: "Affordable AC gas refilling services.", image: "", price: 1000 },
-  { id: 5, category: "AC Services", name: "AC Maintenance", description: "Periodic maintenance for better performance.", image: "", price: 1300 },
+  { id: 1, category: "AC Services", name: "AC Installation", description: "Expert AC installation at your convenience.", image: null, price: 1200 },
+  { id: 2, category: "AC Services", name: "AC Cleaning", description: "Thorough AC cleaning services for better efficiency.", image: null, price: 800 },
+  { id: 3, category: "AC Services", name: "AC Repair", description: "Reliable AC repair services at your doorstep.", image: null, price: 1500 },
+  { id: 4, category: "AC Services", name: "AC Gas Refill", description: "Affordable AC gas refilling services.", image: null, price: 1000 },
+  { id: 5, category: "AC Services", name: "AC Maintenance", description: "Periodic maintenance for better performance.", image: null, price: 1300 },
 
-  { id: 6, category: "Fan Services", name: "Fan Installation", description: "Quick and reliable fan installation services.", image: "", price: 500 },
-  { id: 7, category: "Fan Services", name: "Fan Repair", description: "Professional fan repair services for all types.", image: "", price: 700 },
-  { id: 8, category: "Fan Services", name: "Fan Cleaning", description: "Deep cleaning service for better performance.", image: "", price: 600 },
-  { id: 9, category: "Fan Services", name: "Fan Motor Replacement", description: "Efficient fan motor replacement.", image: "", price: 900 },
-  { id: 10, category: "Fan Services", name: "Fan Speed Fixing", description: "Fix speed issues in your fan.", image: "", price: 650 },
+  { id: 6, category: "Fan Services", name: "Fan Installation", description: "Quick and reliable fan installation services.", image: null, price: 500 },
+  { id: 7, category: "Fan Services", name: "Fan Repair", description: "Professional fan repair services for all types.", image: null, price: 700 },
+  { id: 8, category: "Fan Services", name: "Fan Cleaning", description: "Deep cleaning service for better performance.", image: null, price: 600 },
+  { id: 9, category: "Fan Services", name: "Fan Motor Replacement", description: "Efficient fan motor replacement.", image: null, price: 900 },
+  { id: 10, category: "Fan Services", name: "Fan Speed Fixing", description: "Fix speed issues in your fan.", image: null, price: 650 },
 
-  { id: 11, category: "Refrigerator Services", name: "Fridge Installation", description: "Expert fridge installation at your convenience.", image: "", price: 1800 },
-  { id: 12, category: "Refrigerator Services", name: "Fridge Repair", description: "Reliable fridge repair services.", image: "", price: 2000 },
-  { id: 13, category: "Refrigerator Services", name: "Fridge Gas Refill", description: "Safe and efficient gas refilling service.", image: "", price: 1400 },
-  { id: 14, category: "Refrigerator Services", name: "Fridge Deep Cleaning", description: "Thorough fridge cleaning service.", image: "", price: 900 },
-  { id: 15, category: "Refrigerator Services", name: "Fridge Maintenance", description: "Periodic fridge maintenance services.", image: "", price: 1600 },
+  { id: 11, category: "Refrigerator Services", name: "Fridge Installation", description: "Expert fridge installation at your convenience.", image: null, price: 1800 },
+  { id: 12, category: "Refrigerator Services", name: "Fridge Repair", description: "Reliable fridge repair services.", image: null, price: 2000 },
+  { id: 13, category: "Refrigerator Services", name: "Fridge Gas Refill", description: "Safe and efficient gas refilling service.", image: null, price: 1400 },
+  { id: 14, category: "Refrigerator Services", name: "Fridge Deep Cleaning", description: "Thorough fridge cleaning service.", image: null, price: 900 },
+  { id: 15, category: "Refrigerator Services", name: "Fridge Maintenance", description: "Periodic fridge maintenance services.", image: null, price: 1600 },
 
-  { id: 16, category: "Washing Machine Services", name: "Washing Machine Installation", description: "Hassle-free washing machine installation.", image: "", price: 1700 },
-  { id: 17, category: "Washing Machine Services", name: "Washing Machine Repair", description: "Expert repair services for washing machines.", image: "", price: 2200 },
-  { id: 18, category: "Washing Machine Services", name: "Washing Machine Drum Cleaning", description: "Professional drum cleaning service.", image: "", price: 1100 },
-  { id: 19, category: "Washing Machine Services", name: "Washing Machine Motor Fix", description: "Efficient motor replacement services.", image: "", price: 2100 },
-  { id: 20, category: "Washing Machine Services", name: "Washing Machine Maintenance", description: "Regular maintenance for longevity.", image: "", price: 1300 },
+  { id: 16, category: "Washing Machine Services", name: "Washing Machine Installation", description: "Hassle-free washing machine installation.", image: null, price: 1700 },
+  { id: 17, category: "Washing Machine Services", name: "Washing Machine Repair", description: "Expert repair services for washing machines.", image: null, price: 2200 },
+  { id: 18, category: "Washing Machine Services", name: "Washing Machine Drum Cleaning", description: "Professional drum cleaning service.", image: null, price: 1100 },
+  { id: 19, category: "Washing Machine Services", name: "Washing Machine Motor Fix", description: "Efficient motor replacement services.", image: null, price: 2100 },
+  { id: 20, category: "Washing Machine Services", name: "Washing Machine Maintenance", description: "Regular maintenance for longevity.", image: null, price: 1300 },
 ];
 
 const groupedServices = services.reduce((acc, service) => {
