@@ -1,4 +1,3 @@
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
 export function Card({ className, children }) {
 	return (
 		<div className={`bg-white shadow-md rounded-lg p-6 ${className}`}>
