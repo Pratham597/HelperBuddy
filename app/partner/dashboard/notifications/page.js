@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Bell } from "lucide-react"
 
+
 export default function NotificationsPage() {
   const [notifications, setNotifications] = React.useState([
     { id: 1, title: "New Message", message: "You have a new message from support.", read: false },

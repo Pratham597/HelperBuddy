@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/user/user-nav-user"
+import { NavUser } from "@/components/partner/partner-nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
@@ -38,23 +38,23 @@ const data = {
       icon: User,
       isActive: false,
       items: [
-        { title: "Information", url: "/user/dashboard/profile/userInformation" },
-        { title: "Wallet", url: "/user/dashboard/profile/wallet" },
+        { title: "Information", url: "/partner/dashboard/profile/partnerInformation" },
+        { title: "something", url: "/partner/dashboard/" },
       ],
     },
     {
-      title: "Bookings",
+      title: "Services",
       url: "#",
       icon: ShoppingBag,
       isActive: false,
       items: [
         {
-          title: "Service Pending",
-          url: "/user/dashboard/bookings/servicesPending",
+          title: "Services Provided",
+          url: "/partner/dashboard/services/servicesProvided",
         },
         {
           title: "History",
-          url: "/user/dashboard/bookings/history",
+          url: "/partner/dashboard/services/history",
         },
       ],
     },
@@ -65,7 +65,7 @@ const data = {
 export function AppSidebar({ ...props }) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <Link href={`/user/dashboard`}>
+      <Link href={`/partner/dashboard`}>
         <SidebarHeader>
           <TeamSwitcher teams={data.teams} />
         </SidebarHeader>
