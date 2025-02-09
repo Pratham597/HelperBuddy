@@ -1,54 +1,65 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import LoginForm from "@/components/loginForm";
-import SignupForm from "@/components/SignupForm";
+import LoginForm from "@/components/partner/LoginFormPartner";
+import SignupForm from "@/components/partner/SignupFormPartner";
 import LoginPageImage from "@/components/LoginPageImage";
+import {useRouter} from "next/navigation"
 
 const colors = {
-    primary: "#060606",
-    secondary: "#E0E0E0",
-    disabled: "#D9D9D9",
+	primary: "#060606",
+	secondary: "#E0E0E0",
+	disabled: "#D9D9D9",
 };
 
-const IMAGE_URL ="https://scrubnbubbles.com/wp-content/uploads/2022/05/cleaning-service.jpeg";
+const IMAGE_URL =
+	"https://scrubnbubbles.com/wp-content/uploads/2022/05/cleaning-service.jpeg";
 const Heading = "Grow Your Business with HelperBuddy!";
-const SubHeading = "Join as a service provider and connect with customers instantly.";
+const SubHeading =
+	"Join as a service provider and connect with customers instantly.";
 
 export default function Page() {
-    const [isLogin, setIsLogin] = useState(true);
+    const router = useRouter();
+	const [isLogin, setIsLogin] = useState(true);
 
-
-    // to resolve some error it was giving upon reloading the page
-    const [hydrated, setHydrated] = useState(false);
-    // Ensure client-side rendering matches SSR output
-    useEffect(() => {
+	// to resolve some error it was giving upon reloading the page
+	const [hydrated, setHydrated] = useState(false);
+	// Ensure client-side rendering matches SSR output
+	useEffect(() => {
         setHydrated(true);
-    }, []);
-    // Prevent mismatches by rendering only after hydration
-    if (!hydrated) return null;
-    
+        if (JSON.parse(localStorage.getItem("user"))) {
+            router.push("/partner/dashboard");
+        }
 
+	}, []);
+	// Prevent mismatches by rendering only after hydration
+	if (!hydrated) return null;
 
-    return (
-        <div className="flex h-screen">
-            {/* Image Section - Changes position based on form type */}
-            <div
-                className={`hidden md:flex w-1/2 relative transition-all duration-500 ${
-                    isLogin ? "" : "order-last"
-                }`}
-            >
-                <LoginPageImage IMAGE_URL={IMAGE_URL} Heading={Heading} SubHeading={SubHeading} />
-            </div>
+	return (
+		<div className="flex h-screen">
+			{/* Image Section - Changes position based on form type */}
+			<div
+				className={`hidden md:flex w-1/2 relative transition-all duration-500 }`}
+			>
+				<LoginPageImage
+					IMAGE_URL={IMAGE_URL}
+					Heading={Heading}
+					SubHeading={SubHeading}
+				/>
+			</div>
 
-            {/* Form Section */}
-            <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8">
-                {isLogin ? (
-                    <LoginForm isLogin={isLogin} setIsLogin={setIsLogin} />
-                ) : (
-                    <SignupForm isLogin={isLogin} setIsLogin={setIsLogin} />
-                )}
-            </div>
-        </div>
-    );
+			{/* Form Section */}
+			<div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8">
+				{isLogin ? (
+					<LoginForm
+						isLogin={isLogin}
+						setIsLogin={setIsLogin}
+						isPartner={true}
+					/>
+				) : (
+					<SignupForm isLogin={isLogin} setIsLogin={setIsLogin} />
+				)}
+			</div>
+		</div>
+	);
 }

@@ -2,13 +2,16 @@ import PartnerService from "@/models/PartnerService";
 import Partner from "@/models/Partner";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
+<<<<<<< HEAD
+
+=======
+>>>>>>> 7d70ebe6085caf8c02ea417e1f18b1779eeb6c1a
 
 /** Controller for creating service under partner */
 export const POST=async(req)=>{
     await connectDB();
     const userId=req.headers.get("userId");
-    let data=await req.formData();
-    data=Object.fromEntries(data);
+    let data=await req.json();
     
     const user=await Partner.findById(userId);
     if(!user){

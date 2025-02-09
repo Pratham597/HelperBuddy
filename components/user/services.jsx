@@ -1,188 +1,45 @@
-"use client"
+"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/service-card"
 import { Button } from "@/components/ui/button"
 import { Carousel, CarouselItem, CarouselContent, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import UserNavbar from "../UserNavbar"
 import { poppins } from "../fonts/font"
+import { useEffect, useState } from "react"
+import ServiceDetails from "./service-details"
 
-const services = [
-  {
-    id: 1,
-    category: "AC Services",
-    name: "AC Installation",
-    description: "Expert AC installation at your convenience.",
-    image:
-      "https://media.istockphoto.com/id/1208084866/photo/repairer-repairing-air-conditioner.webp?a=1&b=1&s=612x612&w=0&k=20&c=wfHliIRaBsiqWqmr1gHWFtESrdqwJ7Azf1KBlEh-cSw=",
-    price: 1200,
-  },
-  {
-    id: 2,
-    category: "AC Services",
-    name: "AC Cleaning",
-    description: "Thorough AC cleaning services for better efficiency.",
-    image:
-      "https://media.istockphoto.com/id/1284843352/photo/the-technicians-are-cleaning-the-air-conditioner-by-spraying-water-hand-and-water-spray-are.webp?a=1&b=1&s=612x612&w=0&k=20&c=sJyiPhLk0LJdpvJAsswYqeOSwZWypX2qztfCc-XvREk=",
-    price: 800,
-  },
-  {
-    id: 3,
-    category: "AC Services",
-    name: "AC Repair",
-    description: "Reliable AC repair services at your doorstep.",
-    image: "https://media.istockphoto.com/id/492892828/photo/air-conditioning-engineer.webp?a=1&b=1&s=612x612&w=0&k=20&c=GgvNuEV3Pue8ioVhMOWwJDaJWSmQHJk9Ufd3H7s3otA=",
-    price: 1500,
-  },
-  {
-    id: 4,
-    category: "AC Services",
-    name: "AC Gas Refill",
-    description: "Affordable AC gas refilling services.",
-    image: "https://media.istockphoto.com/id/530806724/photo/freon-air-conditioner-refill.webp?a=1&b=1&s=612x612&w=0&k=20&c=VrK9OjrU4Q_ZjsUPe1DoUXjrGjU2RerbumTOOuAuLqM=",
-    price: 1000,
-  },
-  {
-    id: 5,
-    category: "AC Services",
-    name: "AC Maintenance",
-    description: "Periodic maintenance for better performance.",
-    image: "https://plus.unsplash.com/premium_photo-1683134512538-7b390d0adc9e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YWMlMjBtYWludGVuYW5jZXxlbnwwfHwwfHx8MA%3D%3D",
-    price: 1300,
-  },
-
-  {
-    id: 6,
-    category: "Fan Services",
-    name: "Fan Installation",
-    description: "Quick and reliable fan installation services.",
-    image: "https://media.istockphoto.com/id/187062338/photo/real-electrician-hanging-a-ceiling-fan-rr.webp?a=1&b=1&s=612x612&w=0&k=20&c=PBawCM2k-F4tLkGeyfBuuMTPPH9sE6sDqO8NLWR0y_A=",
-    price: 500,
-  },
-  {
-    id: 7,
-    category: "Fan Services",
-    name: "Fan Repair",
-    description: "Professional fan repair services for all types.",
-    image: "https://media.istockphoto.com/id/865382430/photo/handyman-installing-a-ceiling-fan.webp?a=1&b=1&s=612x612&w=0&k=20&c=rjgHOSHGNqqChLV5DhIn2h49w7UZ7wO87QgnAxTn-Ug=",
-    price: 700,
-  },
-  {
-    id: 8,
-    category: "Fan Services",
-    name: "Fan Cleaning",
-    description: "Deep cleaning service for better performance.",
-    image: "https://media.istockphoto.com/id/1302714315/photo/woman-cleaning-ceiling-fan-at-home.webp?a=1&b=1&s=612x612&w=0&k=20&c=D_ogbkF-ECBalmSz9UdrtTk6y3Gcq5UMIAsdXerM_6I=",
-    price: 600,
-  },
-  {
-    id: 9,
-    category: "Fan Services",
-    name: "Fan Motor Replacement",
-    description: "Efficient fan motor replacement.",
-    image: null,
-    price: 900,
-  },
-  {
-    id: 10,
-    category: "Fan Services",
-    name: "Fan Speed Fixing",
-    description: "Fix speed issues in your fan.",
-    image: null,
-    price: 650,
-  },
-
-  {
-    id: 11,
-    category: "Refrigerator Services",
-    name: "Fridge Installation",
-    description: "Expert fridge installation at your convenience.",
-    image: "https://media.istockphoto.com/id/1180607321/photo/two-young-male-movers-placing-steel-refrigerator-in-kitchen.webp?a=1&b=1&s=612x612&w=0&k=20&c=RFgizG-npxoVj17exb331a2VR79iCCGuzrAh8ztnLXw=",
-    price: 1800,
-  },
-  {
-    id: 12,
-    category: "Refrigerator Services",
-    name: "Fridge Repair",
-    description: "Reliable fridge repair services.",
-    image: "",
-    price: 2000,
-  },
-  {
-    id: 13,
-    category: "Refrigerator Services",
-    name: "Fridge Gas Refill",
-    description: "Safe and efficient gas refilling service.",
-    image: null,
-    price: 1400,
-  },
-  {
-    id: 14,
-    category: "Refrigerator Services",
-    name: "Fridge Deep Cleaning",
-    description: "Thorough fridge cleaning service.",
-    image: null,
-    price: 900,
-  },
-  {
-    id: 15,
-    category: "Refrigerator Services",
-    name: "Fridge Maintenance",
-    description: "Periodic fridge maintenance services.",
-    image: null,
-    price: 1600,
-  },
-
-  {
-    id: 16,
-    category: "Washing Machine Services",
-    name: "Washing Machine Installation",
-    description: "Hassle-free washing machine installation.",
-    image: null,
-    price: 1700,
-  },
-  {
-    id: 17,
-    category: "Washing Machine Services",
-    name: "Washing Machine Repair",
-    description: "Expert repair services for washing machines.",
-    image: null,
-    price: 2200,
-  },
-  {
-    id: 18,
-    category: "Washing Machine Services",
-    name: "Washing Machine Drum Cleaning",
-    description: "Professional drum cleaning service.",
-    image: null,
-    price: 1100,
-  },
-  {
-    id: 19,
-    category: "Washing Machine Services",
-    name: "Washing Machine Motor Fix",
-    description: "Efficient motor replacement services.",
-    image: null,
-    price: 2100,
-  },
-  {
-    id: 20,
-    category: "Washing Machine Services",
-    name: "Washing Machine Maintenance",
-    description: "Regular maintenance for longevity.",
-    image: null,
-    price: 1300,
-  },
-]
-
-const groupedServices = services.reduce((acc, service) => {
-  if (!acc[service.category]) {
-    acc[service.category] = []
-  }
-  acc[service.category].push(service)
-  return acc
-}, {})
 
 export default function ServicesPage() {
+  const [services, setServices] = useState([]);
+  const [selectedService, setSelectedService] = useState(null); // ✅ State to track clicked service
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/service");
+        const data = await res.json();
+        setServices(data);
+      } catch (error) {
+        console.error("Failed to fetch services", error);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  const groupedServices = services?.reduce((acc, service) => {
+    if (!acc[service.category]) {
+      acc[service.category] = [];
+    }
+    acc[service.category].push(service);
+    return acc;
+  }, {});
+
+  const handleBookNow = (service) => {
+    console.log(service);
+    setSelectedService(service); 
+  };
+
   return (
     <div className={`min-h-screen bg-gray-50 text-gray-900 ${poppins.variable} font-sans`}>
       <UserNavbar />
@@ -202,7 +59,7 @@ export default function ServicesPage() {
               <CarouselContent className="-ml-2 md:-ml-4">
                 {services.map((service) => (
                   <CarouselItem
-                    key={service.id}
+                    key={service._id}
                     className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                   >
                     <Card className="h-[400px] bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 relative group">
@@ -225,6 +82,7 @@ export default function ServicesPage() {
                           <Button
                             variant="outline"
                             className="w-full bg-black text-white border-gray-300 hover:bg-gray-200 hover:text-black transition-all duration-300 transform group-hover:scale-105"
+                            onClick={() => handleBookNow(service)}
                           >
                             Book Now
                           </Button>
@@ -240,6 +98,7 @@ export default function ServicesPage() {
           </section>
         ))}
       </main>
+      {selectedService && <ServiceDetails service={selectedService} onClose={() => setSelectedService(null)} />}
     </div>
   )
 }
