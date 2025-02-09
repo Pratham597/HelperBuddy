@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from 'react-hot-toast'
 
 
 const colors = {
@@ -15,16 +17,72 @@ const colors = {
 };
 
 export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
-    // console.log("isAdmin:"+ isAdmin);
+	const router = useRouter();
+
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [Form, setForm] = useState({
 		email: "",
 		password: "",
 	});
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// console.log(Form);
+		setIsSubmitting(true);
+
+		if (!Form.email || !Form.password) {
+			toast.error("All fields are required.");
+			setIsSubmitting(false);
+			return;
+		}
+
+		if (!/\S+@\S+\.\S+/.test(Form.email)) {
+			toast.error("Email is invalid.");
+			setIsSubmitting(false);
+			return;
+		}
+
+		if (Form.password.length < 8) {
+			toast.error("Password must be at least 8 characters long.");
+			setIsSubmitting(false);
+			return;
+		}
+
+		// API call to login
+
+		try {
+			const res = await fetch("/api/user/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(Form),
+			});
+
+			if (res.ok) {
+				const data = await res.json();
+				console.log(data);
+				// Save token in local storage
+				localStorage.setItem("user", data);
+				router.push("/");
+				toast.success("Logged in successfully");
+			}
+
+			if (res.status === 400) {
+				toast.error("Invalid credentials");
+			}
+
+			setIsSubmitting(false);
+
+		} catch (error) {
+			console.error(error);
+			toast.error("Something went wrong");
+			setIsSubmitting(false);
+		} finally {
+			setIsSubmitting(false);
+		}
+
+
 	};
 
 	return (
@@ -82,9 +140,17 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 
 				<Button
 					className="w-full"
+					onClick={handleSubmit}
+					disabled={isSubmitting}
 					style={{ backgroundColor: colors.primary }}
 				>
-					Login
+					{isSubmitting ? (
+						<>
+							<Loader2 className="size-7 animate-spin" /> Logging in....
+						</>
+					) : (
+						"Login"
+					)}
 				</Button>
 
 				{/* Render only if isAdmin is false */}

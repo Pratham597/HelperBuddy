@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import LoginForm from "@/components/loginForm";
-import SignupForm from "@/components/SignupForm";
+import LoginForm from "@/components/user/loginFormUser";
+import SignupForm from "@/components/user/SignupFormUser";
 import LoginPageImage from "@/components/LoginPageImage";
-import UserNavbar from "@/components/UserNavbar";
 
 const colors = {
 	primary: "#060606",
@@ -19,28 +18,29 @@ const SubHeading =
 	"Quick, reliable, and hassle-free service booking, all in one place.";
 
 export default function Page() {
-	const [isLogin, setIsLogin] = useState(false);
+	const [isLogin, setIsLogin] = useState(true);
 
 	// to resolve some error it was giving upon reloading the page
 	const [hydrated, setHydrated] = useState(false);
 	// Ensure client-side rendering matches SSR output
 	useEffect(() => {
 		setHydrated(true);
+		if (JSON.parse(localStorage.getItem("user"))) {
+			router.push("/");
+		}
 	}, []);
 	// Prevent mismatches by rendering only after hydration
 	if (!hydrated) return null;
 
 	return (
-        <>
-            {/* ---- just for checking remove afterwards----- */}
-            <UserNavbar/>
-            {/* --------------------------------------------- */}
+		<>
+			{/* ---- just for checking remove afterwards----- */}
+			{/* <UserNavbar /> */}
+			{/* --------------------------------------------- */}
 			<div className="flex h-screen">
 				{/* Image Section - Changes position based on form type */}
 				<div
-					className={`hidden md:flex w-1/2 relative transition-all duration-500 ${
-						isLogin ? "" : "order-last"
-					}`}
+					className={`hidden md:flex w-1/2 relative transition-all duration-500 }`}
 				>
 					<LoginPageImage
 						IMAGE_URL={IMAGE_URL}

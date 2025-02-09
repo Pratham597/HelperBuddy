@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { set } from "mongoose";
-import { toast } from 'react-hot-toast'
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const colors = {
 	primary: "#060606",
@@ -15,7 +16,8 @@ const colors = {
 	disabled: "#D9D9D9",
 };
 
-export default function Form({ isLogin, setIsLogin }) {
+export default function Form({ isLogin, setIsLogin, isPartner }) {
+	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [form, setForm] = useState({
@@ -33,7 +35,6 @@ export default function Form({ isLogin, setIsLogin }) {
 		setIsSubmitting(true);
 		console.log("issubmitting", isSubmitting);
 
-		
 		if (!form.firstName || !form.email || !form.phone || !form.password) {
 			toast.error("All fields are required.");
 			console.log("All fields are required.");
@@ -60,19 +61,25 @@ export default function Form({ isLogin, setIsLogin }) {
 		}
 
 		try {
-			const res = await fetch("/api/user/sign-up", {
+			const requestBody = {
+				name: `${form.firstName} ${form.lastName}`,
+				email: form.email,
+				phone: `+91${form.phone}`,
+				password: form.password,
+			};
+
+			if (form.referralCode) {
+				requestBody.referredBy = form.referralCode;
+			}
+
+			const res = await fetch("/api/partner/sign-up", {
 				method: "POST",
-				body: JSON.stringify({
-					name: `${form.firstName} ${form.lastName}`,
-					email: form.email,
-					phone: `+91${form.phone}`,
-					password: form.password,
-					referralCode: form.referralCode,
-				}),
+				body: JSON.stringify(requestBody),
 				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
+					"Content-Type": "application/json",
 				},
 			});
+
 			const data = await res.json();
 			console.log("res", data);
 			if (!res.ok) {
@@ -81,9 +88,10 @@ export default function Form({ isLogin, setIsLogin }) {
 				return;
 			}
 
-			localStorage.setItem("user", JSON.stringify(data));
+			localStorage.setItem("partner", JSON.stringify(data));
 			toast.success("Signup successful!");
 			setIsLogin(true);
+			router.push("/partner/dashboard");
 		} catch (error) {
 			console.error(error);
 			toast.error("Something went wrong.");
@@ -192,20 +200,6 @@ export default function Form({ isLogin, setIsLogin }) {
 					</button>
 				</div>
 
-				{/* ✅ Fixed Referral Code */}
-				<div className="space-y-2">
-					<Label htmlFor="referralCode">Referral Code</Label>
-					<Input
-						id="referralCode"
-						type="text"
-						placeholder="(Optional)"
-						value={form.referralCode}
-						onChange={(e) =>
-							setForm({ ...form, referralCode: e.target.value })
-						}
-					/>
-				</div>
-
 				{/* Submit Button */}
 				<Button
 					className="w-full flex items-center justify-center gap-2"
@@ -215,7 +209,8 @@ export default function Form({ isLogin, setIsLogin }) {
 				>
 					{isSubmitting ? (
 						<>
-							<Loader2 className="size-7 animate-spin" /> Signing up....
+							<Loader2 className="size-7 animate-spin" /> Signing
+							up....
 						</>
 					) : (
 						"Sign up"
