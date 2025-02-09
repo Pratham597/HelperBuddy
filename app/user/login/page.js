@@ -19,7 +19,7 @@ const SubHeading =
 	"Quick, reliable, and hassle-free service booking, all in one place.";
 
 export default function Page() {
-	const [isLogin, setIsLogin] = useState(true);
+	const [isLogin, setIsLogin] = useState(false);
 
 	// to resolve some error it was giving upon reloading the page
 	const [hydrated, setHydrated] = useState(false);
