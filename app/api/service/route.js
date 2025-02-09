@@ -1,9 +1,11 @@
 import Service from "@/models/Service";
 import Admin from "@/models/Admin";
 import { NextResponse } from "next/server";
+import connectDB from "@/db/connect";
 
 /** Controller for creating the service */ 
 export const POST=async(req)=>{
+    await connectDB();
     const userId=req.headers.get("userId");
     if(!userId) return NextResponse.json({error:"Unauthorized"}, {status:401});
     const admin=await Admin.findById(userId);
@@ -19,6 +21,7 @@ export const POST=async(req)=>{
 }
 /** Controller for fetching all services */
 export const GET=async(req)=>{
+    await connectDB();
     const services=await Service.find({});
     return NextResponse.json(services);
 }
