@@ -13,7 +13,7 @@ export function middleware(req) {
     "/api/admin/login",
     "/api/admin/sign-up",
   ];
-  if (method == "POST" && !arr.includes(path)  ) {
+  if (method==="POST" && !arr.includes(path)) {
     return auth(req);
   } else return NextResponse.next();
 }

@@ -1,4 +1,3 @@
-import { AppSidebar } from "@/components/user/user-app-sidebar"
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -8,8 +7,6 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
-	SidebarInset,
-	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar"
 import Link from "next/link"

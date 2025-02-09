@@ -6,8 +6,7 @@ import generateToken from "@/lib/generateToken";
 /** Controller for admin login */
 export const POST = async (req) => {
   await connectDB();
-  let data = await req.formData();
-  data = Object.fromEntries(data);
+  let data = await req.json();
   if (!data.email || !data.password) {
     return NextResponse.json(
       { error: "Email and password are required" },
