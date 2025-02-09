@@ -6,8 +6,7 @@ import { NextResponse } from "next/server";
  /** Controller to create a new user */ 
 export const POST = async (req) => {
   await connectDB();
-  let data = await req.formData();
-  data = Object.fromEntries(data);
+  let data = await req.json();
   if (!data.email || !data.name || !data.password || !data.phone) {
     return NextResponse.json(
       { error: "All fields are required" },

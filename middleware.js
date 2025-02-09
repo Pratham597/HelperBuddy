@@ -12,9 +12,8 @@ export function middleware(req) {
     "/api/partner/sign-up",
     "/api/admin/login",
     "/api/admin/sign-up",
-    "/api/service"
   ];
-  if (method==="POST" || !arr.includes(path)) {
+  if (method==="POST" && !arr.includes(path)) {
     return auth(req);
   } else return NextResponse.next();
 }

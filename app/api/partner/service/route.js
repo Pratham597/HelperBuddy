@@ -7,8 +7,7 @@ import connectDB from "@/db/connect";
 export const POST=async(req)=>{
     await connectDB();
     const userId=req.headers.get("userId");
-    let data=await req.formData();
-    data=Object.fromEntries(data);
+    let data=await req.json();
     
     const user=await Partner.findById(userId);
     if(!user){
