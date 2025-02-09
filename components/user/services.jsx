@@ -220,11 +220,11 @@ export default function ServicesPage() {
                           {service.name}
                         </CardTitle>
                         <p className="text-sm text-gray-600 mb-2 h-12 overflow-hidden">{service.description}</p>
-                        <p className="text-lg font-bold text-gray-800 mt-auto mb-2">₹{service.price}</p>
+                        <p className="text-lg font-bold text-gray-800 -my-2">₹{service.price}</p>
                         <div className="absolute bottom-4 left-4 right-4">
                           <Button
                             variant="outline"
-                            className="w-full bg-white text-gray-800 border-gray-300 hover:bg-black hover:text-white transition-all duration-300 transform group-hover:scale-105"
+                            className="w-full bg-black text-white border-gray-300 hover:bg-gray-200 hover:text-black transition-all duration-300 transform group-hover:scale-105"
                           >
                             Book Now
                           </Button>

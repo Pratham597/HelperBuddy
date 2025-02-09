@@ -4,6 +4,7 @@ import auth from "@/middlewares/auth.js";
 // Middleware which auth the any type of user!
 export function middleware(req) {
   const path = req.nextUrl.pathname;
+  const method = req.method;
   const arr = [
     "/api/user/login",
     "/api/user/sign-up",
@@ -11,8 +12,9 @@ export function middleware(req) {
     "/api/partner/sign-up",
     "/api/admin/login",
     "/api/admin/sign-up",
+    "/api/service"
   ];
-  if (!arr.includes(path)) {
+  if (method==="POST" || !arr.includes(path)) {
     return auth(req);
   } else return NextResponse.next();
 }
