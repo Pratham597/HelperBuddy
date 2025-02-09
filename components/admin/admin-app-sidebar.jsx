@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/user/user-nav-user"
+import { NavUser } from "@/components/admin/admin-nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
@@ -18,6 +18,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+
 
 const data = {
   user: {
@@ -38,38 +39,52 @@ const data = {
       icon: User,
       isActive: false,
       items: [
-        { title: "Information", url: "/user/dashboard/profile/userInformation" },
-        { title: "Wallet", url: "/user/dashboard/profile/wallet" },
+        { title: "Information", url: "/admin/dashboard/profile/adminInformation" },
+        { title: "Add Admin", url: "/admin/dashboard/profile/addAdmin" },
       ],
     },
     {
-      title: "Bookings",
+      title: "Services",
       url: "#",
       icon: ShoppingBag,
       isActive: false,
       items: [
         {
-          title: "Service Pending",
-          url: "/user/dashboard/bookings/servicesPending",
+          title: "Add Service",
+          url: "/admin/dashboard/services/addService",
         },
         {
-          title: "History",
-          url: "/user/dashboard/bookings/history",
+          title: "Analytics",
+          url: "/admin/dashboard/services/analytics",
         },
       ],
     },
-
+    {
+      title: "Partner",
+      url: "#",
+      icon: ShoppingBag,
+      isActive: false,
+      items: [
+        {
+          title: "Add Partner",
+          url: "/admin/dashboard/partner/addPartner",
+        },
+        {
+          title: "Analytics",
+          url: "/admin/dashboard/services/analytics",
+        },
+      ],
+    },
   ],
 }
 
 export function AppSidebar({ ...props }) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <Link href={`/user/dashboard`}>
-        <SidebarHeader>
-          <TeamSwitcher teams={data.teams} />
-        </SidebarHeader>
-      </Link>
+      <Link href={`/admin/dashboard`}></Link>
+      <SidebarHeader>
+        <TeamSwitcher teams={data.teams} />
+      </SidebarHeader>
 
       <SidebarContent>
         <NavMain items={data.navMain} />
