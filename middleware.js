@@ -13,12 +13,16 @@ export function middleware(req) {
     "/api/admin/login",
     "/api/admin/sign-up",
   ];
-  if (method==="POST" && !arr.includes(path)) {
+
+  if (method === "POST" && !arr.includes(path))
     return auth(req);
-  } else return NextResponse.next();
+  else if (path === "/api/partner/service") {
+    return auth(req);
+  }
+  else return NextResponse.next();
 }
 
 export const config = {
-    runtime: "nodejs",
-    matcher: ["/api/:path*"],
+  runtime: "nodejs",
+  matcher: ["/api/:path*"],
 };
