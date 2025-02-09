@@ -18,6 +18,8 @@ export function middleware(req) {
     return auth(req);
   else if (path === "/api/partner/service") {
     return auth(req);
+  } else if (path === "/api/partner") {
+    return auth(req);
   }
   else return NextResponse.next();
 }

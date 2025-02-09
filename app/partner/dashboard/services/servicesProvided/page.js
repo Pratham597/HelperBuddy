@@ -23,15 +23,12 @@ export default function ServiceManagement() {
 
   // Fetch services on component mount
   useEffect(() => {
-    const fetchAvailableServices = async () => {
+    const fetchServices = async () => {
       const { data } = await axios.get("/api/service");
-
       if (Array.isArray(data)) {
         setAvailableServices(data);
       }
-    }
 
-    const fetchServices = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("No authentication token found");
@@ -42,7 +39,7 @@ export default function ServiceManagement() {
         const { data } = await axios.get("/api/partner/service", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(data)
+        console.log(data.services)
         if (Array.isArray(data.services)) {
           setServicesProvided(data.services);
         } else {
@@ -54,19 +51,16 @@ export default function ServiceManagement() {
         setServicesProvided([]);
       }
     };
-
     fetchServices();
-    fetchAvailableServices();
   }, []);
 
   // Add Service Handler
   const handleAddService = async (e) => {
     e.preventDefault();
     if (!selectedService || !pincode) {
-      alert("All fields are required");
+      console.log("all fields are required")
       return;
     }
-    console.log(selectedService, pincode)
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No authentication token found");
@@ -76,11 +70,10 @@ export default function ServiceManagement() {
     try {
       const { data } = await axios.post(
         "/api/partner/service",
-        { service: selectedService, pincode },
+        { serviceId: selectedService, pincode },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      setServicesProvided([...servicesProvided, data]);
+      setServicesProvided([...servicesProvided, data.services[0]]);
       setSelectedService("");
       setPincode("");
     } catch (error) {
@@ -129,7 +122,7 @@ export default function ServiceManagement() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
-              <Link href={`/partner/dashboard`}>Partner</Link>
+              <Link href={"/partner/dashboard"}>Partner</Link>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
@@ -139,24 +132,24 @@ export default function ServiceManagement() {
         </Breadcrumb>
       </header>
 
-      <div className="mx-auto p-6 bg-white shadow-md rounded-lg max-w-screen-2xl">
-        <h2 className="text-2xl font-semibold mb-6">Service Management</h2>
+      <div className="m-2 sm:m-3 md:m-4 lg:m-10 p-6 bg-white shadow-lg rounded-lg border border-black">
+        <h2 className="text-2xl font-semibold text-black mb-6">Service Management</h2>
 
         {/* Add Service Form */}
-        <form onSubmit={handleAddService} className="bg-gray-100 p-4 rounded-lg mb-6 w-full">
-          <h3 className="text-lg font-medium mb-3">Add a New Service</h3>
+        <form onSubmit={handleAddService} className="bg-white p-4 rounded-lg mb-6 w-full shadow-sm border border-black">
+          <h3 className="text-lg font-medium text-black mb-3">Add a New Service</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Service Selection */}
             <div className="flex flex-col">
-              <label className="text-gray-700 font-medium">Service</label>
+              <label className="text-black font-medium">Service</label>
               <select
                 value={selectedService}
                 onChange={(e) => setSelectedService(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-black rounded-md bg-white text-black focus:outline-none focus:ring-1 focus:ring-black"
               >
                 <option value="">Select a service</option>
                 {availableServices.map((service) => (
-                  <option key={service.name} value={service.name}>
+                  <option key={service._id} value={service._id}>
                     {service.name}
                   </option>
                 ))}
@@ -165,39 +158,39 @@ export default function ServiceManagement() {
 
             {/* Pincode Input */}
             <div className="flex flex-col">
-              <label className="text-gray-700 font-medium">Pincode</label>
+              <label className="text-black font-medium">Pincode</label>
               <input
                 type="text"
                 value={pincode}
                 onChange={(e) => setPincode(e.target.value)}
                 placeholder="Enter pincode"
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-1.5 border border-black rounded-md bg-white text-black focus:outline-none focus:ring-1 focus:ring-black"
               />
             </div>
           </div>
 
-          <button type="submit" className="w-full mt-4 py-2 bg-blue-600 text-white rounded-md text-lg font-semibold hover:bg-blue-700 transition">
+          <button type="submit" className="w-36 mt-4 py-2 bg-black text-white rounded-md text-md font-normal hover:bg-gray-800 transition">
             Add Service
           </button>
         </form>
 
         {/* Provided Services */}
-        <div className="bg-gray-100 p-4 rounded-lg">
-          <h3 className="text-lg font-medium mb-3">Services You Provide</h3>
+        <div className="bg-gray-100 p-4 rounded-lg border border-black">
+          <h3 className="text-lg font-semibold mb-3 text-black">Services You Provide</h3>
           {servicesProvided.length === 0 ? (
             <p className="text-gray-500">You have not added any services yet.</p>
           ) : (
             <ul className="space-y-3">
-              {servicesProvided.map((service) => (
+              {servicesProvided.map((service, id) => (
                 <li
-                  key={service.name}
-                  className={`p-3 rounded-md flex justify-between items-center ${removeMode && selectedForRemoval.includes(service.name) ? "bg-red-200" : "bg-white"
+                  key={id}
+                  className={`p-3 rounded-md flex justify-between items-center border border-black ${removeMode && selectedForRemoval.includes(service.service.name) ? "bg-gray-300" : "bg-white"
                     }`}
-                  onClick={() => removeMode && toggleServiceSelection(service.name)}
+                  onClick={() => removeMode && toggleServiceSelection(service.service.name)}
                 >
-                  <span>{service.name} (Pincode: {service.pincode})</span>
+                  <span className="text-black">{service.service.name}</span>
                   {removeMode && (
-                    <input type="checkbox" checked={selectedForRemoval.includes(service.name)} readOnly className="h-4 w-4" />
+                    <input type="checkbox" checked={selectedForRemoval.includes(service.service.name)} readOnly className="h-4 w-4 border-black" />
                   )}
                 </li>
               ))}
@@ -208,15 +201,15 @@ export default function ServiceManagement() {
         {/* Remove Mode Buttons */}
         <div className="mt-4 flex gap-3">
           {!removeMode ? (
-            <button className="px-4 py-2 bg-red-600 text-white rounded-md" onClick={() => setRemoveMode(true)}>
+            <button className="px-4 py-2 bg-black text-white rounded-md" onClick={() => setRemoveMode(true)}>
               Remove Services
             </button>
           ) : (
             <>
-              <button className="px-4 py-2 bg-gray-600 text-white rounded-md" onClick={() => setRemoveMode(false)}>
+              <button className="px-4 py-2 bg-gray-500 text-white rounded-md" onClick={() => setRemoveMode(false)}>
                 Cancel
               </button>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-md" onClick={handleRemoveServices}>
+              <button className="px-4 py-2 bg-black text-white rounded-md" onClick={handleRemoveServices}>
                 Confirm Removal
               </button>
             </>
