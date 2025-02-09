@@ -2,6 +2,8 @@ import generateToken from "@/lib/generateToken";
 import User from "@/models/User";
 import connectDB from "@/db/connect";
 import { NextResponse } from "next/server";
+import { generateUniqueReferralCode } from "@/actions/user/refferalCode";
+
 
  /** Controller to create a new user */ 
 export const POST = async (req) => {
@@ -25,6 +27,7 @@ export const POST = async (req) => {
       );
     }
     data.refferedBy = currUser._id;
+    data.refferalCode=await generateUniqueReferralCode();
     const user = new User(data);
     await user.save();
     await currUser.save();
@@ -37,6 +40,7 @@ export const POST = async (req) => {
       token: await generateToken(user._id),
     });
   } else {
+    data.refferalCode=await generateUniqueReferralCode();
     const user = new User(data);
     await user.save();
     return NextResponse.json({

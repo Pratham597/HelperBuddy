@@ -1,5 +1,7 @@
 import Service from "@/app/services/page";
 import PartnerService from "@/models/PartnerService";
+import { NextResponse } from "next/server";
+import connectDB from "@/db/connect";
 
 /** Controller for availability of service */
 export const GET= async (req,{params}) => { 
