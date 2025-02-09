@@ -1,10 +1,8 @@
 "use client"
 
 import {
-  BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
 } from "lucide-react"
 
@@ -59,7 +57,7 @@ export function NavUser({
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}>
-            <Link href={`/user/dashboard/notifications`}>
+            <Link href={`/partner/dashboard/notifications`}>
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Bell />

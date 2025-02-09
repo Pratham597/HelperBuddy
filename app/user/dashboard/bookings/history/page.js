@@ -1,4 +1,3 @@
-import { AppSidebar } from "@/components/user/user-app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,17 +8,13 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import {
-  SidebarInset,
-  SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
