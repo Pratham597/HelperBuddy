@@ -84,7 +84,7 @@ export default function ServicesPage() {
                             className="w-full bg-black text-white border-gray-300 hover:bg-gray-200 hover:text-black transition-all duration-300 transform group-hover:scale-105"
                             onClick={() => handleBookNow(service)}
                           >
-                            Book Now
+                            More Details
                           </Button>
                         </div>
                       </CardContent>

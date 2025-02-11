@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { generateUniqueReferralCode } from "@/actions/user/refferalCode";
 
 
- /** Controller to create a new user */ 
+/** Controller to create a new user */
 export const POST = async (req) => {
   await connectDB();
   let data = await req.json();
@@ -27,7 +27,8 @@ export const POST = async (req) => {
       );
     }
     data.refferedBy = currUser._id;
-    data.refferalCode=await generateUniqueReferralCode();
+    data.refferalCode = await generateUniqueReferralCode();
+    console.log(data)
     const user = new User(data);
     await user.save();
     await currUser.save();
@@ -40,7 +41,8 @@ export const POST = async (req) => {
       token: await generateToken(user._id),
     });
   } else {
-    data.refferalCode=await generateUniqueReferralCode();
+    data.referralCode = await generateUniqueReferralCode();
+    console.log(data)
     const user = new User(data);
     await user.save();
     return NextResponse.json({

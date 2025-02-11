@@ -21,6 +21,6 @@ export const POST = async (req) => {
     email: admin.email,
     id: admin._id,
     token: await generateToken(admin._id),
-    phone:admin.phone
+    phone: admin.phone
   });
 };

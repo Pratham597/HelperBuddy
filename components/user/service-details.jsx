@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,14 +13,30 @@ export default function ServiceDetails({ service, onClose }) {
   const [pincode, setPincode] = useState("")
   const [availabilityMessage, setAvailabilityMessage] = useState(null)
   const [feedback, setFeedback] = useState("")
+  const router = useRouter();
 
-  const checkAvailability = () => {
-    const availablePincodes = ["110001", "400001", "560001"]
-    if (availablePincodes.includes(pincode)) {
-      setAvailabilityMessage("Service is available in your area.")
-    } else {
-      setAvailabilityMessage("Service is not available in your area.")
+  const checkAvailability = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/service/${service._id}/available?pincode=${pincode}`);
+      if (!res.ok) throw new Error("Failed to fetch availability");
+      const data = await res.json();
+      setAvailabilityMessage(data.error || data.success);
+    } catch (error) {
+      console.error(error);
+      setAvailabilityMessage("Error checking availability");
     }
+  };
+
+  const addToCart = () => {
+    if (!service) return;
+    const cart = JSON.parse(localStorage.getItem("cart")) || []
+    cart.push({
+      id: service.id,
+      name: service.name,
+      price: service.price,
+      image: service.image,
+    })
+    localStorage.setItem("cart", JSON.stringify(cart))
   }
 
   return (
@@ -36,7 +53,7 @@ export default function ServiceDetails({ service, onClose }) {
         <ScrollArea className="w-full md:w-3/5 h-[60vh] md:h-[80vh] p-4 md:p-6">
           <div className="flex justify-between items-start mb-4">
             <h2 className="text-xl md:text-2xl font-semibold text-black">{service.name}</h2>
-            <Button variant="outline" onClick={onClose} className="text-black border-gray-300 hover:bg-gray-100 hover:border-red-700">
+            <Button variant="outline" onClick={onClose} className="text-black absolute right-4 border-gray-300 hover:bg-gray-100 hover:border-red-700">
               Close
             </Button>
           </div>
@@ -55,6 +72,8 @@ export default function ServiceDetails({ service, onClose }) {
                 onChange={(e) => setPincode(e.target.value)}
                 placeholder="Enter Pincode"
                 className="border-gray-300 text-sm flex-grow mx-2"
+                maxLength={6}
+
               />
               <Button
                 variant="outline"
@@ -146,7 +165,7 @@ export default function ServiceDetails({ service, onClose }) {
           </div>
 
           <div className="mt-6 flex justify-center">
-            <Button className="bg-black text-white text-sm px-6 py-2 hover:bg-gray-800">Book Now</Button>
+            <Button onClick={addToCart} className="bg-black text-white text-sm px-6 py-2 hover:bg-gray-800">Add to Cart</Button>
           </div>
         </ScrollArea>
       </Card>
