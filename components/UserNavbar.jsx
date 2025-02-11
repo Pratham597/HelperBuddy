@@ -67,7 +67,7 @@ const UserNavbar = () => {
 							<Link href="/user/cart" className="relative">
 								<ShoppingCart />
 								{cartCount > 0 && (
-									<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+									<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-[1.5] py-1 rounded-full">
 										{cartCount}
 									</span>
 								)}

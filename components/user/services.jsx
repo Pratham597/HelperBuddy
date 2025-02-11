@@ -11,7 +11,7 @@ import ServiceDetails from "./service-details"
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
-  const [selectedService, setSelectedService] = useState(null); // ✅ State to track clicked service
+  const [selectedService, setSelectedService] = useState(null); 
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -36,12 +36,11 @@ export default function ServicesPage() {
   }, {});
 
   const handleBookNow = (service) => {
-    console.log(service);
     setSelectedService(service); 
   };
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-gray-900 ${poppins.variable} font-sans`}>
+    <div className={`min-h-screen bg-gray-50 text-gray-900 font-sans ${poppins.variable}`}>
       <UserNavbar />
       <main className="container mx-auto px-4 py-8">
         {Object.entries(groupedServices).map(([category, services]) => (
