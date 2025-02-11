@@ -12,7 +12,7 @@ const partnerServiceSchema = new mongoose.Schema(
       ref: "Service",
       required: true,
     },
-    pincode: { type: String, required: true },
+    pincode: [{ type: String, required: true }],
   },
   { timestamps: true }
 );

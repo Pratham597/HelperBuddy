@@ -7,4 +7,5 @@ export const POST=async (req)=>{
     if(!userId) return NextResponse.json({error:"User unauthorized"},{status:404});
     const patnerservice=await PartnerService.find({partner:userId});
     const serviceOrder=await ServiceOrder.find({})
+
 }
