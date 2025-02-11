@@ -1,4 +1,3 @@
-import Service from "@/app/services/page";
 import connectDB from "@/db/connect";
 import PartnerService from "@/models/PartnerService";
 import { NextResponse } from "next/server";

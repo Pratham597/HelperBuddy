@@ -8,22 +8,27 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
+import { Loader2 } from "lucide-react"
 
 export default function ServiceDetails({ service, onClose }) {
   const [pincode, setPincode] = useState("")
   const [availabilityMessage, setAvailabilityMessage] = useState(null)
   const [feedback, setFeedback] = useState("")
+  const [loading, setLoading] = useState(false) 
   const router = useRouter();
 
   const checkAvailability = async () => {
+    setLoading(true)
     try {
-      const res = await fetch(`http://localhost:3000/api/service/${service._id}/available?pincode=${pincode}`);
+      const res = await fetch(`/api/service/${service._id}/available?pincode=${pincode}`);
       if (!res.ok) throw new Error("Failed to fetch availability");
       const data = await res.json();
       setAvailabilityMessage(data.error || data.success);
     } catch (error) {
       console.error(error);
       setAvailabilityMessage("Error checking availability");
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -41,7 +46,16 @@ export default function ServiceDetails({ service, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-gray-400 bg-opacity-90 flex items-center justify-center z-50 p-4">
+      <Button
+        variant="outline"
+        onClick={onClose}
+        className="absolute 
+              top-2 right-2  text-white bg-red-600 hover:bg-red-700 border-none p-1 rounded-full w-8 h-8 flex items-center justify-center shadow-md"
+      >
+        ✖
+      </Button>
       <Card className="w-full max-w-6xl shadow-lg flex flex-col md:flex-row overflow-hidden">
+      
         <div className="w-full md:w-2/5 bg-gray-100 flex items-center justify-center p-4 md:p-6">
           <img
             src={service.image || "/placeholder.svg"}
@@ -51,11 +65,10 @@ export default function ServiceDetails({ service, onClose }) {
         </div>
 
         <ScrollArea className="w-full md:w-3/5 h-[60vh] md:h-[80vh] p-4 md:p-6">
+        
           <div className="flex justify-between items-start mb-4">
             <h2 className="text-xl md:text-2xl font-semibold text-black">{service.name}</h2>
-            <Button variant="outline" onClick={onClose} className="text-black absolute right-4 border-gray-300 hover:bg-gray-100 hover:border-red-700">
-              Close
-            </Button>
+            
           </div>
 
           <p className="text-gray-600 text-sm mb-4">{service.description}</p>
@@ -78,9 +91,10 @@ export default function ServiceDetails({ service, onClose }) {
               <Button
                 variant="outline"
                 onClick={checkAvailability}
+                disabled={loading}
                 className="ml-2 bg-black text-white text-sm whitespace-nowrap hover:bg-gray-300 hover:border-black hover:text-black"
               >
-                Check
+              {  loading ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : "Check"}
               </Button>
             </div>
             {availabilityMessage && (
@@ -165,7 +179,7 @@ export default function ServiceDetails({ service, onClose }) {
           </div>
 
           <div className="mt-6 flex justify-center">
-            <Button onClick={addToCart} className="bg-black text-white text-sm px-6 py-2 hover:bg-gray-800">Add to Cart</Button>
+            <Button onClick={()=>{addToCart(),onClose()}} className="bg-black text-white text-sm px-6 py-2 hover:bg-gray-800">Add to Cart</Button>
           </div>
         </ScrollArea>
       </Card>

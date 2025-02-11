@@ -63,7 +63,7 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 				const data = await res.json();
 				console.log(data);
 				// Save token in local storage
-				localStorage.setItem("user", data);
+				localStorage.setItem("user", JSON.stringify(data));
 				router.push("/");
 				toast.success("Logged in successfully");
 			}
