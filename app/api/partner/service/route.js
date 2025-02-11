@@ -19,10 +19,13 @@ export const POST = async (req) => {
     if (!data.serviceId || !data.pincode) {
         return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
-    const service = await PartnerService.create({
-        partner: userId,
-        service: data.serviceId,
-        pincode: data.pincode
+    const partnerservice=await PartnerService.findOne({partner:userId,service:data.serviceId});
+    if(partnerservice) return NextResponse.json({error:"Service already exists!"},{status:403});
+    
+    const service=await PartnerService.create({
+        partner:userId,
+        service:data.serviceId,
+        pincode:data.pincode
     });
 
     const services = await PartnerService.find({ partner: userId, service: data.serviceId }).populate("service");
