@@ -2,6 +2,7 @@ import Service from "@/models/Service";
 import Admin from "@/models/Admin";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
+import ServiceOrder from "@/models/ServiceOrder";
 
 /** Controller for fetching particular id */
 export const GET=async(req,{params})=>{
@@ -9,7 +10,8 @@ export const GET=async(req,{params})=>{
     const {id}= await params;
     const service=await Service.findById(id);
     if(!service) return NextResponse.json({error:"Service not found"}, {status:404});
-    return NextResponse.json(service);
+    const remarks=await ServiceOrder.find({service:service._id,partner:{$ne:null}}).select("remarks");
+    return NextResponse.json(service,remarks);
 }
 
 /** Controller for updating the particular id */
