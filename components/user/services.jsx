@@ -42,7 +42,7 @@ export default function ServicesPage() {
 
   return (
     <div className={`min-h-screen bg-gray-50 text-gray-900 ${poppins.variable} font-sans`}>
-      <UserNavbar />
+      {/* <UserNavbar /> */}
       <main className="container mx-auto px-4 py-8">
         {Object.entries(groupedServices).map(([category, services]) => (
           <section key={category} className="mb-12">

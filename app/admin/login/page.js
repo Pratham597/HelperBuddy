@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import LoginForm from "@/components/admin/loginFormAdmin";
 import LoginPageImage from "@/components/LoginPageImage";
-import UserNavbar from "@/components/UserNavbar";
+import UserNavbar from "@/components/user/UserNavbar";
 
 const colors = {
 	primary: "#060606",
