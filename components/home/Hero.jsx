@@ -1,65 +1,75 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import ImageCollage from "./ImageCollage";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
-	const parallaxRef = useRef(null);
+	const [isMobile, setIsMobile] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
-		const handleScroll = () => {
-			if (parallaxRef.current) {
-				const scrollPosition = window.scrollY;
-				parallaxRef.current.style.transform = `translateY(${
-					scrollPosition * 0.5
-				}px)`;
-			}
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 768);
 		};
-
-		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
+		checkMobile();
+		window.addEventListener("resize", checkMobile);
+		return () => window.removeEventListener("resize", checkMobile);
 	}, []);
 
 	return (
-		<section className="relative h-screen flex items-center justify-center overflow-hidden">
-			<div
-				ref={parallaxRef}
-				className="absolute inset-0 z-0"
-				style={{
-					backgroundImage:
-						'url("https://img.freepik.com/free-vector/background-blue-color-design-abstract_779267-1057.jpg")',
-					backgroundSize: "cover",
-					backgroundPosition: "center",
-					filter: "grayscale(100%)",
-				}}
-			></div>
-			<div className="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
-			<div className="relative z-20 text-center text-white px-4">
-				<motion.h1
+		<section className="relative  bg-gradient-to-br px-10 from-white to-gray-100 overflow-hidden">
+			{isMobile && (
+				<div className="absolute inset-0 z-0">
+					<motion.div
+						className="w-full h-full bg-gradient-to-r from-blue-200 to-purple-200 opacity-30"
+						animate={{
+							scale: [1, 1.1, 1],
+							rotate: [0, 5, 0],
+						}}
+						transition={{
+							duration: 20,
+							repeat: Number.POSITIVE_INFINITY,
+							repeatType: "reverse",
+						}}
+					/>
+				</div>
+			)}
+			<div className="container mt-5 flex flex-col gap-5 md:flex-row items-center justify-between relative z-10">
+				{!isMobile && (
+					<div className="w-full md:w-3/5 mb-8 md:mb-0 px-5 ">
+						<ImageCollage />
+					</div>
+				)}
+				<motion.div
+					className="w-full md:w-2/5 text-center md:text-left"
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
-					className="text-4xl md:text-6xl font-bold mb-4"
 				>
-					Find the Best Local Services at Your Fingertips!
-				</motion.h1>
-				<motion.p
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, delay: 0.2 }}
-					className="text-xl md:text-2xl mb-8"
-				>
-					Book trusted professionals for any job, anytime, anywhere.
-				</motion.p>
-				<motion.button
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, delay: 0.4 }}
-					className="bg-white text-black px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-200 hover:scale-105 transition-all duration-300"
-				>
-					Get Started
-				</motion.button>
+					<h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r to-slate-500 from-neutral-800 bg-clip-text text-transparent">
+						Your One-Stop Service Solution
+					</h1>
+					<p className="text-lg md:text-xl text-gray-700 mb-8">
+						Find trusted professionals for any job, anytime,
+						anywhere. Experience convenience like never before.
+					</p>
+					<motion.button
+						className="px-8 py-3  bg-gradient-to-r to-slate-500 from-neutral-800 text-white rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						onClick={() => {
+							router.push("/services");
+						}}
+					>
+						Get Started
+					</motion.button>
+				</motion.div>
 			</div>
+			{!isMobile && (
+				<div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
+			)}
 		</section>
 	);
 }

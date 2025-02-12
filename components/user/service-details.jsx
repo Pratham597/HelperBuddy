@@ -42,6 +42,7 @@ export default function ServiceDetails({ service, onClose }) {
       image: service.image,
     })
     localStorage.setItem("cart", JSON.stringify(cart))
+    window.dispatchEvent(new Event("storage")); // to get instant update of cart count on cart icon - Smit
   }
 
   return (

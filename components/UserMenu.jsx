@@ -3,38 +3,43 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react"; // Added import for React
 import { useState, useEffect } from "react"; // Added import for useState and useEffect
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"; // Added import for DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; // Added import for DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
 
 const UserMenu = ({ isLoggedIn }) => {
-    const pathname = usePathname();
-    const [cartCount, setCartCount] = useState(0); 
+	const pathname = usePathname();
+	const [cartCount, setCartCount] = useState(0);
 
-    const isActive = (path) => pathname === path;
-    
-    useEffect(() => {
-            const updateCartCount = () => {
-                if (typeof window !== "undefined") {
-                    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-                    setCartCount(cart.length);
-                }
-            };
-    
-		updateCartCount(); 
-		console.log(cartCount);
-		
-    
-            window.addEventListener("storage", updateCartCount);
-    
-            return () => {
-                window.removeEventListener("storage", updateCartCount);
-            };
-        });
+	const isActive = (path) => pathname === path;
+
+	useEffect(() => {
+		const updateCartCount = () => {
+			if (typeof window !== "undefined") {
+				const cart = JSON.parse(localStorage.getItem("cart")) || [];
+				setCartCount(cart.length);
+			}
+		};
+
+		updateCartCount();
+
+		window.addEventListener("storage", updateCartCount);
+
+		return () => {
+			window.removeEventListener("storage", updateCartCount);
+		};
+	});
 
 	return (
 		<>
 			<Link
 				href="/services"
-				className={`text-slate-100 hover:text-slate-400 px-3 py-2 text-sm font-medium ${
+				className={`text-slate-100 hover:text-slate-400 px-3 py-2 text-lg font-medium ${
 					isActive("/services") ? "border-b-2 border-slate-100" : ""
 				}`}
 			>
@@ -42,7 +47,7 @@ const UserMenu = ({ isLoggedIn }) => {
 			</Link>
 			<Link
 				href="/blogs"
-				className={`text-slate-100 hover:text-slate-400 px-3 py-2  text-sm font-medium ${
+				className={`text-slate-100 hover:text-slate-400 px-3 py-2  text-lg font-medium ${
 					isActive("/blogs") ? "border-b-2 border-slate-100" : ""
 				}`}
 			>
@@ -50,7 +55,7 @@ const UserMenu = ({ isLoggedIn }) => {
 			</Link>
 			<Link
 				href="/about"
-				className={`text-slate-100 hover:text-slate-400 px-3 py-2  text-sm font-medium ${
+				className={`text-slate-100 hover:text-slate-400 px-3 py-2  text-lg font-medium ${
 					isActive("/about") ? "border-b-2 border-slate-100" : ""
 				}`}
 			>
@@ -74,11 +79,11 @@ const UserMenu = ({ isLoggedIn }) => {
 					/>
 				</svg>
 			</Link>
-					{cartCount > 0 && (
-						<span className="absolute top-3 right-28 bg-red-500 text-white cartNumber px-1 py-[.5] rounded-full">
-							{cartCount}
-						</span>
-					)}
+			{cartCount > 0 && (
+				<span className="absolute top-3 right-28 bg-red-500 text-white cartNumber px-1 py-[.5] rounded-full">
+					{cartCount}
+				</span>
+			)}
 			{isLoggedIn ? (
 				<>
 					<Link
