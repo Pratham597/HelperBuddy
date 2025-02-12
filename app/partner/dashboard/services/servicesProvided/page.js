@@ -29,7 +29,8 @@ export default function ServiceManagement() {
         setAvailableServices(data);
       }
 
-      const token = localStorage.getItem("token");
+      const partner = localStorage.getItem("partner");
+      const { token } = JSON.parse(partner)
       if (!token) {
         console.error("No authentication token found");
         return;
@@ -61,7 +62,8 @@ export default function ServiceManagement() {
       console.log("all fields are required")
       return;
     }
-    const token = localStorage.getItem("token");
+    const partner = localStorage.getItem("partner");
+    const { token } = JSON.parse(partner)
     if (!token) {
       console.error("No authentication token found");
       return;
@@ -92,7 +94,8 @@ export default function ServiceManagement() {
   const handleRemoveServices = async () => {
     if (selectedForRemoval.length === 0) return;
 
-    const token = localStorage.getItem("token");
+    const partner = localStorage.getItem("partner");
+    const { token } = JSON.parse(partner)
     if (!token) {
       console.error("No authentication token found");
       return;

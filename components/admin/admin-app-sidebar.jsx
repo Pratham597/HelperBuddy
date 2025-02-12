@@ -71,7 +71,7 @@ const data = {
         },
         {
           title: "Analytics",
-          url: "/admin/dashboard/services/analytics",
+          url: "/admin/dashboard/partner/analytics",
         },
       ],
     },

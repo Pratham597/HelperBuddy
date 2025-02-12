@@ -12,6 +12,7 @@ export default function WalletPage() {
     referralCode: "ABC123XYZ",
   }
 
+
   const handleCopy = () => {
     navigator.clipboard.writeText(wallet.referralCode)
   }
@@ -41,16 +42,26 @@ export default function WalletPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
           {/* Wallet Points */}
-          <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow">
-            <span className="text-gray-600 font-medium">Wallet Points</span>
-            <span className="text-lg font-semibold text-gray-800">{wallet.points}</span>
+          <div className="flex flex-col mt-1">
+            <label className="font-medium text-gray-600">Wallet Points</label>
+            <input
+              type="text"
+              value={wallet.points}
+              readOnly
+              className="p-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+            />
           </div>
 
           {/* Referral Code */}
-          <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow">
-            <span className="text-gray-600 font-medium">Referral Code</span>
+          <div className="flex flex-col">
+            <label className="font-medium text-gray-600">Referral Code</label>
             <div className="flex items-center justify-between mt-1">
-              <span className="text-lg font-semibold text-gray-800">{wallet.referralCode}</span>
+              <input
+                type="text"
+                value={wallet.referralCode}
+                readOnly
+                className="p-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+              />
               <button
                 onClick={handleCopy}
                 className="px-4 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
