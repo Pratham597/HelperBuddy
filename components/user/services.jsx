@@ -11,7 +11,7 @@ import ServiceDetails from "./service-details"
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
-  const [selectedService, setSelectedService] = useState(null); // ✅ State to track clicked service
+  const [selectedService, setSelectedService] = useState(null); 
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -36,7 +36,6 @@ export default function ServicesPage() {
   }, {});
 
   const handleBookNow = (service) => {
-    console.log(service);
     setSelectedService(service); 
   };
 

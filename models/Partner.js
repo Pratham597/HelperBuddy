@@ -6,8 +6,6 @@ const partnerSchema = new mongoose.Schema(
       email: { type: String, required: true, unique: true },
       phone: { type: String, required: true, unique: true },
       password: { type: String, required: true },
-      // servicesOffered: [{ type: mongoose.Schema.Types.ObjectId, ref: "Service" }],
-      // pinCodes: [{ type: String}],
       isApproved: { type: String, default: '0' },
     },
     { timestamps: true }
