@@ -37,7 +37,6 @@ export default function Cart() {
 
   return (
   <>
-  <UserNavbar />
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-black mb-8 text-center">🛒 Your Cart</h1>
 
