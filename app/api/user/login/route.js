@@ -26,6 +26,6 @@ export const POST = async (req) => {
     phone: user.phone,
     wallet: user.wallet,
     id: user._id,
-    token: generateToken(user._id),
+    token: await generateToken(user._id),
   });
 };

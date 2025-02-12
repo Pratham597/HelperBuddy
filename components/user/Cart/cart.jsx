@@ -67,10 +67,9 @@ export default function Cart() {
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-black mb-8 text-center">🛒 Your Cart</h1>
+  <>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-black mb-8 text-center">🛒 Your Cart</h1>
 
         {cart.length === 0 ? (
           <p className="text-gray-500 text-center">Your cart is empty. Add services to proceed.</p>

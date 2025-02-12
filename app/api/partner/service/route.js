@@ -16,7 +16,7 @@ export const POST = async (req) => {
     if (user.isApproved !== "1") {
         return NextResponse.json({ error: "User not approved" }, { status: 403 });
     }
-    if (!data.serviceId || !data.pincode) {
+    if (!data.serviceId || !data.pincode || !data.pincode.length!=0) {
         return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
     const partnerservice=await PartnerService.findOne({partner:userId,service:data.serviceId});
