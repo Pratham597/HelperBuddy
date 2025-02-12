@@ -37,7 +37,7 @@ export const POST = async (req) => {
         let service = serviceOrders[i];
         const serviceId=service.service;
         const pincode=service.pincode;
-        const partner=await PartnerService.find({service:serviceId,pincode}).populate("partner");
+        const partner=await PartnerService.find({service:serviceId,pincode:{$in:[pincode]}}).populate("partner");
         /** Send email to partner email */
     }
     return NextResponse.json({ success: "Payment successful :)" });

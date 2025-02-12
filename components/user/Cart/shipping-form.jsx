@@ -107,6 +107,9 @@ export function ShippingForm({ onSubmit }) {
           <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleChange} required />
         </div>
     </form>
+    <Button type="submit" onClick={handleSubmit} className="w-full my-5 bg-black text-white hover:bg-gray-800">
+        Save Address
+      </Button>
   </>
     
   )

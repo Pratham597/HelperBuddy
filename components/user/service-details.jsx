@@ -36,7 +36,7 @@ export default function ServiceDetails({ service, onClose }) {
     if (!service) return;
     const cart = JSON.parse(localStorage.getItem("cart")) || []
     cart.push({
-      id: service.id,
+      id: service._id,
       name: service.name,
       price: service.price,
       image: service.image,
