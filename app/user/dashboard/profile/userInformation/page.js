@@ -13,24 +13,31 @@ import { Separator } from "@/components/ui/separator"
 import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export default function ProfilePage() {
-	const [user, setUser] = React.useState({
+	const [profile, setProfile] = useState({
 		name: "John Doe",
-		email: "johndoe@example.com",
-		phone: "+1 (123) 456-7890",
-		address: "123 Main St, Springfield, USA",
-		joined: "January 15, 2023",
+		email: "john.doe@example.com",
+		phone: "+1234567890",
 	})
 
-	const handleChange = (e) => {
-		setUser({ ...user, [e.target.name]: e.target.value })
+	const handleChange = (event) => {
+		const { name, value } = event.target
+		setProfile((prevProfile) => ({
+			...prevProfile,
+			[name]: value,
+		}))
 	}
 
-	const handleSubmit = (e) => {
-		e.preventDefault()
-		console.log("Updated Profile:", user)
-		alert("Profile updated successfully!")
+	const handleSubmit = (event) => {
+		event.preventDefault()
+		// Handle form submission here
+		console.log("Profile updated:", profile)
 	}
 
 	return (
@@ -52,79 +59,52 @@ export default function ProfilePage() {
 					</Breadcrumb>
 				</div>
 			</header>
-			<div className="w-full max-w-6xl mx-auto mt-6 p-6 bg-white shadow-md rounded-lg">
-
-				<h2 className="text-2xl font-semibold mb-6">Update Profile</h2>
-				<form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-
-					<div className="flex flex-col">
-						<label className="font-medium text-gray-600">Full Name</label>
-						<input
-							type="text"
-							name="name"
-							value={user.name}
-							onChange={handleChange}
-							placeholder="Enter your name"
-							className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-						/>
-					</div>
-
-					<div className="flex flex-col">
-						<label className="font-medium text-gray-600">Email</label>
-						<input
-							type="email"
-							name="email"
-							value={user.email}
-							onChange={handleChange}
-							placeholder="Enter your email"
-							className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-						/>
-					</div>
-
-					<div className="flex flex-col">
-						<label className="font-medium text-gray-600">Phone</label>
-						<input
-							type="tel"
-							name="phone"
-							value={user.phone}
-							onChange={handleChange}
-							placeholder="Enter your phone number"
-							className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-						/>
-					</div>
-
-					<div className="flex flex-col">
-						<label className="font-medium text-gray-600">Address</label>
-						<input
-							type="text"
-							name="address"
-							value={user.address}
-							onChange={handleChange}
-							placeholder="Enter your address"
-							className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-						/>
-					</div>
-
-					<div className="flex flex-col md:col-span-2">
-						<label className="font-medium text-gray-600">Joined</label>
-						<input
-							type="text"
-							value={user.joined}
-							readOnly
-							className="p-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
-						/>
-					</div>
-
-					<div className="md:col-span-2 flex justify-start">
-						<button
-							type="submit"
-							className="px-6 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-						>
-							Save Changes
-						</button>
-					</div>
-				</form>
+			<div className="space-y-6 px-6 py-4"> {/* Added padding */}
+				<h1 className="text-3xl font-bold">Your Profile</h1>
+				<Card>
+					<CardHeader>
+						<CardTitle>Edit Profile</CardTitle>
+						<CardDescription>Update your personal information</CardDescription>
+					</CardHeader>
+					<form onSubmit={handleSubmit}>
+						<CardContent className="space-y-4 px-6 py-4"> {/* Added padding */}
+							<div className="space-y-2">
+								<Label htmlFor="name">Name</Label>
+								<Input
+									id="name"
+									name="name"
+									value={profile.name}
+									onChange={handleChange}
+									required />
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="email">Email</Label>
+								<Input
+									id="email"
+									name="email"
+									type="email"
+									value={profile.email}
+									onChange={handleChange}
+									required />
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="phone">Phone</Label>
+								<Input
+									id="phone"
+									name="phone"
+									type="tel"
+									value={profile.phone}
+									onChange={handleChange}
+									required />
+							</div>
+						</CardContent>
+						<CardFooter className="px-6 py-4"> {/* Added padding */}
+							<Button type="submit">Update Profile</Button>
+						</CardFooter>
+					</form>
+				</Card>
 			</div>
 		</>
 	)
 }
+

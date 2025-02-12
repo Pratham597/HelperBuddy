@@ -27,11 +27,13 @@ export const POST = async (req, res) => {
   }
   if(!data.totalAmount ||  !data.pincode || !data.address) return NextResponse.json({error:"Total amount required"},{status:403});
   const orderId = await generateOrderId(data.totalAmount);
+  console.log(orderId)
   const booking=new Booking({
     user: userId,
     orderId: orderId,
     totalAmount:parseInt(data.totalAmount)
   });
+  console.log(booking)
   await booking.save();
   for (let i = 0; i < data.length; i++) {
     const service = data[i];
