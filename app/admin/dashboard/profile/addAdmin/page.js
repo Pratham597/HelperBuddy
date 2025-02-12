@@ -9,6 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link";
 
 export default function Page() {
@@ -31,7 +36,39 @@ export default function Page() {
           </Breadcrumb>
         </div>
       </header>
-      Add Admin
+      <div className="p-6 space-y-6">
+        <h1 className="text-3xl font-bold">Add Admin</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>Admin Information</CardTitle>
+            <CardDescription>Enter the details of the new admin user.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input id="firstName" placeholder="Enter first name" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input id="lastName" placeholder="Enter last name" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="Enter email address" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Temporary Password</Label>
+              <Input id="password" type="password" placeholder="Enter temporary password" />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline">Cancel</Button>
+            <Button>Add Admin</Button>
+          </CardFooter>
+        </Card>
+      </div>
     </>
   );
 }

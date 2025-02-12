@@ -4,12 +4,12 @@ const partnerServiceSchema = new mongoose.Schema(
   {
     partner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Partner",
+      ref: "partner",
       required: true,
     },
     service: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Service",
+      ref: "service",
       required: true,
     },
     pincode: { type: String, required: true },
