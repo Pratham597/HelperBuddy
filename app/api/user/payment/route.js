@@ -31,15 +31,6 @@ export const POST = async (req) => {
   if(xx){
     booking.isPaid = true;
     await booking.save();
-    const serviceOrders=await ServiceOrder.find({booking:booking._id});
-
-    for(let i=0;i<serviceOrders.length;i++){
-        let service = serviceOrders[i];
-        const serviceId=service.service;
-        const pincode=service.pincode;
-        const partner=await PartnerService.find({service:serviceId,pincode}).populate("partner");
-        /** Send email to partner email */
-    }
     return NextResponse.json({ success: "Payment successful :)" });
   }
   else{

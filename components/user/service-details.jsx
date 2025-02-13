@@ -36,12 +36,13 @@ export default function ServiceDetails({ service, onClose }) {
     if (!service) return;
     const cart = JSON.parse(localStorage.getItem("cart")) || []
     cart.push({
-      id: service.id,
+      id: service._id,
       name: service.name,
       price: service.price,
       image: service.image,
     })
     localStorage.setItem("cart", JSON.stringify(cart))
+    window.dispatchEvent(new Event("storage")); // to get instant update of cart count on cart icon - Smit
   }
 
   return (
