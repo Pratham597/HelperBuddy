@@ -18,7 +18,7 @@ export const POST = async (req, res) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const data = await req.json();
-  // console.log(data) 
+  
   for (let i = 0; i < data.services.length; i++) {
     const service = data.services[i];
     const serviceId = service.serviceId;

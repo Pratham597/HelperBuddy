@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2 } from "lucide-react"
+import axios from "axios"
 
 export default function ServiceDetails({ service, onClose }) {
   const [pincode, setPincode] = useState("")
@@ -17,20 +18,29 @@ export default function ServiceDetails({ service, onClose }) {
   const [loading, setLoading] = useState(false) 
   const router = useRouter();
 
-  const checkAvailability = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/service/${service._id}/available?pincode=${pincode}`);
-      if (!res.ok) throw new Error("Failed to fetch availability");
-      const data = await res.json();
-      setAvailabilityMessage(data.error || data.success);
-    } catch (error) {
-      console.error(error);
-      setAvailabilityMessage("Error checking availability");
-    } finally{
-      setLoading(false)
+const checkAvailability = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch(`/api/service/${service._id}/available?pincode=${pincode}`);
+    if (!res.ok) throw new Error("Failed to fetch availability");
+
+    const data = await res.json();
+    
+    if (data.error) {
+      setAvailabilityMessage(data.error);
+    } else {
+      setAvailabilityMessage(data.available ? "Service available in this area" : "Service not available in this area");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    setAvailabilityMessage("Error checking availability");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  
+  
 
   const addToCart = () => {
     if (!service) return;
@@ -43,7 +53,6 @@ export default function ServiceDetails({ service, onClose }) {
     })
     localStorage.setItem("cart", JSON.stringify(cart))
     window.dispatchEvent(new Event("storage")); // to get instant update of cart count on cart icon - Smit
-    router.push('/user/cart')
   }
 
   return (
