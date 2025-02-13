@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import LoginForm from "@/components/partner/LoginFormPartner";
 import SignupForm from "@/components/partner/SignupFormPartner";
 import LoginPageImage from "@/components/LoginPageImage";
-import {useRouter} from "next/navigation"
+import { useRouter } from "next/navigation"
 
 const colors = {
 	primary: "#060606",
@@ -19,17 +19,17 @@ const SubHeading =
 	"Join as a service provider and connect with customers instantly.";
 
 export default function Page() {
-    const router = useRouter();
+	const router = useRouter();
 	const [isLogin, setIsLogin] = useState(true);
 
 	// to resolve some error it was giving upon reloading the page
 	const [hydrated, setHydrated] = useState(false);
 	// Ensure client-side rendering matches SSR output
 	useEffect(() => {
-        setHydrated(true);
-        if (JSON.parse(localStorage.getItem("user"))) {
-            router.push("/partner/dashboard");
-        }
+		setHydrated(true);
+		if (JSON.parse(localStorage.getItem("partner"))) {
+			router.push("/partner/dashboard");
+		}
 
 	}, []);
 	// Prevent mismatches by rendering only after hydration

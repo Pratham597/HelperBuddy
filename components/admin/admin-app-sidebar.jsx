@@ -18,6 +18,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 
 const data = {
@@ -83,6 +84,19 @@ const data = {
 }
 
 export function AppSidebar({ ...props }) {
+  const [profile, setProfile] = useState({})
+
+  useEffect(() => {
+    const storedProfile = JSON.parse(localStorage.getItem("admin"));
+    if (storedProfile) {
+      setProfile({
+        name: storedProfile.name || "",
+        email: storedProfile.email || "",
+        phone: storedProfile.phone || "",
+      });
+    }
+  }, []);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <Link href={`/admin/dashboard`}></Link>
@@ -95,7 +109,7 @@ export function AppSidebar({ ...props }) {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={profile} />
       </SidebarFooter>
 
       <SidebarRail />

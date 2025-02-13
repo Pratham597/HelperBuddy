@@ -12,143 +12,125 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from 'react-hot-toast'
 
 export default function ServiceManagement() {
   const [availableServices, setAvailableServices] = useState([]);
   const [servicesProvided, setServicesProvided] = useState([]);
   const [selectedService, setSelectedService] = useState("");
-  const [pincode, setPincode] = useState("");
-  const [removeMode, setRemoveMode] = useState(false);
-  const [selectedForRemoval, setSelectedForRemoval] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch services on component mount
   useEffect(() => {
     const fetchServices = async () => {
-      const { data } = await axios.get("/api/service");
-      if (Array.isArray(data)) {
-        setAvailableServices(data);
-      }
-
-      const partner = localStorage.getItem("partner");
-      const { token } = JSON.parse(partner)
-      if (!token) {
-        console.error("No authentication token found");
-        return;
-      }
-
       try {
-        const { data } = await axios.get("/api/partner/service", {
+        const { data } = await axios.get("/api/service");
+        if (Array.isArray(data)) {
+          setAvailableServices(data);
+        }
+        const partner = JSON.parse(localStorage.getItem("partner"));
+        const { token } = partner;
+        const res = await axios.get("/api/partner/service", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(data.services)
-        if (Array.isArray(data.services)) {
-          setServicesProvided(data.services);
-        } else {
-          setServicesProvided([]);
-          console.error("Unexpected response format:", data);
-        }
+        setServicesProvided(res.data.services || []);
       } catch (error) {
-        console.error("Error fetching services:", error.response?.data || error.message);
-        setServicesProvided([]);
+        toast.error("Error fetching services:")
+      } finally {
+        setLoading(false);
       }
     };
     fetchServices();
   }, []);
 
-  // Add Service Handler
-  const handleAddService = async (e) => {
-    e.preventDefault();
-    if (!selectedService || !pincode) {
-      console.log("all fields are required")
-      return;
-    }
-    const partner = localStorage.getItem("partner");
-    const { token } = JSON.parse(partner)
-    if (!token) {
-      console.error("No authentication token found");
-      return;
-    }
+  const handleAddService = async () => {
+    if (!selectedService) return;
 
     try {
-      const { data } = await axios.post(
-        "/api/partner/service",
-        { serviceId: selectedService, pincode },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setServicesProvided([...servicesProvided, data.services[0]]);
-      setSelectedService("");
-      setPincode("");
-    } catch (error) {
-      console.error("Error adding service:", error.response?.data || error.message);
-    }
-  };
+      const partner = JSON.parse(localStorage.getItem("partner"));
+      const { token } = partner;
 
-  // Toggle service selection for removal
-  const toggleServiceSelection = (serviceName) => {
-    setSelectedForRemoval((prev) =>
-      prev.includes(serviceName) ? prev.filter((s) => s !== serviceName) : [...prev, serviceName]
-    );
-  };
-
-  // Remove Services Handler
-  const handleRemoveServices = async () => {
-    if (selectedForRemoval.length === 0) return;
-
-    const partner = localStorage.getItem("partner");
-    const { token } = JSON.parse(partner)
-    if (!token) {
-      console.error("No authentication token found");
-      return;
-    }
-
-    try {
       await axios.post(
-        "/api/partner/services/remove",
-        { services: selectedForRemoval },
+        "/api/partner/service",
+        { serviceId: selectedService },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setServicesProvided(servicesProvided.filter((s) => !selectedForRemoval.includes(s.name)));
-      setSelectedForRemoval([]);
-      setRemoveMode(false);
+      // Refresh services list after adding
+      const res = await axios.get("/api/partner/service", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setServicesProvided(res.data.services || []);
+
+      // Reset selection
+      setSelectedService("");
+      toast.success("Service added Successfully")
     } catch (error) {
-      console.error("Error removing services:", error.response?.data || error.message);
+      toast.error(error.response.data.error)
+    }
+  };
+
+  const handleRemoveService = async (serviceId) => {
+    try {
+      const partner = JSON.parse(localStorage.getItem("partner"));
+      const { token } = partner;
+
+      await axios.delete("/api/partner/service", {
+        data: { serviceId },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Refresh services list after removing
+      const res = await axios.get("/api/partner/service", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setServicesProvided(res.data.services || []);
+      toast.success("Service removed successfully")
+    } catch (error) {
+      toast.error("Error removing service:")
     }
   };
 
   return (
-    <>
-      {/* Header */}
-      <header className="flex h-16 items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="h-4" />
+    <div className="min-h-screen bg-gray-50">
+      <header className="flex h-16 items-center gap-4 px-6 bg-white border-b border-gray-200">
+        <SidebarTrigger className="text-gray-600 hover:text-gray-900" />
+        <Separator orientation="vertical" className="h-6" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
-              <Link href={"/partner/dashboard"}>Partner</Link>
+              <Link href="/partner/dashboard" className="text-gray-600 hover:text-gray-900">
+                Partner
+              </Link>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Services Provided</BreadcrumbPage>
+              <BreadcrumbPage className="font-medium">Services Provided</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </header>
 
-      <div className="m-2 sm:m-3 md:m-4 lg:m-10 p-6 bg-white shadow-lg rounded-lg border border-black">
-        <h2 className="text-2xl font-semibold text-black mb-6">Service Management</h2>
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">Service Management</h2>
+          <p className="mt-2 text-gray-600">Add and manage the services you provide to customers.</p>
+        </div>
 
-        {/* Add Service Form */}
-        <form onSubmit={handleAddService} className="bg-white p-4 rounded-lg mb-6 w-full shadow-sm border border-black">
-          <h3 className="text-lg font-medium text-black mb-3">Add a New Service</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Service Selection */}
-            <div className="flex flex-col">
-              <label className="text-black font-medium">Service</label>
+        <Card className="shadow-sm">
+          <CardHeader className="border-b border-gray-100">
+            <CardTitle className="text-lg font-semibold text-gray-900">Add a New Service</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">Service</Label>
               <select
                 value={selectedService}
                 onChange={(e) => setSelectedService(e.target.value)}
-                className="w-full p-2 border border-black rounded-md bg-white text-black focus:outline-none focus:ring-1 focus:ring-black"
+                className="w-full h-10 px-3 rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
               >
                 <option value="">Select a service</option>
                 {availableServices.map((service) => (
@@ -158,67 +140,52 @@ export default function ServiceManagement() {
                 ))}
               </select>
             </div>
+            <Button
+              className="mt-6"
+              onClick={handleAddService}
+              disabled={!selectedService}
+            >
+              Add Service
+            </Button>
+          </CardContent>
+        </Card>
 
-            {/* Pincode Input */}
-            <div className="flex flex-col">
-              <label className="text-black font-medium">Pincode</label>
-              <input
-                type="text"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
-                placeholder="Enter pincode"
-                className="w-full p-1.5 border border-black rounded-md bg-white text-black focus:outline-none focus:ring-1 focus:ring-black"
-              />
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">Services You Provide</h3>
+          {loading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-16 w-full rounded-lg" />
+              <Skeleton className="h-16 w-full rounded-lg" />
+              <Skeleton className="h-16 w-full rounded-lg" />
             </div>
-          </div>
-
-          <button type="submit" className="w-36 mt-4 py-2 bg-black text-white rounded-md text-md font-normal hover:bg-gray-800 transition">
-            Add Service
-          </button>
-        </form>
-
-        {/* Provided Services */}
-        <div className="bg-gray-100 p-4 rounded-lg border border-black">
-          <h3 className="text-lg font-semibold mb-3 text-black">Services You Provide</h3>
-          {servicesProvided.length === 0 ? (
-            <p className="text-gray-500">You have not added any services yet.</p>
+          ) : servicesProvided.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+              <p className="text-gray-600">You have not added any services yet.</p>
+            </div>
           ) : (
-            <ul className="space-y-3">
-              {servicesProvided.map((service, id) => (
-                <li
-                  key={id}
-                  className={`p-3 rounded-md flex justify-between items-center border border-black ${removeMode && selectedForRemoval.includes(service.service.name) ? "bg-gray-300" : "bg-white"
-                    }`}
-                  onClick={() => removeMode && toggleServiceSelection(service.service.name)}
+            <div className="space-y-3">
+              {servicesProvided.map((service) => (
+                <div
+                  key={service.service._id}
+                  className="p-4 rounded-lg bg-white border border-gray-200 shadow-sm hover:border-gray-300 transition-colors flex justify-between items-center"
                 >
-                  <span className="text-black">{service.service.name}</span>
-                  {removeMode && (
-                    <input type="checkbox" checked={selectedForRemoval.includes(service.service.name)} readOnly className="h-4 w-4 border-black" />
-                  )}
-                </li>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{service.service.name}</h4>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-gray-600"
+                    onClick={() => handleRemoveService(service.service._id)}
+                  >
+                    Remove
+                  </Button>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
-
-        {/* Remove Mode Buttons */}
-        <div className="mt-4 flex gap-3">
-          {!removeMode ? (
-            <button className="px-4 py-2 bg-black text-white rounded-md" onClick={() => setRemoveMode(true)}>
-              Remove Services
-            </button>
-          ) : (
-            <>
-              <button className="px-4 py-2 bg-gray-500 text-white rounded-md" onClick={() => setRemoveMode(false)}>
-                Cancel
-              </button>
-              <button className="px-4 py-2 bg-black text-white rounded-md" onClick={handleRemoveServices}>
-                Confirm Removal
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }

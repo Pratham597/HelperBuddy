@@ -23,6 +23,9 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import toast from "react-hot-toast";
+
 
 export default function PendingPartnersPage() {
   const [pendingPartners, setPendingPartners] = useState([]);
@@ -30,7 +33,7 @@ export default function PendingPartnersPage() {
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [flag, setFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 2;
+  const pageSize = 10;
 
   useEffect(() => {
     const fetchPartners = async () => {
@@ -69,7 +72,14 @@ export default function PendingPartnersPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (response.status === 200) setFlag((prev) => !prev);
+      if (response.status === 200) {
+        setFlag((prev) => !prev)
+        if (action === 1) {
+          toast.success("Partner accepted successfully")
+        } else {
+          toast.success("Partner rejected successfully")
+        }
+      };
     } catch (error) {
       console.log(error);
     }
@@ -106,7 +116,9 @@ export default function PendingPartnersPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {loading ? (
-              <p>Loading...</p>
+              Array.from({ length: 10 }).map((_, index) => (
+                <Skeleton key={index} className="h-20 w-full rounded-lg" />
+              ))
             ) : paginatedData.length === 0 ? (
               <p className="text-gray-600">No pending partners.</p>
             ) : (
@@ -154,7 +166,7 @@ export default function PendingPartnersPage() {
               <Button onClick={() => handleAction(selectedPartner._id, "1")}>
                 Approve
               </Button>
-              <Button variant="destructive" onClick={() => handleAction(selectedPartner._id, "-1")}>
+              <Button onClick={() => handleAction(selectedPartner._id, "-1")}>
                 Reject
               </Button>
             </DialogFooter>

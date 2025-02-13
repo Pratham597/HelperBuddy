@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -5,86 +8,105 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import {
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { Mail, Phone, MapPin, Calendar } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
-export default function Page() {
-  const adminInfo = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Admin St, City, Country",
-    role: "Super Admin",
-    joinDate: "January 1, 2023",
-  }
+export default function AdminProfilePage() {
+  const [profile, setProfile] = useState(null);
+  const [isChanged, setIsChanged] = useState(false);
+  const [originalProfile, setOriginalProfile] = useState(null);
+
+  useEffect(() => {
+    const storedProfile = JSON.parse(localStorage.getItem("admin"));
+    if (storedProfile) {
+      setProfile({
+        name: storedProfile.name || "",
+        email: storedProfile.email || "",
+        phone: storedProfile.phone || "",
+      });
+      setOriginalProfile({ ...storedProfile });
+    }
+  }, []);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [name]: value,
+    }));
+    setIsChanged(value !== originalProfile[name]);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    localStorage.setItem("admin", JSON.stringify(profile));
+    setIsChanged(false);
+    setOriginalProfile({ ...profile });
+  };
 
   return (
-    <>
-      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <Link href={`/admin/dashboard`}>Admin</Link>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Admin Information</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <header className="flex h-16 items-center gap-4 px-6 bg-white border-b border-gray-200">
+        <SidebarTrigger className="text-gray-600 hover:text-gray-900" />
+        <Separator orientation="vertical" className="h-6" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem className="hidden md:block">
+              <Link href="/admin/dashboard" className="text-gray-600 hover:text-gray-900">
+                Admin
+              </Link>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="font-medium">Admin Information</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </header>
-      <div className="p-6 space-y-6">
-        <h1 className="text-3xl font-bold">Admin Information</h1>
-        <Card>
-          <CardHeader className="flex flex-row items-center space-x-4 pb-2">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src="/avatars/01.png" alt={adminInfo.name} />
-              <AvatarFallback>
-                {adminInfo.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle>{adminInfo.name}</CardTitle>
-              <CardDescription>{adminInfo.role}</CardDescription>
-            </div>
+
+      <main className="max-w-3xl mx-auto px-4 py-8">
+        <Card className="shadow-sm">
+          <CardHeader className="border-b border-gray-100">
+            <CardTitle className="text-lg font-semibold text-gray-900">Edit Profile</CardTitle>
+            <CardDescription className="text-gray-600">Update your personal information</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="flex items-center space-x-4">
-              <Mail className="h-4 w-4 opacity-70" />
-              <span>{adminInfo.email}</span>
+          {profile ? (
+            <form onSubmit={handleSubmit}>
+              <CardContent className="p-6 space-y-6">
+                <div className="space-y-2">
+                  <Label>Name</Label>
+                  <Input id="name" name="name" value={profile.name} onChange={handleChange} required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Email</Label>
+                  <Input id="email" name="email" type="email" value={profile.email} onChange={handleChange} required />
+                </div>
+                <div className="space-y-2">
+                  <Label>Phone</Label>
+                  <Input id="phone" name="phone" type="tel" value={profile.phone} onChange={handleChange} required />
+                </div>
+              </CardContent>
+              <CardFooter className="p-6 border-t border-gray-100">
+                <Button type="submit" disabled={!isChanged}>
+                  Update Profile
+                </Button>
+              </CardFooter>
+            </form>
+          ) : (
+            <div className="p-6 space-y-6">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
-            <div className="flex items-center space-x-4">
-              <Phone className="h-4 w-4 opacity-70" />
-              <span>{adminInfo.phone}</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <MapPin className="h-4 w-4 opacity-70" />
-              <span>{adminInfo.address}</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Calendar className="h-4 w-4 opacity-70" />
-              <span>Joined on {adminInfo.joinDate}</span>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full">Edit Profile</Button>
-          </CardFooter>
+          )}
         </Card>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }
