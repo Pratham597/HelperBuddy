@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    wallet: { type: Number, default: 100 },
+    wallet: { type: Number, default: 100 ,max:[1000,"Wallet cash can't be greater than 1000"]},
     referralCode: { type: String, unique: true },
     referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   },

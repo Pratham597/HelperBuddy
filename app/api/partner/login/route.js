@@ -32,6 +32,7 @@ export const POST = async (req) => {
     email: partner.email,
     id: partner._id,
     phone:partner.phone,
+    pincode:partner.pincode,
     token: await  generateToken(partner._id),
   });
 };
