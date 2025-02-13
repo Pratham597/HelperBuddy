@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import SearchBar from "./SearchBar"
@@ -10,7 +10,28 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const pathname = usePathname()
 
-  const isActive = (path) => pathname === path
+	const isActive = (path) => pathname === path
+	
+	const [cartCount, setCartCount] = useState(0); 
+		
+		useEffect(() => {
+				const updateCartCount = () => {
+					if (typeof window !== "undefined") {
+						const cart = JSON.parse(localStorage.getItem("cart")) || [];
+						setCartCount(cart.length);
+					}
+				};
+		
+			updateCartCount(); 
+			console.log(cartCount);
+			
+		
+				window.addEventListener("storage", updateCartCount);
+		
+				return () => {
+					window.removeEventListener("storage", updateCartCount);
+				};
+			});
 
   if (!isOpen) return null
 
@@ -66,10 +87,15 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 				>
 					Cart
 				</Link>
+				{cartCount > 0 && (
+					<span className="absolute top-52 right-5 bg-red-500 text-white cartNumber py-2 px-3 rounded-full">
+						{cartCount}
+					</span>
+				)}
 				{isLoggedIn ? (
 					<>
 						<Link
-							href="/notifications"
+							href="/user/dashboard/notifications"
 							className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
 								isActive("/notifications") ? "bg-gray-100" : ""
 							}`}
@@ -77,7 +103,7 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 							Notifications
 						</Link>
 						<Link
-							href="/profile"
+							href="/user/dashboard"
 							className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
 								isActive("/profile") ? "bg-gray-100" : ""
 							}`}

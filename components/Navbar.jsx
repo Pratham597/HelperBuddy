@@ -21,16 +21,16 @@ const Navbar = () => {
 		};
 
 		checkLoginStatus();
-	}, []);
+	});
 
 	return (
-		<nav className="sticky top-0 z-50 bg-black text-white shadow-md ">
-			<div className=" mx-auto px-4 sm:px-6 lg:px-8">
-				<div className="flex justify-between items-center h-16">
+		<nav className="sticky top-2 z-50 bg-slate-950 text-white shadow-md md:rounded-full rounded-xl m-2"> 
+			<div className=" mx-auto px-4 sm:px-6 lg:px-8  ">
+				<div className="flex justify-between items-center h-[4.5rem]">
 					<div className="flex items-center">
 						<Logo />
 					</div>
-					<div className="hidden md:block flex-1 mx-4 max-w-xl ">
+					<div className="hidden md:block flex-1 mx-4 max-w-md ">
 						<SearchBar />
 					</div>
 					<div className="hidden md:flex items-center space-x-5">
