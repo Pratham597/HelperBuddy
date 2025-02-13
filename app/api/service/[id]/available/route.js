@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
 import PartnerService from "@/models/PartnerService";
+import Partner from "@/models/Partner";
 
 export const GET = async (req, { params }) => {
   const { id } = await params; 

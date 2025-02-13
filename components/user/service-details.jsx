@@ -43,6 +43,7 @@ export default function ServiceDetails({ service, onClose }) {
     })
     localStorage.setItem("cart", JSON.stringify(cart))
     window.dispatchEvent(new Event("storage")); // to get instant update of cart count on cart icon - Smit
+    router.push('/user/cart')
   }
 
   return (

@@ -18,6 +18,9 @@ const bookingSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  paymentId:{
+    type:String,
+  }
 });
 
 export default mongoose.models.booking ||

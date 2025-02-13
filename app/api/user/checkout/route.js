@@ -46,7 +46,7 @@ export const POST = async (req, res) => {
     const serviceOrder=new ServiceOrder(service);
     await serviceOrder.save();
   }
-  return NextResponse.json({ success: true,message:"Booking has done successfully!"});
+  return NextResponse.json({ success: true,booking});
 };
 
 export const GET=async (req)=>{
