@@ -2,6 +2,7 @@ import PartnerService from "@/models/PartnerService";
 import Partner from "@/models/Partner";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
+import Service from "@/models/Service"
 
 /** Controller for creating service under partner */
 export const POST = async (req) => {
@@ -16,7 +17,7 @@ export const POST = async (req) => {
     if (user.isApproved !== "1") {
         return NextResponse.json({ error: "User not approved" }, { status: 403 });
     }
-    if (!data.serviceId || !data.pincode || !data.pincode.length!=0) {
+    if (!data.serviceId) {
         return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
     const partnerservice=await PartnerService.findOne({partner:userId,service:data.serviceId});
@@ -25,7 +26,6 @@ export const POST = async (req) => {
     const service=await PartnerService.create({
         partner:userId,
         service:data.serviceId,
-        pincode:data.pincode
     });
 
     const services = await PartnerService.find({ partner: userId, service: data.serviceId }).populate("service");

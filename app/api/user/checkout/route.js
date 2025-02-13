@@ -18,34 +18,35 @@ export const POST = async (req, res) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const data = await req.json();
-  for (let i = 0; i < data.length; i++) {
-    const service = data.service[i];
+  // console.log(data) 
+  for (let i = 0; i < data.services.length; i++) {
+    const service = data.services[i];
     const serviceId = service.serviceId;
     if(!serviceId || !service.timeline){
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
   }
+ 
   if(!data.totalAmount ||  !data.pincode || !data.address) return NextResponse.json({error:"Total amount required"},{status:403});
   const orderId = await generateOrderId(data.totalAmount);
-  console.log(orderId)
   const booking=new Booking({
     user: userId,
     orderId: orderId,
     totalAmount:parseInt(data.totalAmount)
   });
-  console.log(booking)
+  
   await booking.save();
-  for (let i = 0; i < data.length; i++) {
-    const service = data[i];
+  for (let i = 0; i < data.services.length; i++) {
+    const service = data.services[i];
     service.booking=booking._id;
     service.pincode=data.pincode
     service.address=data.address
-    service.timeline=data[i].timeline
+    service.timeline=data.services[i].timeline
     service.service=service.serviceId;
     const serviceOrder=new ServiceOrder(service);
     await serviceOrder.save();
   }
-  return NextResponse.json({ success: true ,booking});
+  return NextResponse.json({ success: true,message:"Booking has done successfully!"});
 };
 
 export const GET=async (req)=>{

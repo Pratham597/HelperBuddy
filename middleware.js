@@ -14,7 +14,7 @@ export function middleware(req) {
     "/api/admin/sign-up",
   ];
 
-  if (method === "POST" && !arr.includes(path))
+  if (method !== "GET" && !arr.includes(path))
     return auth(req);
   else if (path === "/api/partner/service") {
     return auth(req);
