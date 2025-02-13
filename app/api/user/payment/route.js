@@ -69,7 +69,6 @@ export const POST = async (req) => {
         pincode: { $in: [userDetails.pincode] },
       })
         .select("email")
-        .lean();
 
       if (emails.length == 0)
         return NextResponse.json(
