@@ -70,6 +70,10 @@ const data = {
           url: "/admin/dashboard/partner/addPartner",
         },
         {
+          title: "Manage Partner",
+          url: "/admin/dashboard/partner/managePartner"
+        },
+        {
           title: "Analytics",
           url: "/admin/dashboard/partner/analytics",
         },

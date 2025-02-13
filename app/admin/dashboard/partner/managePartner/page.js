@@ -22,13 +22,12 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function PendingPartnersPage() {
   const [pendingPartners, setPendingPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPartner, setSelectedPartner] = useState(null);
-  const [flag, setFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 2;
 
@@ -43,7 +42,7 @@ export default function PendingPartnersPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setPendingPartners(response.data.filter((partner) => partner.isApproved === "0"));
+        setPendingPartners(response.data.filter((partner) => partner.isApproved === "1"));
       } catch (err) {
         console.log(err.response?.data?.error || err.message);
       } finally {
@@ -52,30 +51,10 @@ export default function PendingPartnersPage() {
     };
 
     fetchPartners();
-  }, [flag]);
+  }, []);
 
   const totalPages = Math.ceil(pendingPartners.length / pageSize);
   const paginatedData = pendingPartners.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-  const handleAction = async (id, action) => {
-    try {
-      const admin = localStorage.getItem("admin");
-      const { token } = JSON.parse(admin);
-      if (!token) throw new Error("No authentication token found.");
-
-      const response = await axios.post(
-        `http://localhost:3000/api/partner/${id}/approve`,
-        { isApproved: action },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (response.status === 200) setFlag((prev) => !prev);
-    } catch (error) {
-      console.log(error);
-    }
-
-    setSelectedPartner(null);
-  };
 
   return (
     <>
@@ -90,7 +69,7 @@ export default function PendingPartnersPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Pending Partners</BreadcrumbPage>
+                <BreadcrumbPage>Accepted Partners</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -98,11 +77,11 @@ export default function PendingPartnersPage() {
       </header>
 
       <div className="p-6 space-y-6">
-        <h1 className="text-3xl font-bold">Pending Partners</h1>
+        <h1 className="text-3xl font-bold">Accepted Partners</h1>
         <Card>
           <CardHeader>
-            <CardTitle>Pending Approvals</CardTitle>
-            <CardDescription>Review and approve pending partner requests.</CardDescription>
+            <CardTitle>Accepted Approvals</CardTitle>
+            <CardDescription>Review pending partner requests.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {loading ? (
@@ -150,14 +129,6 @@ export default function PendingPartnersPage() {
             <p><strong>Name:</strong> {selectedPartner.name}</p>
             <p><strong>Email:</strong> {selectedPartner.email}</p>
             <p><strong>Phone:</strong> {selectedPartner.phone}</p>
-            <DialogFooter>
-              <Button onClick={() => handleAction(selectedPartner._id, "1")}>
-                Approve
-              </Button>
-              <Button variant="destructive" onClick={() => handleAction(selectedPartner._id, "-1")}>
-                Reject
-              </Button>
-            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
