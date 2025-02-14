@@ -4,6 +4,7 @@ import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
 import Booking from "@/models/Booking";
 import { NextResponse } from "next/server";
+import Service from "@/models/Service";
 
 export const POST = async (req) => {
   await connectDB();

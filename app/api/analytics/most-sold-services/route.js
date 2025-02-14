@@ -1,5 +1,7 @@
-import connectDB from "@/utils/db";
+import connectDB from "@/db/connect";
 import ServiceOrder from "@/models/ServiceOrder";
+import { NextResponse } from "next/server";
+import Service from "@/models/Service";
 
 export const GET= async (req)=>{
   await connectDB();
