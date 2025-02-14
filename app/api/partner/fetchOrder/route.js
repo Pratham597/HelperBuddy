@@ -3,6 +3,7 @@ import Partner from "@/models/Partner";
 import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
 import Booking from "@/models/Booking";
+import Service from "@/models/Service";
 import { NextResponse } from "next/server";
 
 export const POST = async (req) => {
