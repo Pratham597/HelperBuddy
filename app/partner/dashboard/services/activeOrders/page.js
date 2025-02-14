@@ -47,7 +47,7 @@ export default function ActiveOrders() {
 				throw new Error("No authentication token found.");
 
 			const response = await axios.post(
-				"/api/partner/fetchOrder",
+				"/api/partner/acceptedOrders",
 				{},
 				{
 					headers: {
@@ -56,8 +56,11 @@ export default function ActiveOrders() {
 					},
 				}
 			);
-
-			setOrders(response.data.serviceOrders);
+            
+            console.log(response.data.serviceOrders);
+            setOrders(response.data.serviceOrders);
+            console.log();
+            
 		} catch (error) {
 			console.error("Error fetching active orders:", error);
 		} finally {
@@ -70,10 +73,12 @@ export default function ActiveOrders() {
 			const partner = JSON.parse(localStorage.getItem("partner"));
 			if (!partner || !partner.token)
 				throw new Error("No authentication token found.");
-
+            
+            const serviceorder_id = orderId;
+            const userCode = verificationCode;
 			await axios.post(
 				"/api/partner/acceptOrder/verifyUserCode",
-				{ orderId, code: verificationCode },
+				{ serviceorder_id, userCode },
 				{
 					headers: { Authorization: `Bearer ${partner.token}` },
 				}
