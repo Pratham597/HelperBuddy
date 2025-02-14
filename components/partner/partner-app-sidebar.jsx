@@ -51,7 +51,7 @@ const data = {
       items: [
         {
           title: "Active Orders",
-          url: "/partner/dashboard/activeOrders",
+          url: "/partner/dashboard/services/activeOrders",
         },
         {
           title: "Order Requests",

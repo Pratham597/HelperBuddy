@@ -52,7 +52,7 @@ export default function PartnerProfilePage() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    localStorage.setItem("partner", JSON.stringify({ ...profile, pincodes: pincodeList }));
+    localStorage.setItem("partner", JSON.stringify({ ...profile, pincode: pincodeList }));
     setIsChanged(false);
     setOriginalProfile({ ...profile });
   };
@@ -79,7 +79,7 @@ export default function PartnerProfilePage() {
 
       const updatedPincodes = response.data.pincode || [];
       setPincodeList(updatedPincodes);
-      localStorage.setItem("partner", JSON.stringify({ ...profile, pincodes: updatedPincodes }));
+      localStorage.setItem("partner", JSON.stringify({ ...profile, pincode: updatedPincodes }));
       setSelectedPincode("");
     } catch (error) {
       setError(error.message || "Failed to add pincode");
@@ -105,7 +105,7 @@ export default function PartnerProfilePage() {
 
       const updatedPincodes = response.data.pincode || [];
       setPincodeList(updatedPincodes);
-      localStorage.setItem("partner", JSON.stringify({ ...profile, pincodes: updatedPincodes }));
+      localStorage.setItem("partner", JSON.stringify({ ...profile, pincode: updatedPincodes }));
     } catch (error) {
       setError(error.response?.data?.error || error.message || "Failed to remove pincode"); // ✅ Fix applied
     } finally {
