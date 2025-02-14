@@ -36,7 +36,7 @@ const sendEmailToUser = async (userEmail, userName, serviceOrder, partner) => {
             <li><strong>🛠 Service Name:</strong> ${serviceOrder.service.name}</li>
             <li><strong>📅 Booking Date:</strong> ${date}</li>
             <li><strong>✔️ Status:</strong> Assigned & Processing</li>
-            <li><strong>🧑‍💻 Service OTP: ${serviceOrder.userCode}<strong></li>
+            <li><strong>🧑‍💻 Service OTP: ${serviceOrder.userCode}</strong></li>
           </ul>
           <p>We will notify you once the partner reaches out to you.</p>
           <h3>Partner Details:</h3>
