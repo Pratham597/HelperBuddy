@@ -4,6 +4,7 @@ import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
 import Booking from "@/models/Booking";
 import { NextResponse } from "next/server";
+import Service from "@/models/Service";
 
 export const POST = async (req) => {
   await connectDB();
@@ -13,8 +14,8 @@ export const POST = async (req) => {
 
   const partnerServices = await PartnerService.find({ partner: userId }).select("service");
   const partner = await Partner.findById(userId).select("isApproved pincode");
-  
-  if (!partner?.isApproved) 
+
+  if (!partner?.isApproved)
     return NextResponse.json({ error: "Partner Unauthorized" });
 
   if (partnerServices.length === 0) {
@@ -32,7 +33,6 @@ export const POST = async (req) => {
   })
     .populate("service")
     .populate("booking");
-  serviceOrders = serviceOrders.filter(order => order.booking && order.booking.paid);
-
+  serviceOrders = serviceOrders.filter(order => order.booking && order.booking.isPaid);
   return NextResponse.json({ serviceOrders });
 };
