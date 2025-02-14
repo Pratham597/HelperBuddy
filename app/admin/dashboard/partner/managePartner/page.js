@@ -23,13 +23,16 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import toast from "react-hot-toast";
 
 export default function PendingPartnersPage() {
   const [pendingPartners, setPendingPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPartner, setSelectedPartner] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 2;
 
   useEffect(() => {
@@ -59,15 +62,21 @@ export default function PendingPartnersPage() {
       await axios.delete(`http://localhost:3000/api/partner/${id}`);
       setPendingPartners((prev) => prev.filter((partner) => partner._id !== id));
       setSelectedPartner(null);
-      toast.success("Partner removed successfully")
+      setConfirmDelete(false);
+      toast.success("Partner removed successfully");
     } catch (error) {
       console.error("Error removing partner:", error);
-      toast.error("Error removing partner")
+      toast.error("Error removing partner");
     }
   };
 
-  const totalPages = Math.ceil(pendingPartners.length / pageSize);
-  const paginatedData = pendingPartners.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const filteredPartners = pendingPartners.filter((partner) =>
+    partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    partner.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredPartners.length / pageSize);
+  const paginatedData = filteredPartners.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <>
@@ -91,6 +100,13 @@ export default function PendingPartnersPage() {
 
       <div className="p-6 space-y-6">
         <h1 className="text-3xl font-bold">Accepted Partners</h1>
+        <input
+          type="text"
+          placeholder="Search by name or email"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-2 border rounded-lg"
+        />
         <Card>
           <CardHeader>
             <CardTitle>Accepted Approvals</CardTitle>
@@ -98,7 +114,9 @@ export default function PendingPartnersPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {loading ? (
-              <p>Loading...</p>
+              Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="h-20 w-full rounded-lg" />
+              ))
             ) : paginatedData.length === 0 ? (
               <p className="text-gray-600">No accepted partners.</p>
             ) : (
@@ -143,9 +161,22 @@ export default function PendingPartnersPage() {
             <p><strong>Email:</strong> {selectedPartner.email}</p>
             <p><strong>Phone:</strong> {selectedPartner.phone}</p>
             <DialogFooter className="flex justify-end gap-2">
-              <Button variant="destructive" onClick={() => handleRemovePartner(selectedPartner._id)}>
-                Remove Partner
-              </Button>
+              <Button onClick={() => setConfirmDelete(true)}>Remove Partner</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {confirmDelete && (
+        <Dialog open={true} onOpenChange={() => setConfirmDelete(false)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Removal</DialogTitle>
+            </DialogHeader>
+            <p>Are you sure you want to remove {selectedPartner?.name}?</p>
+            <DialogFooter className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+              <Button onClick={() => handleRemovePartner(selectedPartner._id)}>Confirm</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

@@ -1,46 +1,60 @@
-"use client";
+"use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/service-card"
 import { Button } from "@/components/ui/button"
 import { Carousel, CarouselItem, CarouselContent, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import { poppins } from "../fonts/font"
 import { useEffect, useState } from "react"
-import ServiceDetails from "./service-details"
-import axios from "axios";
+import axios from "axios"
+import { useRouter, useParams } from "next/navigation"
+import ServiceDetailsContent from "@/components/user/serviceDetailsContent"
 
 export default function ServicesPage() {
-  const [services, setServices] = useState([]);
-  const [selectedService, setSelectedService] = useState(null); 
+  const [services, setServices] = useState([])
+  const [selectedServiceId, setSelectedServiceId] = useState(null)
+  const router = useRouter()
+  const params = useParams()
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/service`);
-        const data = res.data;
-        setServices(data);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/service`)
+        const data = res.data
+        setServices(data)
       } catch (error) {
-        console.error("Failed to fetch services", error);
+        console.error("Failed to fetch services", error)
       }
-    };
+    }
 
-    fetchServices();
-  }, []);
+    fetchServices()
+  }, [])
+
+  useEffect(() => {
+    if (params.id) {
+      setSelectedServiceId(params.id)
+    }
+  }, [params.id])
 
   const groupedServices = services?.reduce((acc, service) => {
     if (!acc[service.category]) {
-      acc[service.category] = [];
+      acc[service.category] = []
     }
-    acc[service.category].push(service);
-    return acc;
-  }, {});
+    acc[service.category].push(service)
+    return acc
+  }, {})
 
-  const handleBookNow = (service) => {
-    setSelectedService(service); 
-  };
+  const handleServiceClick = (serviceId) => {
+    setSelectedServiceId(serviceId)
+    router.push(`/services/${serviceId}`, undefined, { shallow: true })
+  }
+
+  const handleCloseDetails = () => {
+    setSelectedServiceId(null)
+    router.push("/services", undefined, { shallow: true })
+  }
 
   return (
     <div className={`min-h-screen bg-gray-50 text-gray-900 ${poppins.variable} font-sans`}>
-      {/* <UserNavbar /> */}
       <main className="container mx-auto px-4 py-8">
         {Object.entries(groupedServices).map(([category, services]) => (
           <section key={category} className="mb-12">
@@ -79,8 +93,8 @@ export default function ServicesPage() {
                         <div className="absolute bottom-4 left-4 right-4">
                           <Button
                             variant="outline"
+                            onClick={() => handleServiceClick(service._id)}
                             className="w-full bg-black text-white border-gray-300 hover:bg-gray-200 hover:text-black transition-all duration-300 transform group-hover:scale-105"
-                            onClick={() => handleBookNow(service)}
                           >
                             More Details
                           </Button>
@@ -96,7 +110,7 @@ export default function ServicesPage() {
           </section>
         ))}
       </main>
-      {selectedService && <ServiceDetails service={selectedService} onClose={() => setSelectedService(null)} />}
+      {selectedServiceId && <ServiceDetailsContent slug={selectedServiceId} onClose={handleCloseDetails} />}
     </div>
   )
 }

@@ -5,6 +5,7 @@ import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
 import generateOrderId from "@/actions/user/generateOrderId"
 import Booking from "@/models/Booking";
+import { generateCode } from "@/actions/user/refferalCode";
 
 /** Controller for checking out cart */
 export const POST = async (req, res) => {
@@ -43,6 +44,7 @@ export const POST = async (req, res) => {
     service.address=data.address
     service.timeline=data.services[i].timeline
     service.service=service.serviceId;
+    service.userCode=generateCode()
     const serviceOrder=new ServiceOrder(service);
     await serviceOrder.save();
   }

@@ -15,6 +15,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import toast from "react-hot-toast";
 
 export default function OrderList() {
@@ -53,7 +54,7 @@ export default function OrderList() {
         }
       });
       toast.success("Order accepted successfully");
-      fetchOrders(); // Refresh the list
+      setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
       setSelectedOrder(null); // Close dialog
     } catch (error) {
       console.error("Error accepting order:", error);
@@ -90,7 +91,9 @@ export default function OrderList() {
           </CardHeader>
           <CardContent className="space-y-4">
             {loading ? (
-              <p>Loading...</p>
+              Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="h-20 w-full rounded-lg" />
+              ))
             ) : orders.length === 0 ? (
               <p className="text-gray-600">No pending orders.</p>
             ) : (

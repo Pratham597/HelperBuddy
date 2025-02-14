@@ -1,7 +1,7 @@
 import User from "@/models/User";
 import connectDB from "@/db/connect";
 
-const generateReferralCode = () => {
+const generateCode = () => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let code = "";
     for (let i = 0; i < 6; i++) { 
@@ -15,7 +15,7 @@ const generateUniqueReferralCode = async () => {
     let isUnique = false;
     await connectDB();
     while (!isUnique) {
-        referralCode = generateReferralCode();
+        referralCode = generateCode();
         const existingUser = await User.findOne({ referralCode });
         if (!existingUser) {
             isUnique = true; 
@@ -23,4 +23,4 @@ const generateUniqueReferralCode = async () => {
     }
     return referralCode;
 };
-export { generateUniqueReferralCode };
+export { generateUniqueReferralCode,generateCode};

@@ -55,6 +55,10 @@ const data = {
           url: "/admin/dashboard/services/addService",
         },
         {
+          title: "Manage Service",
+          url: "/admin/dashboard/services/manageService"
+        },
+        {
           title: "Analytics",
           url: "/admin/dashboard/services/analytics",
         },

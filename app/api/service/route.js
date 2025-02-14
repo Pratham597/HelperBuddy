@@ -10,7 +10,7 @@ export const POST = async (req) => {
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const admin = await Admin.findById(userId);
     if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    let data = req.json();
+    let data = await req.json();
 
     if (!data.name || !data.description || !data.price || !data.category || !data.image)
         return NextResponse.json({ error: "All fields are required" }, { status: 400 });
