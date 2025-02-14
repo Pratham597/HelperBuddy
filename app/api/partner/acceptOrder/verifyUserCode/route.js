@@ -25,14 +25,14 @@ export const POST = async (req) => {
     );
 
   if (
-    serviceOrder.partner === partner._id &&
+    serviceOrder.partner?.equals(partner._id) &&
     serviceOrder.userCode === userCode
   ) {
     serviceOrder.userApproved = true;
     await serviceOrder.save();
     return NextResponse.json({
       success: true,
-      message: "User Code matched successfully!",
+      message: "User code matched successfully!",
     });
   } else
     return NextResponse.json(

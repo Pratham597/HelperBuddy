@@ -1,4 +1,5 @@
 import Partner from "@/models/Partner";
+import Partner from "@/models/Partner";
 import ServiceOrder from "@/models/ServiceOrder";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
@@ -14,7 +15,7 @@ export const POST = async (req) => {
     return NextResponse.json({ error: "Partner not found!" }, { status: 403 });
   const serviceOrders = await ServiceOrder.find({
     partner: userId,
-    userApproved: false,
+    userApproved: true,
   })
     .populate("service")
     .select("-userCode");
