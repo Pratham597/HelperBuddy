@@ -84,6 +84,18 @@ const data = {
         },
       ],
     },
+    {
+      title:"Wallet Analytics",
+      url: "#",
+      isActive:false,
+      icon: ShoppingBag,
+      items: [
+        {
+          title: "Analytics",
+          url: "/admin/dashboard/wallet/analytics",
+        },
+      ]
+    }
   ],
 }
 

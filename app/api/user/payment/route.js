@@ -72,12 +72,23 @@ export const POST = async (req) => {
 
       if (emails.length == 0)
         return NextResponse.json(
-          { error: "No parnters are available at that pincode :(" },
+          { error: "No patners are available at that pincode :(" },
           { status: 404 }
         );
       userDetails.name = userInfo.user.name;
       userDetails.phone = userInfo.user.phone;
       await sendEmailToPartner(emails, userDetails, service.service);
+      if (userInfo.referredBy && !userInfo.referredBonus) {
+        const referrer = await User.findByIdAndUpdate(
+          userInfo.referredBy, 
+          { $inc: { wallet: Number(process.env.REFER_POINTS) } }, 
+          { new: true }
+        );
+      
+        if (referrer) {
+          await User.findByIdAndUpdate(userInfo._id, { referredBonus: true });
+        }
+      }
     }
 
     return NextResponse.json({

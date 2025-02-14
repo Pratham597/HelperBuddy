@@ -28,10 +28,8 @@ export const POST = async (req) => {
     }
     data.refferedBy = currUser._id;
     data.refferalCode = await generateUniqueReferralCode();
-    console.log(data)
     const user = new User(data);
     await user.save();
-    await currUser.save();
     return NextResponse.json({
       name: user.name,
       email: user.email,

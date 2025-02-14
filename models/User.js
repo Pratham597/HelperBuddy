@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema(
     wallet: { type: Number, default: 100 ,max:[1000,"Wallet cash can't be greater than 1000"]},
     referralCode: { type: String, unique: true },
     referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    referredBonus:{
+      type:Boolean,
+      default:false
+    }
   },
   { timestamps: true }
 );
