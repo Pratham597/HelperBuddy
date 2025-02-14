@@ -7,6 +7,7 @@ import { Star } from "lucide-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 const TrendingServices = () => {
 	const router = useRouter();
@@ -87,17 +88,23 @@ const TrendingServices = () => {
 						className="flex gap-6 overflow-x-hidden whitespace-nowrap py-4"
 					>
 						{[...services, ...services].map((service, index) => (
-							<Link href={`/services/${service._id}`} passHref key={`${service._id}-${index}`} >
+							<Link
+								href={`/services/${service._id}`}
+								passHref
+								key={`${service._id}-${index}`}
+							>
 								<Card
 									key={index}
 									className="w-72 flex-shrink-0 hover:shadow-xl transition-all duration-300 bg-white/50 backdrop-blur-sm border-0 hover:cursor-pointer hover:scale-105"
 								>
 									<div className="relative h-48 overflow-hidden rounded-t-lg">
-										<img
+										<Image
 											src={
-												service.image ||
+												service.image.trim() ||
 												"/placeholder.svg"
 											}
+											width={300}
+											height={200}
 											alt={service.name}
 											className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
 										/>

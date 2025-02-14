@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fuse from "fuse.js";
+import Image from "next/image";
 
 const options = {
 	keys: ["name"], // Search based on 'name'
@@ -89,13 +90,15 @@ const SearchBar = () => {
 									className="p-4 border-b border-gray-200 hover:bg-gray-100"
 								>
 									<div className="flex items-center space-x-4">
-										<img
+										<Image
+											width={100}
+											height={100}
 											src={
-												service.image ||
+												service.image.trim() ||
 												"/placeholder.svg"
 											}
 											alt={service.name}
-											className="w-12 h-12 object-cover rounded-md"
+											className=" object-cover rounded-md"
 										/>
 										<div>
 											<h3 className="font-semibold">

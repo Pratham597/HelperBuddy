@@ -5,12 +5,12 @@ import TrustSection from "@/components/home/TrustSection";
 import Testimonials from "@/components/home/Testimonials";
 import CallToAction from "@/components/home/CallToAction";
 import Footer from "@/components/home/Footer";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 
 export default function Home() {
 	return (
 		<main className="bg-white text-black">
-			<Navbar	/>
+			<Navbar />
 			<Hero />
 			<TrendingServices />
 			<ServiceCategories />

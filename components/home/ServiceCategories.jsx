@@ -23,7 +23,7 @@ const categories = [
 			"https://cdn.zyrosite.com/cdn-cgi/image/format=auto,w=328,h=184,fit=crop,q=100/cdn-ecommerce/store_01JCYZKF09EKDA2HS3ZXYAX2G1%2Fassets%2F1734724456891-Untitled-design-24-1024x683.webp",
 	},
 	{
-		name: "Bathroom & Kitchen Cleaning",
+		name: "Bathroom and Kitchen Cleaning",
 		icon: Sparkles,
 		bgImage:
 			"https://cdn.zyrosite.com/cdn-cgi/image/format=auto,w=328,h=184,fit=crop,q=100/cdn-ecommerce/store_01JCYZKF09EKDA2HS3ZXYAX2G1%2Fassets%2F1734723078544-store_01JCYZKF09EKDA2HS3ZXYAX2G1_assets_1733056060044-1000s.webp",
@@ -53,7 +53,7 @@ const categories = [
 			"https://cdn.zyrosite.com/cdn-cgi/image/format=auto,w=328,h=184,fit=crop,q=100/cdn-ecommerce/store_01JCYZKF09EKDA2HS3ZXYAX2G1%2Fassets%2F1734723764015-ezgif.com-gif-maker-4.webp",
 	},
 	{
-		name: "Sofa & Carpet Cleaning",
+		name: "Sofa and Carpet Cleaning",
 		icon: Sofa,
 		bgImage:
 			"https://cdn.zyrosite.com/cdn-cgi/image/format=auto,w=328,h=184,fit=crop,q=100/cdn-ecommerce/store_01JCYZKF09EKDA2HS3ZXYAX2G1%2Fassets%2F1734721650441-bhg-how-to-clean-couch-cushions-7095970-hero-3x2-0117_1ZngdVVW4PxAArdBHBojUT-5de66a661071480d9b40b4782dcbea76.webp",

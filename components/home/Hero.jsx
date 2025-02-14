@@ -43,7 +43,7 @@ export default function Hero() {
 					</div>
 				)}
 				<motion.div
-					className="w-full md:w-2/5 text-center md:text-left"
+					className={`w-full md:w-2/5 text-center md:text-left z-10 ${ isMobile ? 'py-5' : '' }`}
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
