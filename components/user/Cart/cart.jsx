@@ -125,6 +125,7 @@ export default function Cart() {
                 setPaymentStatus('success');
                 setCart([]);
                 localStorage.removeItem("cart");
+                window.dispatchEvent(new Event("storage"))
               } else {
                 setPaymentStatus('error');
               }

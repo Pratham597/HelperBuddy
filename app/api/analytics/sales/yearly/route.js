@@ -5,6 +5,7 @@ import Admin from "@/models/Admin";
 
 export const POST = async (req) => {
   const userId = req.headers.get("userId");
+  console.log(userId)
   if (!userId)
     return NextResponse.json({ error: "User unauthorized!" }, { status: 403 });
 
@@ -54,7 +55,7 @@ export const POST = async (req) => {
         totalBookings: foundMonth ? foundMonth.totalBookings : 0
       };
     });
-
+    
     return NextResponse.json({ success: true, year, monthlySales: fullMonthlySales });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
