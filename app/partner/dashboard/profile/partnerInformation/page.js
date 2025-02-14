@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,6 +24,8 @@ export default function PartnerProfilePage() {
   const [originalProfile, setOriginalProfile] = useState(null);
   const [selectedPincode, setSelectedPincode] = useState("");
   const [pincodeList, setPincodeList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const storedProfile = JSON.parse(localStorage.getItem("partner"));
@@ -31,9 +34,10 @@ export default function PartnerProfilePage() {
         name: storedProfile.name || "",
         email: storedProfile.email || "",
         phone: storedProfile.phone || "",
+        token: storedProfile.token || "",
       });
       setOriginalProfile({ ...storedProfile });
-      setPincodeList(storedProfile.pincodes || []);
+      setPincodeList(storedProfile.pincode || []);
     }
   }, []);
 
@@ -57,18 +61,58 @@ export default function PartnerProfilePage() {
     setSelectedPincode(event.target.value);
   };
 
-  const handlePincodeUpdate = () => {
+  const handlePincodeUpdate = async () => {
     if (!selectedPincode || pincodeList.includes(selectedPincode)) return;
-    const updatedPincodes = [...pincodeList, selectedPincode];
-    setPincodeList(updatedPincodes);
-    localStorage.setItem("partner", JSON.stringify({ ...profile, pincodes: updatedPincodes }));
+    setLoading(true);
+    setError("");
+
+    try {
+      const partner = JSON.parse(localStorage.getItem("partner"));
+      if (!partner || !partner.token) throw new Error("No authentication token found.");
+
+      const response = await axios.put("/api/partner/profile", {
+        pincode: selectedPincode,
+        function: "ADD",
+      }, {
+        headers: { Authorization: `Bearer ${partner.token}` },
+      });
+
+      const updatedPincodes = response.data.pincode || [];
+      setPincodeList(updatedPincodes);
+      localStorage.setItem("partner", JSON.stringify({ ...profile, pincodes: updatedPincodes }));
+      setSelectedPincode("");
+    } catch (error) {
+      setError(error.message || "Failed to add pincode");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePincodeRemove = (pincode) => {
-    const updatedPincodes = pincodeList.filter((p) => p !== pincode);
-    setPincodeList(updatedPincodes);
-    localStorage.setItem("partner", JSON.stringify({ ...profile, pincodes: updatedPincodes }));
+  const handlePincodeRemove = async (pincode) => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const partner = JSON.parse(localStorage.getItem("partner"));
+      if (!partner || !partner.token) throw new Error("No authentication token found.");
+      console.log(partner.token)
+      const response = await axios.put("/api/partner/profile", {
+        pincode,
+        function: "DELETE",
+      }, {
+        headers: { Authorization: `Bearer ${partner.token}` },
+      });
+
+      const updatedPincodes = response.data.pincode || [];
+      setPincodeList(updatedPincodes);
+      localStorage.setItem("partner", JSON.stringify({ ...profile, pincodes: updatedPincodes }));
+    } catch (error) {
+      setError(error.response?.data?.error || error.message || "Failed to remove pincode"); // ✅ Fix applied
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -138,15 +182,16 @@ export default function PartnerProfilePage() {
               onChange={handlePincodeChange}
               className="w-full h-10 border border-gray-300 rounded-md"
             />
-            <Button onClick={handlePincodeUpdate} disabled={!selectedPincode}>
-              Add Pincode
+            <Button onClick={handlePincodeUpdate} disabled={!selectedPincode || loading}>
+              {loading ? "Adding..." : "Add Pincode"}
             </Button>
+            {error && <p className="text-red-500">{error}</p>}
             <ul className="mt-4 space-y-2">
               {pincodeList.map((pincode) => (
                 <li key={pincode} className="flex justify-between">
                   <span>{pincode}</span>
-                  <Button className="bg-black" onClick={() => handlePincodeRemove(pincode)}>
-                    Remove
+                  <Button className="bg-black" onClick={() => handlePincodeRemove(pincode)} disabled={loading}>
+                    {loading ? "Removing..." : "Remove"}
                   </Button>
                 </li>
               ))}

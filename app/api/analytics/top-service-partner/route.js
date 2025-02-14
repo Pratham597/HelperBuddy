@@ -2,6 +2,7 @@ import connectDB from "@/db/connect";
 import ServiceOrder from "@/models/ServiceOrder";
 import { NextResponse } from "next/server";
 import Admin from "@/models/Admin";
+import { NextResponse } from "next/server";
 
 export const POST = async (req) => {
   const userId = req.headers.get("userId");

@@ -2,10 +2,10 @@
 const nextConfig = {
 	images: {
 		domains: [
+			"images.unsplash.com", // ✅ Keep this
+			"plus.unsplash.com", // ✅ Needed for some Unsplash images
 			"media.istockphoto.com",
 			"cdn.zyrosite.com",
-			"plus.unsplash.com",
-			"images.unsplash.com",
 			"encrypted-tbn0.gstatic.com",
 		],
 	},
