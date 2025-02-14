@@ -40,22 +40,22 @@ const data = {
       isActive: false,
       items: [
         { title: "Information", url: "/partner/dashboard/profile/partnerInformation" },
-        { title: "something", url: "/partner/dashboard/" },
+        { title: "Services Provided", url: "/partner/dashboard/profile/servicesProvided" },
       ],
     },
     {
-      title: "Services",
+      title: "Orders",
       url: "#",
       icon: ShoppingBag,
       isActive: false,
       items: [
         {
-          title: "Services Provided",
-          url: "/partner/dashboard/services/servicesProvided",
+          title: "Active Orders",
+          url: "/partner/dashboard/activeOrders",
         },
         {
-          title: "Orders",
-          url: "/partner/dashboard/services/orders",
+          title: "Order Requests",
+          url: "/partner/dashboard/services/orderRequests",
         },
         {
           title: "History",
