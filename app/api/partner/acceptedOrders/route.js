@@ -9,14 +9,8 @@ export const POST = async (req) => {
   if (!userId)
     return NextResponse.json({ error: "User unauthorized" }, { status: 401 });
 
-  const partner = await Partner.findById(userId);
-  if (!partner)
-    return NextResponse.json({ error: "Partner not found!" }, { status: 403 });
-  const serviceOrders = await ServiceOrder.find({
-    partner: userId,
-    userApproved: false,
-  })
-    .populate("service")
-    .select("-userCode");
-  return NextResponse.json({ serviceOrders });
-};
+  const partner=await Partner.findById(userId);
+  if(!partner) return NextResponse.json({error:"Partner not found!"},{status:403})
+  const serviceOrders=await ServiceOrder.find({partner:userId,userApproved:false}).populate("service").select("-userCode");
+  return NextResponse.json({ serviceOrders })
+}; 
