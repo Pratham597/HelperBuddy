@@ -1,5 +1,6 @@
-"use client"
+"use client";
 
+import { useState, useEffect } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,10 +9,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import {
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -24,28 +24,55 @@ import {
   PieChart,
   Pie,
   Cell,
-} from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+} from "recharts";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import axios from "axios";
 
 export default function Page() {
-  const barData = [
-    { name: "Jan", revenue: 4000 },
-    { name: "Feb", revenue: 3000 },
-    { name: "Mar", revenue: 2000 },
-    { name: "Apr", revenue: 2780 },
-    { name: "May", revenue: 1890 },
-    { name: "Jun", revenue: 2390 },
-  ]
+  const [barData, setBarData] = useState([]); // Store bar chart data
+  const [pieData, setPieData] = useState([]); // Store pie chart data
+  const [loading, setLoading] = useState(true); // Loading state
 
-  const pieData = [
-    { name: "Cleaning", value: 400 },
-    { name: "Maintenance", value: 300 },
-    { name: "Security", value: 300 },
-    { name: "Other", value: 200 },
-  ]
+  useEffect(() => {
+    async function fetchAnalytics() {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/analytics/most-sold-services`);
+        if (response.data.services) {
+          const formattedBarData = response.data.services.map((service) => ({
+            name: service._id.name,
+            revenue: service.count,
+          }));
+          setBarData(formattedBarData);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
+          const pieResponse = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/analytics/sales`);
+          const sortedServices = pieResponse.data.services.sort((a, b) => b.count - a.count);
+          const topServices = sortedServices.slice(0, 5);
+          const otherServices = sortedServices.slice(5);
+
+          const formattedPieData = topServices.map((service) => ({
+            name: service._id.name,
+            value: service.count,
+          }));
+
+          if (otherServices.length > 0) {
+            const othersCount = otherServices.reduce((sum, service) => sum + service.count, 0);
+            formattedPieData.push({ name: "Others", value: othersCount });
+          }
+
+          setPieData(formattedPieData);
+        }
+      } catch (error) {
+        console.error("Error fetching analytics data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAnalytics();
+  }, []);
+
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A020F0", "#808080"];
 
   return (
     <>
@@ -87,42 +114,59 @@ export default function Page() {
               <CardDescription>Monthly revenue from all services</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={barData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="revenue" fill="#8884d8" />
-                </BarChart>
-              </ResponsiveContainer>
+              {loading ? (
+                <div className="flex justify-center items-center h-96 bg-white rounded-lg">
+                  <Loader2 className="animate-spin w-8 h-8 text-gray-700" />
+                </div>
+              ) : barData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={barData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="revenue" fill="#8884d8" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-center text-gray-500">No data available</p>
+              )}
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
               <CardTitle>Service Distribution</CardTitle>
-              <CardDescription>Breakdown of services by category</CardDescription>
+              <CardDescription>Top 5 services and others</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value">
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+              {loading ? (
+                <div className="flex justify-center items-center h-96 bg-white rounded-lg">
+                  <Loader2 className="animate-spin w-8 h-8 text-gray-700" />
+                </div>
+              ) : pieData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-center text-gray-500">No data available</p>
+              )}
             </CardContent>
           </Card>
         </div>

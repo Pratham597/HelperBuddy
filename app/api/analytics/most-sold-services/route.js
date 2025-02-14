@@ -1,6 +1,6 @@
 import connectDB from "@/db/connect";
 import ServiceOrder from "@/models/ServiceOrder";
-import { NextResponse } from "next/server";
+import {NextResponse} from "next/server";
 import Service from "@/models/Service";
 
 export const GET= async (req)=>{
@@ -12,6 +12,7 @@ export const GET= async (req)=>{
         { $limit: 10 },
       ]);
       const populatedServices = await ServiceOrder.populate(mostSoldServices, { path: "_id", model: "service" });
+      console.log(populatedServices);
       return NextResponse.json({services:populatedServices});
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error"},{status:500});

@@ -11,11 +11,15 @@ import { Timeline } from "./timeline"
 import Script from "next/script"
 import axios from "axios"
 import { useIsMobile } from "@/hooks/use-mobile"
+import PaymentStatusModal from "@/components/user/Cart/payment-status-modal"
+import { delay } from "framer-motion"
 
 export default function Cart() {
   const [cart, setCart] = useState([])
   const [shippingAddress, setShippingAddress] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter()
   const isMobile = useIsMobile()
   useEffect(() => {
@@ -81,7 +85,7 @@ export default function Cart() {
         const orderId = booking.orderId
         const options = {
           key: process.env.RAZORPAY_KEY_ID,
-          amount: Number(booking.totalAmount)*100,
+          amount: Number(booking.totalAmount) * 100,
           currency: "INR",
           name: `HelperBuddy Services`,
           description: "Order Payment",
@@ -100,6 +104,9 @@ export default function Cart() {
           },
           handler: async (response) => {
             try {
+              setPaymentStatus('processing');
+              setIsModalOpen(true);
+
               const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/payment`, {
                 method: "POST",
                 headers: {
@@ -111,25 +118,32 @@ export default function Cart() {
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_signature: response.razorpay_signature,
                 }),
-              })
+              });
 
-              const data = await res.json()
-              console.log(data)
+              const data = await res.json();
               if (data.success) {
-                alert("Payment Verification Successful :)")
-                setCart([])
-                localStorage.removeItem("cart")
-                router.push("/user/dashboard")
+                setPaymentStatus('success');
+                setCart([]);
+                localStorage.removeItem("cart");
               } else {
-                alert("Payment Verification Failed :(")
+                setPaymentStatus('error');
               }
             } catch (error) {
-              console.error("Payment verification error:", error)
+              console.error("Payment verification error:", error);
+              setPaymentStatus('error');
             } finally {
-              setIsLoading(false)
+              setIsLoading(false);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setIsLoading(false); // Stop loading
+              setPaymentStatus('error'); // Mark as error since payment is canceled
+              setIsModalOpen(true); // Open the payment status modal with failure status
             }
           },
         }
+
         const rzp1 = new window.Razorpay(options)
         rzp1.open()
       } else {
@@ -263,6 +277,15 @@ export default function Cart() {
                   </ScrollArea>
                 )}
               </Card>
+              <PaymentStatusModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  setPaymentStatus(null);
+                }}
+                status={paymentStatus}
+                onComplete={() => router.push("/user/dashboard")}
+              />
 
               <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl">
                 <h2 className="text-2xl font-semibold mb-4">Bill Summary</h2>
