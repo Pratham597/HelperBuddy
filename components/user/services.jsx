@@ -6,11 +6,15 @@ import { Carousel, CarouselItem, CarouselContent, CarouselPrevious, CarouselNext
 import { poppins } from "../fonts/font"
 import { useEffect, useState } from "react"
 import axios from "axios"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
+import ServiceDetailsContent from "@/components/user/serviceDetailsContent"
 
 export default function ServicesPage() {
   const [services, setServices] = useState([])
-  const router = useRouter();
+  const [selectedServiceId, setSelectedServiceId] = useState(null)
+  const router = useRouter()
+  const params = useParams()
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -25,6 +29,12 @@ export default function ServicesPage() {
     fetchServices()
   }, [])
 
+  useEffect(() => {
+    if (params.id) {
+      setSelectedServiceId(params.id)
+    }
+  }, [params.id])
+
   const groupedServices = services?.reduce((acc, service) => {
     if (!acc[service.category]) {
       acc[service.category] = []
@@ -32,6 +42,16 @@ export default function ServicesPage() {
     acc[service.category].push(service)
     return acc
   }, {})
+
+  const handleServiceClick = (serviceId) => {
+    setSelectedServiceId(serviceId)
+    router.push(`/services/${serviceId}`, undefined, { shallow: true })
+  }
+
+  const handleCloseDetails = () => {
+    setSelectedServiceId(null)
+    router.push("/services", undefined, { shallow: true })
+  }
 
   return (
     <div className={`min-h-screen bg-gray-50 text-gray-900 ${poppins.variable} font-sans`}>
@@ -71,13 +91,13 @@ export default function ServicesPage() {
                         <p className="text-sm text-gray-600 mb-2 h-12 overflow-hidden">{service.description}</p>
                         <p className="text-lg font-bold text-gray-800 -my-2">₹{service.price}</p>
                         <div className="absolute bottom-4 left-4 right-4">
-                            <Button
-                              variant="outline"
-                              onClick={() => router.push(`/services/${service._id}`)}
-                              className="w-full bg-black text-white border-gray-300 hover:bg-gray-200 hover:text-black transition-all duration-300 transform group-hover:scale-105"
-                            >
-                              More Details
-                            </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => handleServiceClick(service._id)}
+                            className="w-full bg-black text-white border-gray-300 hover:bg-gray-200 hover:text-black transition-all duration-300 transform group-hover:scale-105"
+                          >
+                            More Details
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -90,6 +110,7 @@ export default function ServicesPage() {
           </section>
         ))}
       </main>
+      {selectedServiceId && <ServiceDetailsContent slug={selectedServiceId} onClose={handleCloseDetails} />}
     </div>
   )
 }

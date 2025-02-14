@@ -1,22 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 import { Loader2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
-import Link from "next/link"
-export default function ServiceDetails({ service,onClose }) {
+import { Input } from "@/components/ui/input"
+
+export default function ServiceDetails({ service,onAddToCart }) {
   const [pincode, setPincode] = useState("")
   const [availabilityMessage, setAvailabilityMessage] = useState(null)
   const [feedback, setFeedback] = useState("")
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
-
   const checkAvailability = async () => {
     setLoading(true)
     try {
@@ -49,20 +46,13 @@ export default function ServiceDetails({ service,onClose }) {
     })
     localStorage.setItem("cart", JSON.stringify(cart))
     window.dispatchEvent(new Event("storage"))
-    
+    onAddToCart()
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-400 bg-opacity-90 flex items-center justify-center z-50 p-4">
-      <Button
-        variant="outline"
-        onClick={onClose}
-        className="absolute top-2 right-2  text-white bg-red-600 hover:bg-red-700 border-none p-1 rounded-full w-8 h-8 flex items-center justify-center shadow-md"
-        >
-        ✖
-      </Button>
+    <Card className="w-full max-w-6xl shadow-lg flex flex-col md:flex-row overflow-hidden mx-auto relative">
+      
 
-    <Card className="w-full max-w-6xl shadow-lg flex flex-col md:flex-row overflow-hidden mx-auto">
       <div className="w-full md:w-2/5 bg-gray-100 flex items-center justify-center p-4 md:p-6">
         <img
           src={service.image || "/placeholder.svg"}
@@ -189,7 +179,6 @@ export default function ServiceDetails({ service,onClose }) {
         </div>
       </ScrollArea>
     </Card>
-    </div>
   )
 }
 
