@@ -5,6 +5,7 @@ import { Search } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fuse from "fuse.js";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const options = {
 	keys: ["name"], // Search based on 'name'
@@ -20,6 +21,7 @@ const SearchBar = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const dropdownRef = useRef(null);
+	const router = useRouter();
 
 	useEffect(() => {
 		const fetchServices = async () => {
@@ -87,7 +89,10 @@ const SearchBar = () => {
 							filteredResults.map((service) => (
 								<div
 									key={service._id}
-									className="p-4 border-b border-gray-200 hover:bg-gray-100"
+									className="p-4 border-b border-gray-200 hover:bg-gray-100 hover:shadow-md cursor-pointer"
+									onClick={() =>
+										router.push(`/services/${service._id}`)
+									}
 								>
 									<div className="flex items-center space-x-4">
 										<Image

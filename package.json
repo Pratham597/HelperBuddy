@@ -34,6 +34,7 @@
     "jose": "^5.9.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.475.0",
+    "marked": "^15.0.7",
     "mongoose": "^8.10.0",
     "next": "15.1.6",
     "nodemailer": "^6.10.0",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@tailwindcss/typography": "^0.5.16",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
