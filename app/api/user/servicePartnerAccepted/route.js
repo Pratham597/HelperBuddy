@@ -19,6 +19,7 @@ export const POST = async (req) => {
   const serviceOrder = await ServiceOrder.find({
     booking: { $in: booking },
     partner: {$ne:null},
+    userApproved:false
   }).populate("service");
   return NextResponse.json({ booking, serviceOrder });
 };

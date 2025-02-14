@@ -12,7 +12,6 @@ export const GET= async (req)=>{
         { $limit: 10 },
       ]);
       const populatedServices = await ServiceOrder.populate(mostSoldServices, { path: "_id", model: "service" });
-      console.log(populatedServices);
       return NextResponse.json({services:populatedServices});
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error"},{status:500});

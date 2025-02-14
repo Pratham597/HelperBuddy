@@ -28,7 +28,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
-
+import MonthlySalesGraph from '@/components/analytics/monthly-sales';
 export default function Page() {
   const [barData, setBarData] = useState([]); // Store bar chart data
   const [pieData, setPieData] = useState([]); // Store pie chart data
@@ -171,6 +171,7 @@ export default function Page() {
           </Card>
         </div>
       </div>
+      <MonthlySalesGraph  />
     </>
   );
 }
