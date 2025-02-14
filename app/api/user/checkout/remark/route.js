@@ -9,14 +9,16 @@ export const POST=async(req)=>{
     if(!userId || !data.serviceid) return NextResponse.json({error:"Unauthorized"},{status:401});
     const user=await User.findById(userId);
     if(!user) return NextResponse.json({error:'User unauthorized'},{status:403});
-    
+    // data: serviceId remarks rating
     const serviceOrder=await ServiceOrder.findById(data.serviceid);
-    if(!serviceOrder || !serviceOrder.partner)  return NextResponse.json({error:"Incomplete Data"},{status:404});
+    if(!serviceOrder || !serviceOrder.partner || !serviceOrder.isApproved)  return NextResponse.json({error:"Incomplete Data"},{status:404});
 
     
-    if(!data.remarks){
+    if(!data.remarks || !data.rating){
         return NextResponse.json({error:'Remarks Not found!'},{status:404});
     }
     serviceOrder.remarks=data.remarks;
+    serviceOrder.rating=data.rating;
     await serviceOrder.save();
+    return NextResponse.json({success:true,message:"User feedback added successfully!"})
 }

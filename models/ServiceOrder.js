@@ -37,7 +37,14 @@ const serviceOrderSchema = new mongoose.Schema({
   userApproved:{
     type:Boolean,
     default:false
+  },
+  rating:{
+    type:Number,
+    default:5,
+    max:[5,"Max rating is 5"]
   }
+},{
+  timestamps:true
 });
 
 export default mongoose.models.serviceOrder ||

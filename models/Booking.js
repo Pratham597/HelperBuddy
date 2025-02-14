@@ -21,6 +21,8 @@ const bookingSchema = new mongoose.Schema({
   paymentId:{
     type:String,
   }
+},{
+  timestamps:true
 });
 
 export default mongoose.models.booking ||
