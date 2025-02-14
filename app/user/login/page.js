@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import LoginForm from "@/components/user/loginFormUser";
 import SignupForm from "@/components/user/SignupFormUser";
 import LoginPageImage from "@/components/LoginPageImage";
+import { useRouter } from 'next/navigation'
 
 const colors = {
 	primary: "#060606",
@@ -19,6 +20,7 @@ const SubHeading =
 
 export default function Page() {
 	const [isLogin, setIsLogin] = useState(true);
+	const router = useRouter();
 
 	// to resolve some error it was giving upon reloading the page
 	const [hydrated, setHydrated] = useState(false);

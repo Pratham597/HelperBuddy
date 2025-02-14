@@ -7,7 +7,7 @@ import UserNavbar from "../UserNavbar"
 import { poppins } from "../fonts/font"
 import { useEffect, useState } from "react"
 import ServiceDetails from "./service-details"
-
+import axios from "axios";
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
@@ -16,8 +16,8 @@ export default function ServicesPage() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/service");
-        const data = await res.json();
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/service`);
+        const data = res.data;
         setServices(data);
       } catch (error) {
         console.error("Failed to fetch services", error);

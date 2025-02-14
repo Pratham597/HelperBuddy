@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -22,7 +22,8 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import toast from "react-hot-toast";
 
 export default function PendingPartnersPage() {
   const [pendingPartners, setPendingPartners] = useState([]);
@@ -53,6 +54,18 @@ export default function PendingPartnersPage() {
     fetchPartners();
   }, []);
 
+  const handleRemovePartner = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/partner/${id}`);
+      setPendingPartners((prev) => prev.filter((partner) => partner._id !== id));
+      setSelectedPartner(null);
+      toast.success("Partner removed successfully")
+    } catch (error) {
+      console.error("Error removing partner:", error);
+      toast.error("Error removing partner")
+    }
+  };
+
   const totalPages = Math.ceil(pendingPartners.length / pageSize);
   const paginatedData = pendingPartners.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -81,13 +94,13 @@ export default function PendingPartnersPage() {
         <Card>
           <CardHeader>
             <CardTitle>Accepted Approvals</CardTitle>
-            <CardDescription>Review pending partner requests.</CardDescription>
+            <CardDescription>Review accepted partner requests.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {loading ? (
               <p>Loading...</p>
             ) : paginatedData.length === 0 ? (
-              <p className="text-gray-600">No pending partners.</p>
+              <p className="text-gray-600">No accepted partners.</p>
             ) : (
               paginatedData.map((partner) => (
                 <div key={partner._id} className="p-4 bg-black text-white rounded-lg flex justify-between items-center">
@@ -129,6 +142,11 @@ export default function PendingPartnersPage() {
             <p><strong>Name:</strong> {selectedPartner.name}</p>
             <p><strong>Email:</strong> {selectedPartner.email}</p>
             <p><strong>Phone:</strong> {selectedPartner.phone}</p>
+            <DialogFooter className="flex justify-end gap-2">
+              <Button variant="destructive" onClick={() => handleRemovePartner(selectedPartner._id)}>
+                Remove Partner
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
