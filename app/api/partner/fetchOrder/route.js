@@ -32,7 +32,7 @@ export const POST = async (req) => {
   })
     .populate("service")
     .populate("booking");
-  serviceOrders = serviceOrders.filter(order => order.booking && order.booking.paid);
+  serviceOrders = serviceOrders.filter(order => order.booking && order.booking.isPaid);
 
   return NextResponse.json({ serviceOrders });
 };
