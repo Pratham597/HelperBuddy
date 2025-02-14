@@ -3,7 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/service-card"
 import { Button } from "@/components/ui/button"
 import { Carousel, CarouselItem, CarouselContent, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
-import UserNavbar from "../UserNavbar"
 import { poppins } from "../fonts/font"
 import { useEffect, useState } from "react"
 import ServiceDetails from "./service-details"

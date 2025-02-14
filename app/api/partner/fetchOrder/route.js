@@ -2,8 +2,8 @@ import connectDB from "@/db/connect";
 import Partner from "@/models/Partner";
 import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
+import Booking from "@/models/Booking"; 
 import { NextResponse } from "next/server";
-import Service from "@/models/Service";
 
 export const POST = async (req) => {
   await connectDB();
@@ -11,11 +11,10 @@ export const POST = async (req) => {
   if (!userId)
     return NextResponse.json({ error: "User unauthorized" }, { status: 401 });
 
-  const partnerServices = await PartnerService.find({ partner: userId }).select(
-    "service"
-  );
+  const partnerServices = await PartnerService.find({ partner: userId }).select("service");
   const partner = await Partner.findById(userId).select("isApproved pincode");
-  if (!partner.isApproved)
+  
+  if (!partner?.isApproved) 
     return NextResponse.json({ error: "Partner Unauthorized" });
 
   if (partnerServices.length === 0) {
@@ -24,14 +23,16 @@ export const POST = async (req) => {
       { status: 200 }
     );
   }
+
   const partnerServiceIds = partnerServices.map((item) => item.service);
-  const serviceOrders = await ServiceOrder.find({
+  let serviceOrders = await ServiceOrder.find({
     partner: null,
     service: { $in: partnerServiceIds },
-    pincode: {
-      $in: partner.pincode,
-    },
-  }).populate("service");
+    pincode: { $in: partner.pincode },
+  })
+    .populate("service")
+    .populate("booking");
+  serviceOrders = serviceOrders.filter(order => order.booking && order.booking.paid);
 
   return NextResponse.json({ serviceOrders });
 };

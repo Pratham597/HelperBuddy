@@ -29,6 +29,14 @@ const serviceOrderSchema = new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
     ref:"booking",
     required:true
+  },
+  userCode:{
+    type:String,
+    required:true,
+  },
+  userApproved:{
+    type:Boolean,
+    default:false
   }
 });
 

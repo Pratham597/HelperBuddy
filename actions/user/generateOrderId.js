@@ -6,7 +6,7 @@ const initate = async (amount) => {
   });
 
   let paymentData = {
-    amount: parseInt(amount),
+    amount: parseInt(amount)*100,
     currency: "INR",
   };
   

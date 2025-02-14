@@ -26,7 +26,7 @@ export const POST=async (req)=>{
 
 export const GET=async(req)=>{
     await connectDB()
-    const blogs=await Blog.find({}).populate("author","name").select("title slug author")
+    const blogs=await Blog.find({}).populate("author","name").select("-content")
     return NextResponse.json({success:true,blogs});
 }
 
