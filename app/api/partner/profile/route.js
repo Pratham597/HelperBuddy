@@ -28,7 +28,6 @@ export const PUT = async (req) => {
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
-
   const data = await req.json();
   if (!data.pincode || !data.function) {
     return NextResponse.json(

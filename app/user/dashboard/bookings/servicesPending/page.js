@@ -50,11 +50,11 @@ export default function ActiveOrders() {
 			const user = JSON.parse(localStorage.getItem("user"));
 			if (!user || !user.token) throw new Error("No authentication token found.");
 
-			const response = await axios.post("/api/user/activeOrders", {}, {
+			const response = await axios.post("/api/user/servicesPending", {}, {
 				headers: { Authorization: `Bearer ${user.token}` },
 			});
-
-			setOrders(response.data.activeOrders);
+			console.log(response.data)
+			setOrders(response.data.booking);
 		} catch (error) {
 			console.error("Error fetching active orders:", error);
 			toast.error("Failed to load active orders.");

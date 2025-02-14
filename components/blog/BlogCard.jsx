@@ -34,7 +34,7 @@ export default function BlogCard({ blog }) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          By {blog.author}
+          By {blog.author.name}
         </motion.p>
         <motion.button
           whileHover={{ scale: 1.05 }}
