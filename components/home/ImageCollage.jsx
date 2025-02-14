@@ -19,7 +19,7 @@ export default function ImageCollage() {
 					className="relative overflow-hidden rounded-lg shadow-lg aspect-[4/3]"
 					initial={{ opacity: 0, scale: 0.8 }}
 					animate={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.5, delay: index * 0.1 }}
+					transition={{ duration: 0.4, delay: index * 0.1 }}
 					whileHover={{ scale: 1.03 }}
 				>
 					<Image

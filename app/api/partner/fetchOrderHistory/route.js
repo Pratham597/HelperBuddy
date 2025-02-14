@@ -1,5 +1,4 @@
 import Partner from "@/models/Partner";
-import Partner from "@/models/Partner";
 import ServiceOrder from "@/models/ServiceOrder";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
