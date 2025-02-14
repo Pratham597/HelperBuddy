@@ -24,8 +24,8 @@ import {
 } from "@/components/ui/pagination";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
-
 
 export default function PendingPartnersPage() {
   const [pendingPartners, setPendingPartners] = useState([]);
@@ -33,6 +33,7 @@ export default function PendingPartnersPage() {
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [flag, setFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 10;
 
   useEffect(() => {
@@ -57,8 +58,14 @@ export default function PendingPartnersPage() {
     fetchPartners();
   }, [flag]);
 
-  const totalPages = Math.ceil(pendingPartners.length / pageSize);
-  const paginatedData = pendingPartners.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const filteredPartners = pendingPartners.filter(
+    (partner) =>
+      partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      partner.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredPartners.length / pageSize);
+  const paginatedData = filteredPartners.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleAction = async (id, action) => {
     try {
@@ -73,13 +80,9 @@ export default function PendingPartnersPage() {
       );
 
       if (response.status === 200) {
-        setFlag((prev) => !prev)
-        if (action === 1) {
-          toast.success("Partner accepted successfully")
-        } else {
-          toast.success("Partner rejected successfully")
-        }
-      };
+        setFlag((prev) => !prev);
+        toast.success(action === "1" ? "Partner accepted successfully" : "Partner rejected successfully");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -109,6 +112,12 @@ export default function PendingPartnersPage() {
 
       <div className="p-6 space-y-6">
         <h1 className="text-3xl font-bold">Pending Partners</h1>
+        <Input
+          placeholder="Search by name or email"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-2 border rounded-lg"
+        />
         <Card>
           <CardHeader>
             <CardTitle>Pending Approvals</CardTitle>
