@@ -85,7 +85,7 @@ export default function TrustSection() {
                       0
                     )}
                     {item.title === "Happy Customers" ||
-                    item.title === "Orders Delivered"
+                    item.title === "Service Delivered"
                       ? "+"
                       : ""}
                   </p>

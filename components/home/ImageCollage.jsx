@@ -22,7 +22,7 @@ export default function ImageCollage() {
 					transition={{ duration: 0.5, delay: index * 0.1 }}
 					whileHover={{ scale: 1.03 }}
 				>
-					<img
+					<Image
 						src={src || "/placeholder.svg"}
 						alt={`Service ${index + 1}`}
 						width={400}

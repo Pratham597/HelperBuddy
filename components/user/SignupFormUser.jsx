@@ -84,7 +84,7 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 
 			localStorage.setItem("user", JSON.stringify(data));
 			toast.success("Signup successful!");
-			setIsLogin(true);
+			router.push("/");
 		} catch (error) {
 			console.error(error);
 			toast.error("Something went wrong.");

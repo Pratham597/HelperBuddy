@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import Logo from "./logo";
+import Logo from "./Logo";
 import SearchBar from "./SearchBar";
 import UserMenu from "./UserMenu";
 import MobileMenu from "./MobileMenu";
@@ -10,7 +9,6 @@ import MobileMenu from "./MobileMenu";
 const Navbar = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-	const pathname = usePathname();
 
 	// Simulating a login check
 	useEffect(() => {
@@ -24,24 +22,28 @@ const Navbar = () => {
 	});
 
 	return (
-		<nav className="sticky top-2 z-50 bg-slate-950 text-white shadow-md md:rounded-full rounded-xl m-2"> 
+		<nav
+			className={`sticky top-2 z-50 bg-slate-950 text-white shadow-md  ${
+				isMobileMenuOpen ? "rounded-3xl" : "rounded-full"
+			} m-2`}
+		>
 			<div className=" mx-auto px-4 sm:px-6 lg:px-8  ">
 				<div className="flex justify-between items-center h-[4.5rem]">
 					<div className="flex items-center">
 						<Logo />
 					</div>
-					<div className="hidden md:block flex-1 mx-4 max-w-md ">
+					<div className="hidden lg:block flex-1 mx-4 max-w-md ">
 						<SearchBar />
 					</div>
-					<div className="hidden md:flex items-center space-x-5">
+					<div className="hidden lg:flex items-center space-x-5">
 						<UserMenu isLoggedIn={isLoggedIn} />
 					</div>
-					<div className="md:hidden flex items-center">
+					<div className="lg:hidden flex items-center">
 						<button
 							onClick={() =>
 								setIsMobileMenuOpen(!isMobileMenuOpen)
 							}
-							className="text-slate-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-black"
+							className="text-slate-100 hover:text-gray-600 "
 						>
 							<span className="sr-only">Open main menu</span>
 							{isMobileMenuOpen ? (

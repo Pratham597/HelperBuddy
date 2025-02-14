@@ -36,7 +36,7 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
   if (!isOpen) return null
 
   return (
-		<div className="md:hidden">
+		<div className="lg:hidden">
 			<div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
 				{isSearchOpen ? (
 					<SearchBar />
