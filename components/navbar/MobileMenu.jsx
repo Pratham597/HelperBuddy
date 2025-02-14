@@ -23,7 +23,6 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 				};
 		
 			updateCartCount(); 
-			console.log(cartCount);
 			
 		
 				window.addEventListener("storage", updateCartCount);
