@@ -16,12 +16,14 @@ import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function OrderList() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [accepting, setAccepting] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -45,9 +47,11 @@ export default function OrderList() {
   };
 
   const handleAcceptOrder = async (orderId) => {
-    const partner = JSON.parse(localStorage.getItem("partner"));
-    if (!partner || !partner.token) throw new Error("No authentication token found.");
+    setAccepting(true);
     try {
+      const partner = JSON.parse(localStorage.getItem("partner"));
+      if (!partner || !partner.token) throw new Error("No authentication token found.");
+      
       await axios.post(`/api/partner/acceptOrder`, { serviceorder_id: orderId }, {
         headers: {
           Authorization: `Bearer ${partner.token}`
@@ -59,6 +63,8 @@ export default function OrderList() {
     } catch (error) {
       console.error("Error accepting order:", error);
       toast.error("Error accepting order");
+    } finally {
+      setAccepting(false);
     }
   };
 
@@ -122,8 +128,8 @@ export default function OrderList() {
             <p><strong>Address:</strong> {selectedOrder.address}</p>
             {selectedOrder.remarks && <p><strong>Remarks:</strong> {selectedOrder.remarks}</p>}
             <DialogFooter className="flex justify-end gap-2">
-              <Button variant="default" onClick={() => handleAcceptOrder(selectedOrder._id)}>
-                Accept Order
+              <Button variant="default" onClick={() => handleAcceptOrder(selectedOrder._id)} disabled={accepting}>
+                {accepting ? <Loader2 className="animate-spin w-5 h-5" /> : "Accept Order"}
               </Button>
             </DialogFooter>
           </DialogContent>

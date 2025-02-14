@@ -171,7 +171,7 @@ export function ShippingForm({ onSubmit }) {
       <div>
         <Label htmlFor="pincode">Pincode</Label>
         <div className="flex gap-2">
-          <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleChange} required />
+          <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} required />
           <Button type="button" onClick={handleAvailability} disabled={isLoading || !formData.pincode}>
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify"}
           </Button>
