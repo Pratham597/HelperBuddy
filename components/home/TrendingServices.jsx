@@ -5,12 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
 const TrendingServices = () => {
-	const router = useRouter();
 	const containerRef = useRef(null);
 	const scrollRef = useRef(null);
 	const [services, setServices] = useState([]);
@@ -20,9 +18,9 @@ const TrendingServices = () => {
 		const fetchServices = async () => {
 			try {
 				const response = await axios.get(
-					`${process.env.NEXT_PUBLIC_URL}/api/service`
+					`${process.env.NEXT_PUBLIC_URL}/api/analytics/most-sold-services`
 				);
-				setServices(response.data);
+				setServices(response.data.services);
 			} catch (error) {
 				console.error("Error fetching services:", error);
 			}
@@ -89,23 +87,23 @@ const TrendingServices = () => {
 					>
 						{[...services, ...services].map((service, index) => (
 							<Link
-								href={`/services/${service._id}`}
+								href={`/services/${service._id._id}`}
 								passHref
-								key={`${service._id}-${index}`}
+								key={`${service._id._id}-${index}`}
 							>
 								<Card
 									key={index}
-									className="w-72 flex-shrink-0 hover:shadow-xl transition-all duration-300 bg-white/50 backdrop-blur-sm border-0 hover:cursor-pointer hover:scale-105"
+									className="w-72 flex-shrink-0 hover:shadow-xl transition-all duration-300 bg-gray-50 backdrop-blur-sm border-0 hover:cursor-pointer hover:scale-105"
 								>
 									<div className="relative h-48 overflow-hidden rounded-t-lg">
 										<Image
 											src={
-												service.image.trim() ||
+												service._id.image.trim() ||
 												"/placeholder.svg"
 											}
 											width={300}
 											height={200}
-											alt={service.name}
+											alt={service._id.name}
 											className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
 										/>
 										<div className="absolute top-2 right-2">
@@ -113,14 +111,14 @@ const TrendingServices = () => {
 												variant="secondary"
 												className="bg-white/90 backdrop-blur-sm"
 											>
-												Rs.{service.price}
+												Rs.{service._id.price}
 											</Badge>
 										</div>
 									</div>
 
 									<CardContent className="p-4">
 										<h3 className="font-semibold text-lg mb-2">
-											{service.name}
+											{service._id.name}
 										</h3>
 										<div className="flex items-center gap-1">
 											<Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />

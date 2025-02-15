@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import ImageCollage from "./ImageCollage";
 import { useRouter } from "next/navigation";
+import MobileHero from "./MobileHero";
 
 export default function Hero() {
 	const [isMobile, setIsMobile] = useState(false);
@@ -17,6 +18,10 @@ export default function Hero() {
 		window.addEventListener("resize", checkMobile);
 		return () => window.removeEventListener("resize", checkMobile);
 	}, []);
+
+	if (isMobile) {
+		return <MobileHero />
+	}
 
 	return (
 		<section className="relative  bg-gradient-to-br px-10 from-white to-gray-100 overflow-hidden">
