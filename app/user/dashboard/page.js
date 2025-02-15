@@ -15,11 +15,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
+import { verifyUser } from "@/middlewares/roleVerify";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
     const [orders, setOrders] = useState([]);
     const [expandedOrders, setExpandedOrders] = useState({});
 
+    const router = useRouter();
+    useEffect(() => {
+        if (!verifyUser()) {
+            toast.error("You are not authorized to view this page.");
+            // DELETE THE USER FROM LOCAL STORAGE
+            localStorage.removeItem("user");
+			router.push("/user/login");
+		}
+    }, []);
+    
     useEffect(() => {
         const fetchOrders = async () => {
             try {

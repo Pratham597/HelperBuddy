@@ -9,6 +9,18 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { set } from "mongoose";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import crypto from "crypto";
+import Cookies from "js-cookie"
+
+const SECRET_KEY = process.env.NEXT_PUBLIC_ROLE_KEY;
+
+const hashRole = (role, salt) => {
+	return crypto
+		.createHmac("sha256", SECRET_KEY)
+		.update(role + salt)
+		.digest("hex");
+};
+
 
 const colors = {
 	primary: "#060606",
@@ -83,8 +95,19 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 			}
 
 			localStorage.setItem("user", JSON.stringify(data));
-			toast.success("Signup successful!");
+			const salt = crypto.randomBytes(16).toString("hex");
+
+			// Hash the role
+			const hashedRole = hashRole("user", salt);
+
+			// Store in cookies
+			Cookies.remove("salt");
+			Cookies.remove("role");
+			Cookies.set("salt", salt);
+			Cookies.set("role", hashedRole);
+
 			router.push("/");
+			toast.success("Signup successful!");
 		} catch (error) {
 			console.error(error);
 			toast.error("Something went wrong.");

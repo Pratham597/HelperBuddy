@@ -1,33 +1,94 @@
 import { NextResponse } from "next/server";
 import auth from "@/middlewares/auth.js";
+import {
+	verifyUser,
+	verifyPartner,
+	verifyAdmin,
+} from "@/middlewares/roleVerify.js";
 
-// Middleware which auth the any type of user!
-export function middleware(req) {
-  const path = req.nextUrl.pathname;
-  const method = req.method;
-  const arr = [
-    "/api/user/login",
-    "/api/user/sign-up",
-    "/api/partner/login",
-    "/api/partner/sign-up",
-    "/api/admin/login",
-    "/api/admin/sign-up",
-  ];
+function parseCookies(req) {
+	const cookieHeader = req.headers.get("cookie") || "";
+	return Object.fromEntries(
+		cookieHeader.split("; ").map((cookie) => {
+			const [key, ...value] = cookie.split("=");
+			return [key, value.join("=")];
+		})
+	);
+}
 
-  if (method !== "GET" && !arr.includes(path))
-    return auth(req);
-  else if (path === "/api/partner/service") {
-    return auth(req);
-  } else if (path === "/api/partner") {
-    return auth(req);
-  }
-  else if (path === "/api/partner") {
-    return auth(req);
-  }
-  else return NextResponse.next();
+// Middleware which authenticates any type of user!
+export async function middleware(req) {
+	const path = req.nextUrl.pathname;
+	const method = req.method;
+	const cookies = parseCookies(req);
+	const arr = ["/api/user/login", "/api/partner/login", "/api/admin/login"];
+
+	// API Authentication
+	if (path.startsWith("/api")) {
+		if (method !== "GET" && !arr.includes(path)) return auth(req);
+		else if (path === "/api/partner/service") {
+			return auth(req);
+		} else if (path === "/api/partner") {
+			return auth(req);
+		} else if (path === "/api/partner") {
+			return auth(req);
+		} else return NextResponse.next();
+	}
+
+	if (path.startsWith("/_next")) return NextResponse.next();
+
+	const isPartner = await verifyPartner(cookies);
+	const isAdmin = await verifyAdmin(cookies);
+  const isUser = await verifyUser(cookies);
+  
+  
+	// Publicly accessible routes
+	const publicRoutes = [
+		"/",
+		"/user/login",
+		"/user/cart",
+		"/partner/login",
+		"/admin/login",
+	];
+
+	if (
+		publicRoutes.includes(path) ||
+		path.startsWith("/services") ||
+		path.startsWith("/blogs")
+	) {
+		console.log("publicRoutes", path);
+		if (
+			isUser &&
+			(path === "/user/login" ||
+				path === "/partner/login" ||
+				path === "/admin/login")
+		)
+			return NextResponse.redirect(new URL("/", req.url));
+
+		if (isPartner)
+			return NextResponse.redirect(
+				new URL("/partner/dashboard", req.url)
+			);
+		if (isAdmin)
+			return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+		return NextResponse.next();
+	}
+
+	if (isUser && path.startsWith("/user")) return NextResponse.next();
+	if (isPartner && path.startsWith("/partner")) return NextResponse.next();
+	if (isAdmin && path.startsWith("/admin")) return NextResponse.next();
+
+	// Redirect unauthorized access
+	if (isPartner)
+		return NextResponse.redirect(new URL("/partner/dashboard", req.url));
+	if (isAdmin)
+		return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+	if (isUser) return NextResponse.redirect(new URL("/", req.url));
+
+	// If not logged in, redirect to login
+	return NextResponse.redirect(new URL("/", req.url));
 }
 
 export const config = {
-  runtime: "nodejs",
-  matcher: ["/api/:path*"],
+	matcher: ["/:path*"],
 };

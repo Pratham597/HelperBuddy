@@ -8,7 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from 'react-hot-toast'
+import crypto from "crypto";
+import Cookies from "js-cookie"
 
+const SECRET_KEY = process.env.NEXT_PUBLIC_ROLE_KEY;
+
+const hashRole = (role, salt) => {
+	return crypto
+		.createHmac("sha256", SECRET_KEY)
+		.update(role + salt)
+		.digest("hex");
+};
 
 const colors = {
 	primary: "#060606",
@@ -42,14 +52,6 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 			return;
 		}
 
-		if (Form.password.length < 8) {
-			toast.error("Password must be at least 8 characters long.");
-			setIsSubmitting(false);
-			return;
-		}
-
-		// API call to login
-
 		try {
 			const res = await fetch("/api/user/login", {
 				method: "POST",
@@ -61,9 +63,20 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 
 			if (res.ok) {
 				const data = await res.json();
-				console.log(data);
-				// Save token in local storage
 				localStorage.setItem("user", JSON.stringify(data));
+
+				// storing user role and salt in cookies
+				const salt = crypto.randomBytes(16).toString("hex");
+
+				// Hash the role
+				const hashedRole = hashRole("user", salt);
+
+				// Store in cookies
+				Cookies.remove("salt");
+				Cookies.remove("role");
+				Cookies.set("salt", salt);
+				Cookies.set("role", hashedRole);
+
 				router.push("/");
 				toast.success("Logged in successfully");
 			}

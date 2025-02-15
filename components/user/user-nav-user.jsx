@@ -1,51 +1,50 @@
-"use client"
+"use client";
 
 import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-} from "lucide-react"
+	BadgeCheck,
+	Bell,
+	ChevronsUpDown,
+	CreditCard,
+	LogOut,
+} from "lucide-react";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
+} from "@/components/ui/sidebar";
 
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
-import Link from "next/link"
+import Link from "next/link";
+import Cookies from "js-cookie";
 
-export function NavUser({user}) {
-  const { isMobile } = useSidebar()
+export function NavUser({ user }) {
+	const { isMobile } = useSidebar();
 
-  const router = useRouter()
-  const handleLogOut = () => {
-    // deleting user from local storage and redirecting him to /
-    console.log("Logging out");
-    
-    localStorage.removeItem("user")
-    localStorage.removeItem("cart")
-    router.push("/") // redirecting to home page
-  }
+	const router = useRouter();
+	const handleLogOut = () => {
+		// deleting user from local storage and redirecting him to /
 
-  return (
+		localStorage.removeItem("user");
+		localStorage.removeItem("cart");
+		
+		Cookies.remove("role");
+		Cookies.remove("salt");
+		router.push("/"); // redirecting to home page
+	};
+
+	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
 				<DropdownMenu>
@@ -97,5 +96,5 @@ export function NavUser({user}) {
 				</DropdownMenu>
 			</SidebarMenuItem>
 		</SidebarMenu>
-  );
+	);
 }

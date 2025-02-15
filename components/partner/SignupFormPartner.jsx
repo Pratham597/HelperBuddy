@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,18 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { set } from "mongoose";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import crypto from "crypto";
+import Cookies from "js-cookie"
+
+const SECRET_KEY = process.env.NEXT_PUBLIC_ROLE_KEY;
+
+const hashRole = (role, salt) => {
+	return crypto
+		.createHmac("sha256", SECRET_KEY)
+		.update(role + salt)
+		.digest("hex");
+};
+
 
 const colors = {
 	primary: "#060606",
@@ -16,7 +28,7 @@ const colors = {
 	disabled: "#D9D9D9",
 };
 
-export default function Form({ isLogin, setIsLogin, isPartner }) {
+export default function Form({ isLogin, setIsLogin }) {
 	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,6 +101,16 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 			}
 
 			localStorage.setItem("partner", JSON.stringify(data));
+			const salt = crypto.randomBytes(16).toString("hex");
+
+			// Hash the role
+			const hashedRole = hashRole("partner", salt);
+
+			// Store in cookies
+			Cookies.remove("salt");
+			Cookies.remove("role");
+			Cookies.set("salt", salt);
+			Cookies.set("role", hashedRole);
 			toast.success("Signup successful!");
 			router.push("/partner/dashboard");
 			setIsLogin(true);
