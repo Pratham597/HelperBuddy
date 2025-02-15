@@ -157,7 +157,7 @@ export default function Page() {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbPage>User</BreadcrumbPage>
+                    <BreadcrumbPage>Active Orders</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -183,16 +183,17 @@ export default function Page() {
                     })}
                   </h2>
                   <div className="space-y-4">
-                    {dateGroup.bookings.map((booking) => (
+                    {dateGroup.bookings.map((booking,index) => (
                       <Card key={booking.bookingId} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <CardHeader className="bg-white px-6 py-5">
                           <div className="flex items-center justify-between flex-wrap sm:flex-nowrap">
                             <div>
                               <CardTitle className="text-lg font-semibold text-black">
-                                Order {booking.orderId}
+                                Order {index+1}
                               </CardTitle>
                               <CardDescription className="mt-1 text-sm text-gray-600">
-                                Total Amount: ₹{booking.totalAmount.toLocaleString()}
+                                Total Amount: ₹{booking.totalAmount.toLocaleString()}<br />
+                                Booking ID: {booking.bookingId}
                               </CardDescription>
                             </div>
                             <div className="ml-4 flex-shrink-0">
