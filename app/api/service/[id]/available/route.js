@@ -4,7 +4,7 @@ import PartnerService from "@/models/PartnerService";
 import Partner from "@/models/Partner";
 
 export const GET = async (req, { params }) => {
-  const { id } = params;
+  const { id } = await params;
   await connectDB();
 
   const pincode = req.nextUrl.searchParams.get("pincode");
