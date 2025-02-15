@@ -110,8 +110,8 @@ export default function Page() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Revenue by Month</CardTitle>
-              <CardDescription>Monthly revenue from all services</CardDescription>
+              <CardTitle>Revenue by Services</CardTitle>
+              <CardDescription>Revenue from all services</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (

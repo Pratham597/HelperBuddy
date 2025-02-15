@@ -54,9 +54,9 @@ const data = {
           url: "/user/dashboard/bookings/servicesPending",
         },
         {
-          title: "History",
+          title: "Order History",
           url: "/user/dashboard/bookings/history",
-        },
+        }
       ],
     },
 

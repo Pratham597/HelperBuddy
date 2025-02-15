@@ -11,9 +11,7 @@ export const POST=async(req)=>{
     if(!user) return NextResponse.json({error:'User unauthorized'},{status:403});
     // data: serviceId remarks rating
     const serviceOrder=await ServiceOrder.findById(data.serviceid);
-    if(!serviceOrder || !serviceOrder.partner || !serviceOrder.isApproved)  return NextResponse.json({error:"Incomplete Data"},{status:404});
-
-    
+    if(!serviceOrder || !serviceOrder.partner || !serviceOrder.userApproved)  return NextResponse.json({error:"Incomplete Data"},{status:404});
     if(!data.remarks || !data.rating){
         return NextResponse.json({error:'Remarks Not found!'},{status:404});
     }

@@ -158,7 +158,7 @@ export default function ServiceDetails({ service,onAddToCart }) {
 
         <Separator className="my-4 bg-gray-200" />
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label htmlFor="feedback" className="block text-sm font-medium text-gray-700 mb-1">
             Leave Your Feedback:
           </label>
@@ -170,7 +170,7 @@ export default function ServiceDetails({ service,onAddToCart }) {
             className="w-full border-gray-300 text-sm"
             rows={3}
           />
-        </div>
+        </div> */}
 
         <div className="mt-6 flex justify-center">
           <Button onClick={addToCart} className="bg-black text-white text-sm px-6 py-2 hover:bg-gray-800">
