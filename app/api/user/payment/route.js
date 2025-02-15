@@ -67,8 +67,7 @@ export const POST = async (req) => {
       const emails = await Partner.find({
         _id: { $in: partnerIds },
         pincode: { $in: [userDetails.pincode] },
-      })
-        .select("email")
+      }).select("email");
 
       if (emails.length == 0)
         return NextResponse.json(
@@ -78,19 +77,28 @@ export const POST = async (req) => {
       userDetails.name = userInfo.user.name;
       userDetails.phone = userInfo.user.phone;
       await sendEmailToPartner(emails, userDetails, service.service);
-      if (userInfo.referredBy && !userInfo.referredBonus) {
-        const referrer = await User.findByIdAndUpdate(
-          userInfo.referredBy, 
-          { $inc: { wallet: Number(process.env.REFER_POINTS) } }, 
-          { new: true }
+    }
+    
+    const { user } = userInfo;
+    if (!user && user.referredBy && !user.referredBonus) {
+      const referrer = await User.findById(user.referredBy);
+      if (referrer) {
+        const referralBonus = Number(process.env.REFER_POINTS);
+        const maxWalletLimit = 1000;
+        const updatedWallet = Math.min(
+          referrer.wallet + referralBonus,
+          maxWalletLimit
         );
-      
-        if (referrer) {
-          await User.findByIdAndUpdate(userInfo._id, { referredBonus: true });
+        if (updatedWallet > referrer.wallet) {
+          await User.findByIdAndUpdate(
+            user.referredBy,
+            { $set: { wallet: updatedWallet } },
+            { new: true }
+          );
         }
+        await User.findByIdAndUpdate(user._id, { referredBonus: true });
       }
     }
-
     return NextResponse.json({
       success: true,
       message: "Payment successful :)",
