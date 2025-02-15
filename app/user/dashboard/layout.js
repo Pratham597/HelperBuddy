@@ -6,7 +6,7 @@ import {
 
 export default function RootLayout({ children }) {
 	return (
-		<SidebarProvider>
+		<SidebarProvider >
 			<AppSidebar />
 			<SidebarInset>
 				{children}

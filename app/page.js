@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
 	const [loading, setLoading] = useState(true);
-	const [progress, setProgress] = useState(0);
+	const [progress, setProgress] = useState(20);
 
 	useEffect(() => {
 		let interval = setInterval(() => {

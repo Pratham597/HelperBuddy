@@ -138,7 +138,7 @@ export default function Testimonials() {
 	}, [visibleCount]);
 
 	return (
-		<section className="py-16 px-4 bg-white">
+		<section className="py-16 px-4 bg-gray-50">
 			<h2 className="text-3xl font-bold text-center mb-12">
 				What Our Customers Say
 			</h2>
@@ -157,7 +157,7 @@ export default function Testimonials() {
 							.map((testimonial, index) => (
 								<div
 									key={index}
-									className="bg-gray-50 p-6 rounded-lg shadow-md text-center"
+									className="bg-gray-100 p-6 rounded-lg shadow-md text-center"
 								>
 									<div className="text-xl mb-2">
 										{"⭐".repeat(testimonial.rating)}

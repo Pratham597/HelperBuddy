@@ -6,15 +6,6 @@ import Image from "next/image";
 import { marked } from "marked";
 
 export default function BlogPost({ blog }) {
-	if (!blog) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="animate-pulse text-xl text-gray-600">
-					Loading...
-				</div>
-			</div>
-		);
-	}
 
 	const ref = useRef(null);
 	const contentRef = useRef(null);
