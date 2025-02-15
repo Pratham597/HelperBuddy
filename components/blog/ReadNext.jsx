@@ -1,30 +1,33 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
-import Image from "next/image";
-import { useEffect } from "react";
+import Image from "next/legacy/image";
+import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
 export default function ReadNext() {
 	const [relatedPosts, setRelatedPosts] = useState([]);
 	const router = useRouter();
-	// Fetch blogs from the API
+
+	const shuffleArray = (array) => {
+		return array.sort(() => Math.random() - 0.5);
+	};
+
 	const fetchBlogs = async () => {
 		try {
 			const res = await axios.get("/api/blog");
-			console.log(res.data.blogs);
-			setRelatedPosts(res.data.blogs);
+			const shuffledBlogs = shuffleArray(res.data.blogs);
+			setRelatedPosts(shuffledBlogs.slice(0, 5)); 
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
-	// Fetch blogs on component mount
 	useEffect(() => {
 		fetchBlogs();
 	}, []);
+
 	const scrollRef = useRef(null);
 
 	const scroll = (direction) => {
@@ -67,22 +70,43 @@ export default function ReadNext() {
 						{relatedPosts.slice(0, 5).map((post) => (
 							<motion.div
 								key={post._id}
-								className="flex-shrink-0 w-72 bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
-								whileHover={{ scale: 1.05 }}
+								whileHover={{ scale: 1.03 }}
 								transition={{ duration: 0.3 }}
-								onClick={() => router.push(`/blogs/${post.slug}`)}
+								className="relative h-96 min-w-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer"
+								onClick={() =>
+									router.push(`/blogs/${post.slug}`)
+								}
 							>
 								<Image
 									src={post.image || "/placeholder.svg"}
 									alt={post.title}
-									width={288}
-									height={162}
+									layout="fill"
 									objectFit="cover"
+									className="transition-transform duration-300 group-hover:scale-110"
 								/>
-								<div className="p-4">
-									<h3 className="font-serif font-semibold text-lg">
+								<div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-70 group-hover:opacity-80 transition-opacity duration-300"></div>
+								<div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+									<motion.h2
+										className="text-lg font-bold mb-2 leading-tight"
+										initial={{ y: 20, opacity: 0 }}
+										animate={{ y: 0, opacity: 1 }}
+										transition={{ duration: 0.5 }}
+									>
 										{post.title}
-									</h3>
+									</motion.h2>
+									<motion.button
+										whileHover={{ scale: 1.05 }}
+										whileTap={{ scale: 0.95 }}
+										className="bg-white text-black font-bold py-2 px-4 rounded-full w-max text-sm transition-colors duration-300 hover:bg-gray-200"
+										initial={{ y: 20, opacity: 0 }}
+										animate={{ y: 0, opacity: 1 }}
+										transition={{
+											duration: 0.5,
+											delay: 0.2,
+										}}
+									>
+										Read More
+									</motion.button>
 								</div>
 							</motion.div>
 						))}

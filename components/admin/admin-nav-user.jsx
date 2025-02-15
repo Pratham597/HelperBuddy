@@ -18,7 +18,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import Cookies from "js-cookie";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export function NavUser({ user }) {
@@ -79,7 +79,7 @@ export function NavUser({ user }) {
 							</DropdownMenuGroup>
 						</Link>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						<DropdownMenuItem onClick={handleLogOut}>
 							<LogOut />
 							Log out
 						</DropdownMenuItem>
