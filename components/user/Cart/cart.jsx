@@ -337,7 +337,7 @@ export default function Cart() {
                   setPaymentStatus(null);
                 }}
                 status={paymentStatus}
-                onComplete={() => router.push("/user/dashboard")}
+                onComplete={() => router.push("/user/dashboard/booking/servicesPending")}
               />
 
               <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl">
