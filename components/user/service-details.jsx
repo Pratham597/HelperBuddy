@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 
-export default function ServiceDetails({ service,onAddToCart }) {
+export default function ServiceDetails({ service, onAddToCart }) {
   const [pincode, setPincode] = useState("")
   const [availabilityMessage, setAvailabilityMessage] = useState(null)
   const [feedback, setFeedback] = useState("")
@@ -51,7 +51,7 @@ export default function ServiceDetails({ service,onAddToCart }) {
 
   return (
     <Card className="w-full max-w-6xl shadow-lg flex flex-col md:flex-row overflow-hidden mx-auto relative">
-      
+
 
       <div className="w-full md:w-2/5 bg-gray-100 flex items-center justify-center p-4 md:p-6">
         <img
@@ -132,45 +132,43 @@ export default function ServiceDetails({ service,onAddToCart }) {
           <h3 className="text-lg font-semibold text-black mb-2">Customer Feedback</h3>
           <ScrollArea className="h-40 border border-gray-200 rounded-md p-3">
             <div className="space-y-2">
-              <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
-                <p className="text-gray-600 text-sm">"Amazing service! The team was professional and on time."</p>
-                <p className="text-right text-gray-500 text-xs">- Rohan M.</p>
-              </Card>
-              <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
-                <p className="text-gray-600 text-sm">"Very affordable and efficient! Highly recommended."</p>
-                <p className="text-right text-gray-500 text-xs">- Priya K.</p>
-              </Card>
-              <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
-                <p className="text-gray-600 text-sm">"Excellent service quality. Will definitely use again!"</p>
-                <p className="text-right text-gray-500 text-xs">- Amit S.</p>
-              </Card>
-              <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
-                <p className="text-gray-600 text-sm">"Prompt and courteous. Exceeded my expectations."</p>
-                <p className="text-right text-gray-500 text-xs">- Neha R.</p>
-              </Card>
-              <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
-                <p className="text-gray-600 text-sm">"Great value for money. Highly satisfied with the results."</p>
-                <p className="text-right text-gray-500 text-xs">- Vikram P.</p>
-              </Card>
+              {service.reviews && service.reviews.length > 0 ? (
+                service.reviews.map((review, index) => (
+                  <Card key={index} className="bg-gray-50 border border-gray-200 p-3 rounded">
+                    <p className="text-gray-600 text-sm">"{review.review}"</p>
+                    <p className="text-right text-gray-500 text-xs">- {review.customerName}</p>
+                  </Card>
+                ))
+              ) : (
+                <>
+                  <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+                    <p className="text-gray-600 text-sm">"Amazing service! The team was professional and on time."</p>
+                    <p className="text-right text-gray-500 text-xs">- Rohan M.</p>
+                  </Card>
+                  <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+                    <p className="text-gray-600 text-sm">"Very affordable and efficient! Highly recommended."</p>
+                    <p className="text-right text-gray-500 text-xs">- Priya K.</p>
+                  </Card>
+                  <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+                    <p className="text-gray-600 text-sm">"Excellent service quality. Will definitely use again!"</p>
+                    <p className="text-right text-gray-500 text-xs">- Amit S.</p>
+                  </Card>
+                  <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+                    <p className="text-gray-600 text-sm">"Prompt and courteous. Exceeded my expectations."</p>
+                    <p className="text-right text-gray-500 text-xs">- Neha R.</p>
+                  </Card>
+                  <Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+                    <p className="text-gray-600 text-sm">"Great value for money. Highly satisfied with the results."</p>
+                    <p className="text-right text-gray-500 text-xs">- Vikram P.</p>
+                  </Card>
+                </>
+              )}
+
             </div>
           </ScrollArea>
         </div>
 
         <Separator className="my-4 bg-gray-200" />
-
-        {/* <div className="mb-4">
-          <label htmlFor="feedback" className="block text-sm font-medium text-gray-700 mb-1">
-            Leave Your Feedback:
-          </label>
-          <Textarea
-            id="feedback"
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Share your experience..."
-            className="w-full border-gray-300 text-sm"
-            rows={3}
-          />
-        </div> */}
 
         <div className="mt-6 flex justify-center">
           <Button onClick={addToCart} className="bg-black text-white text-sm px-6 py-2 hover:bg-gray-800">
