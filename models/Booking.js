@@ -20,7 +20,16 @@ const bookingSchema = new mongoose.Schema({
   },
   paymentId:{
     type:String,
-  }
+  },
+  paymentMethod: {
+    type: String,
+    enum: ["COD", "Online", "Wallet+Online"],
+    required: true,
+  },
+  walletUsed: {
+    type: Number,
+    default: 0,
+  },
 },{
   timestamps:true
 });

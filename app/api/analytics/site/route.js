@@ -10,7 +10,7 @@ export const GET = async () => {
         await connectDB();
         const bookings = await Booking.countDocuments({ isPaid: true });
         const users = await User.countDocuments({});
-        const partners = await Partner.countDocuments({ isApproved: true });
+        const partners = await Partner.countDocuments({ isApproved: "1" });
         const services = await Service.countDocuments({});
 
         return NextResponse.json({ bookings, users, partners, services }, { status: 200 });
