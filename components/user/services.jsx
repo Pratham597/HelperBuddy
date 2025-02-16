@@ -13,7 +13,38 @@ import { Badge } from "@/components/ui/badge"
 import ServiceDetailsContent from "@/components/user/serviceDetailsContent"
 import { motion, AnimatePresence } from "framer-motion"
 import { poppins } from "../fonts/font"
+import { Skeleton } from "@/components/ui/skeleton";
+import { Star } from "lucide-react";
 
+const ServiceCardSkeleton = () => (
+  <Card className="w-full h-[440px] bg-white rounded-2xl overflow-hidden shadow-sm">
+    <div className="w-full h-[60%] relative">
+      <Skeleton className="w-full h-full" />
+      <Skeleton className="absolute top-4 right-4 h-8 w-24 rounded-full" />
+    </div>
+    <div className="p-4 space-y-4">
+      <Skeleton className="h-6 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-2/3" />
+      <div className="flex items-center justify-between mt-4">
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <Skeleton className="h-10 w-full mt-4" />
+    </div>
+  </Card>
+);
+
+const ServiceSkeletonSection = () => (
+  <div className="mb-12">
+    <Skeleton className="h-8 w-48 mb-6" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {[1, 2, 3, 4].map((i) => (
+        <ServiceCardSkeleton key={i} />
+      ))}
+    </div>
+  </div>
+);
 
 
 const FilterPanel = ({
@@ -38,7 +69,7 @@ const FilterPanel = ({
             key={category}
             variant={selectedCategories.includes(category) ? "default" : "outline"}
             onClick={() => toggleCategory(category)}
-            className="text-sm justify-start h-8 transition-all duration-300 hover:scale-105"
+            className="text-sm justify-start h-8 w-max transition-all duration-300 hover:scale-105"
           >
             {category}
           </Button>
@@ -101,7 +132,6 @@ const ServiceCard = ({ service, onServiceClick }) => (
     className="h-[440px]" 
   >
     <Card className="w-full h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
-
       <div className="relative w-full h-[60%]">
         <motion.img
           src={service.image || "/placeholder.svg"}
@@ -114,7 +144,6 @@ const ServiceCard = ({ service, onServiceClick }) => (
       </div>
 
       <div className="p-4 flex flex-col flex-grow justify-between">
-        {/* Title and Description */}
         <div>
           <h3 className="text-xl font-bold text-gray-900 leading-tight">
             {service.name}
@@ -124,24 +153,32 @@ const ServiceCard = ({ service, onServiceClick }) => (
           </p>
         </div>
 
-        {/* Price and Button - Ensures uniform alignment */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xl font-bold">₹{service.price.toLocaleString()}</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xl font-bold">₹{service.price.toLocaleString()}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                  <span className="text-xs font-medium">{service.rating}</span>
+                </div>
+                <span className="text-xs font-medium">{service.total_bookings}+ Bookings</span>
+              </div>
+            </div>
+            <Button
+              onClick={() => onServiceClick(service._id)}
+              variant="default"
+              className="w-full bg-black text-white hover:bg-gray-800 h-10"
+            >
+              View Details
+            </Button>
           </div>
-
-          <Button
-            onClick={() => onServiceClick(service._id)}
-            variant="default"
-            className="w-full bg-black text-white hover:bg-gray-800 h-10"
-          >
-            View Details
-          </Button>
         </div>
       </div>
     </Card>
   </motion.div>
 );
+
 
 
 export default function ServicesPage() {
@@ -155,16 +192,22 @@ export default function ServicesPage() {
     priceRange: { min: 0, max: 10000 },
     sortType: "none",
   })
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter()
   const params = useParams()
 
   useEffect(() => {
+    setIsLoading(true);
+    setError(null);
     const fetchServices = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/service`)
         setServices(res.data)
       } catch (error) {
         console.error("Failed to fetch services", error)
+      }finally{
+        setIsLoading(false);
       }
     }
 
@@ -288,7 +331,7 @@ export default function ServicesPage() {
                   <Badge
                     key={category}
                     variant="secondary"
-                    className="gap-1 bg-primary text-white px-2 py-1 rounded-full"
+                    className="gap-1 bg-primary hover:text-black text-white px-2 py-1 rounded-full"
                   >
                     {category}
                     <button
@@ -300,12 +343,12 @@ export default function ServicesPage() {
                   </Badge>
                 ))}
                 {(appliedFilters.priceRange.min > 0 || appliedFilters.priceRange.max < 10000) && (
-                  <Badge variant="secondary" className="bg-primary text-white px-2 py-1 rounded-full">
+                  <Badge variant="secondary" className="bg-primary hover:text-black text-white px-2 py-1 rounded-full">
                     ₹{appliedFilters.priceRange.min} - ₹{appliedFilters.priceRange.max}
                   </Badge>
                 )}
                 {appliedFilters.sortType !== "none" && (
-                  <Badge variant="secondary" className="bg-primary text-white px-2 py-1 rounded-full">
+                  <Badge variant="secondary" className="bg-primary hover:text-black text-white px-2 py-1 rounded-full">
                     Price: {appliedFilters.sortType === "asc" ? "Low to High" : "High to Low"}
                   </Badge>
                 )}
@@ -313,7 +356,7 @@ export default function ServicesPage() {
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors duration-300"
+                  className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-200 transition-colors duration-300"
                 >
                   Clear All
                 </Button>
@@ -321,6 +364,28 @@ export default function ServicesPage() {
             )}
           </AnimatePresence>
         </motion.div>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-12"
+          >
+            <ServiceSkeletonSection />
+            <ServiceSkeletonSection />
+          </motion.div>
+        )}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <div className="bg-red-50 p-6 rounded-lg">
+              <h3 className="text-red-800 text-lg font-medium mb-2">Error</h3>
+              <p className="text-red-600">{error}</p>
+            </div>
+          </motion.div>
+        )}
 
         {/* Services Display with Carousel */}
         <AnimatePresence>
@@ -351,15 +416,26 @@ export default function ServicesPage() {
           ))}
         </AnimatePresence>
 
-        {Object.keys(groupedServices).length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-            <p className="text-gray-500 text-lg">No services found matching your filters.</p>
-            <Button
-              onClick={clearFilters}
-              className="mt-4 bg-primary text-white hover:bg-primary/90 transition-all duration-300"
-            >
-              Clear Filters
-            </Button>
+        {!isLoading && !error && Object.keys(groupedServices).length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <div className="bg-gray-50 p-8 rounded-lg">
+              <h3 className="text-gray-800 text-xl font-medium mb-2">
+                No services found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                No services match your current filters.
+              </p>
+              <Button
+                onClick={clearFilters}
+                className="bg-primary text-white hover:bg-primary/90 transition-all duration-300"
+              >
+                Clear Filters
+              </Button>
+            </div>
           </motion.div>
         )}
       </main>

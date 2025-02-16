@@ -103,8 +103,8 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 			// Store in cookies
 			Cookies.remove("salt");
 			Cookies.remove("role");
-			Cookies.set("salt", salt);
-			Cookies.set("role", hashedRole);
+			Cookies.set("salt", salt, { expires: 7 });
+			Cookies.set("role", hashedRole, { expires: 7 });
 
 			router.push("/");
 			toast.success("Signup successful!");

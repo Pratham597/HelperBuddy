@@ -3,16 +3,53 @@ import Admin from "@/models/Admin";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
 import ServiceOrder from "@/models/ServiceOrder";
+import User from "@/models/User";
+import Partner from "@/models/Partner";
+import Booking from "@/models/Booking";
 
-/** Controller for fetching particular id */
-export const GET=async(req,{params})=>{
+export const GET = async (req, { params }) => {
     await connectDB();
-    const {id}= await params;
-    const service=await Service.findById(id);
-    if(!service) return NextResponse.json({error:"Service not found"}, {status:404});
-    const remarks=await ServiceOrder.find({service:service._id,partner:{$ne:null}}).select("remarks");
-    return NextResponse.json(service,remarks);
-}
+
+    const { id } =await params;
+    const service = await Service.findById(id);
+    if (!service) return NextResponse.json({ error: "Service not found" }, { status: 404 });
+
+    const orders = await ServiceOrder.find(
+        { service: service._id, partner: { $ne: null },userApproved:true , remarks: { $ne: null }},
+        { rating: 1, remarks: 1, booking: 1 }
+    );
+
+    const ratings = [];
+    const reviews = await Promise.all(
+        orders.map(async (order) => {
+            if (order.rating !== undefined) ratings.push(order.rating);
+
+            const booking = await Booking.findById(order.booking).select("user");
+            if (!booking || !booking.user) return null;
+
+            const user = await User.findById(booking.user).select("name");
+            if (!user) return null;
+
+            return {
+                review: order.remarks || "No review provided",
+                customerName: user.name
+            };
+        })
+    );
+
+    const filteredReviews = reviews.filter(review => review !== null);
+    const averageRating = ratings.length
+        ? (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1)
+        : null;
+
+    const serviceWithReviews = {
+        ...service.toObject(),
+        averageRating: averageRating ? parseFloat(averageRating) : null,
+        reviews: filteredReviews
+    };
+    console.log(serviceWithReviews);
+    return NextResponse.json(serviceWithReviews);
+};
 
 /** Controller for updating the particular id */
 export const PUT=async(req,{params})=>{

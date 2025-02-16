@@ -82,8 +82,8 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 				// Store in cookies
 				Cookies.remove("salt");
 				Cookies.remove("role");
-				Cookies.set("salt", salt);
-				Cookies.set("role", hashedRole);
+				Cookies.set("salt", salt, { expires: 7 });
+				Cookies.set("role", hashedRole, { expires: 7 });
 				
 				router.push("/partner/dashboard");
 				toast.success("Logged in successfully");

@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 import Booking from "@/models/Booking";
 import ServiceOrder from "@/models/ServiceOrder";
 import Service from "@/models/Service";
+import connectDB from "@/db/connect";
 
 export const POST = async (req) => {
   const userId = req.headers.get("userId");
-
+  await connectDB();
   if (!userId)
     return NextResponse.json({ error: "User Not Found" }, { status: 400 });
   const user = await User.findById(userId);
