@@ -10,7 +10,11 @@ export const POST = async (req) => {
     if (!userId) return NextResponse.json({ error: "User Not Found" }, { status: 400 })
     const user = await User.findById(userId)
 
-    const booking = await Booking.find({ user: user._id, isPaid: true, paymentId: { $ne: null } })
-    const serviceOrder = await ServiceOrder.find({ booking: { $in: booking }, partner: null }).populate("service")
+    const booking = await Booking.find({
+        user: user._id,
+        $or:[{isPaid: true},{paymentMethod:"COD"}],
+        $or:[{paymentId: { $ne: null }},{paymentMethod:"COD"}],
+      });
+    const serviceOrder = await ServiceOrder.find({ booking: { $in: booking }, partner: null }).populate("service").populate("booking")
     return NextResponse.json({ booking, serviceOrder });
 }

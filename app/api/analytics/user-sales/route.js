@@ -15,7 +15,7 @@ export const POST = async (req) => {
 
   try {
     const userSales = await Booking.aggregate([
-      { $match: { isPaid: true } },
+      { $match: {$or:[{ isPaid: true },{paymentMethod:"COD"}]} },
       {
         $group: {
           _id: "$user",
