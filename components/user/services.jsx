@@ -287,7 +287,7 @@ export default function ServicesPage() {
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 ${poppins.variable} font-sans`}
+      className={`min-h-screen mt-16 bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 ${poppins.variable} font-sans`}
     >
       <main className="container mx-auto px-4 py-8">
         {/* Filter Bar */}

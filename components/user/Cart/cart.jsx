@@ -208,7 +208,7 @@ export default function Cart() {
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
-      <div className="container mx-auto px-4 py-8 animate-fadeIn">
+      <div className="container mx-auto px-4 py-8 animate-fadeIn mt-20">
         <h1 className="text-4xl font-bold text-black mb-8 text-center">
           🛒 Your Shopping Cart
         </h1>
