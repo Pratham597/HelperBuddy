@@ -4,38 +4,59 @@ import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 import AnimatedCounter from "./AnimatedCounter";
 import { Users, Building, ShoppingBag, Package } from "lucide-react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+// import registeredEntities from "@/actions/user/registeredEntities";
 
-const trustData = [
-  { 
-    title: "Trusted Partners", 
-    value: 150, 
-    Icon: Building,
-    description: "Global Partnerships"
-  },
-  { 
-    title: "Happy Customers", 
-    value: 1000, 
-    Icon: Users,
-    description: "Satisfied Clients"
-  },
-  { 
-    title: "Service Categories", 
-    value: 100, 
-    Icon: ShoppingBag,
-    description: "Unique Products"
-  },
-  { 
-    title: "Service Delivered", 
-    value: 5000, 
-    Icon: Package,
-    description: "Successful Deliveries"
-  },
-];
 
 export default function TrustSection() {
-  const [ref, isInView] = useInView({ threshold: 0.2 });
+	// const [bookings, setBookings] = useState(0);
+	// const [users, setUsers] = useState(0);
+	// const [partners, setPartners] = useState(0);
+	// const [services, setServices] = useState(0);
 
-  return (
+	// useEffect(() => {
+	// 	const fetchData = async () => {
+	// 		const data = await registeredEntities();
+	// 		console.log(data);
+	// 		setBookings(data.bookings);
+	// 		setUsers(data.users);
+	// 		setPartners(data.partners);
+	// 		setServices(data.services);
+	// 	};
+	// 	fetchData();
+	// }, []);
+
+	const trustData = [
+		{
+			title: "Happy Customers",
+			description: "Satisfied customers who have used our services",
+			value: 50,
+			Icon: Users,
+		},
+		{
+			title: "Service Delivered",
+			description: "Services delivered to customers",
+			value: 44,
+			Icon: ShoppingBag,
+		},
+		{
+			title: "Partners",
+			description: "Partners who have joined our platform",
+			value: 44,
+			Icon: Building,
+		},
+		{
+			title: "Bookings",
+			description: "Bookings made by customers",
+			value: 44,
+			Icon: Package,
+		},
+	];
+
+
+	const [ref, isInView] = useInView({ threshold: 0.2 });
+	return (
 		<section ref={ref} className="py-12 md:py-20 px-4 bg-gray-50">
 			<div className="max-w-7xl mx-auto">
 				<div className="text-center mb-12 md:mb-16">
@@ -97,5 +118,5 @@ export default function TrustSection() {
 				</div>
 			</div>
 		</section>
-  );
+	);
 }
