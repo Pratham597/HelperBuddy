@@ -21,7 +21,7 @@ export async function middleware(req) {
 	const path = req.nextUrl.pathname;
 	const method = req.method;
 	const cookies = parseCookies(req);
-	const arr = ["/api/user/login", "/api/partner/login", "/api/admin/login"];
+	const arr = ["/api/user/login", "/api/partner/login", "/api/admin/login","/api/user/sign-up","/api/partner/sign-up"];
 
 	// API Authentication
 	if (path.startsWith("/api")) {
