@@ -78,12 +78,12 @@ const UserMenu = ({ isLoggedIn }) => {
 						d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
 					/>
 				</svg>
-			</Link>
 			{cartCount > 0 && (
-				<span className="absolute top-3 right-28 bg-red-500 text-white cartNumber px-1 py-[.5] rounded-full">
+				<span className={`absolute top-6 ${isLoggedIn? "right-32" : "right-40"} bg-red-500 text-white cartNumber px-1 py-[.5] rounded-full`}>
 					{cartCount}
 				</span>
 			)}
+			</Link>
 			{isLoggedIn ? (
 				<>
 					<Link

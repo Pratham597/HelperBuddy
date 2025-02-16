@@ -87,37 +87,28 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 					Cart
 				</Link>
 				{cartCount > 0 && (
-					<span className="absolute top-52 right-5 bg-red-500 text-white cartNumber py-2 px-3 rounded-full">
+					<span className="absolute top-56 right-5 bg-red-500 text-white cartNumber py-1 px-2 rounded-full">
 						{cartCount}
 					</span>
 				)}
-				{isLoggedIn ? (
-					<>
-						<Link
-							href="/user/dashboard/notifications"
-							className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
-								isActive("/notifications") ? "bg-gray-100" : ""
-							}`}
-						>
-							Notifications
-						</Link>
-						<Link
-							href="/user/dashboard/profile/userInformation"
-							className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
-								isActive("/profile") ? "bg-gray-100" : ""
-							}`}
-						>
-							Profile
-						</Link>
-					</>
-				) : (
-					<Link
-						href="/user/login"
-						className="w-full text-left bg-black text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-800"
-					>
-						Get Started
-					</Link>
-				)}
+			  {isLoggedIn && (
+				  <>
+					  <Link
+						  href="/user/dashboard/notifications"
+						  className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${isActive("/notifications") ? "bg-gray-100" : ""
+							  }`}
+					  >
+						  Notifications
+					  </Link>
+					  <Link
+						  href="/user/dashboard/profile/userInformation"
+						  className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${isActive("/profile") ? "bg-gray-100" : ""
+							  }`}
+					  >
+						  Profile
+					  </Link>
+				  </>
+			  )}
 			</div>
 		</div>
   );

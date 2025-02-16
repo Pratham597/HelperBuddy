@@ -21,14 +21,12 @@ export async function middleware(req) {
 	const path = req.nextUrl.pathname;
 	const method = req.method;
 	const cookies = parseCookies(req);
-	const arr = ["/api/user/login", "/api/partner/login", "/api/admin/login"];
+	const arr = ["/api/user/login", "/api/partner/login", "/api/admin/login", "/api/user/complaint", "/api/user/sign-up", "/api/partner/sign-up"];
 
 	// API Authentication
 	if (path.startsWith("/api")) {
 		if (method !== "GET" && !arr.includes(path)) return auth(req);
 		else if (path === "/api/partner/service") {
-			return auth(req);
-		} else if (path === "/api/partner") {
 			return auth(req);
 		} else if (path === "/api/partner") {
 			return auth(req);
@@ -39,7 +37,7 @@ export async function middleware(req) {
 
 	const isPartner = await verifyPartner(cookies);
 	const isAdmin = await verifyAdmin(cookies);
-  const isUser = await verifyUser(cookies);
+  	const isUser = await verifyUser(cookies);
   
   
 	// Publicly accessible routes
@@ -49,6 +47,7 @@ export async function middleware(req) {
 		"/user/cart",
 		"/partner/login",
 		"/admin/login",
+		"/about",
 	];
 
 	if (
@@ -56,7 +55,6 @@ export async function middleware(req) {
 		path.startsWith("/services") ||
 		path.startsWith("/blogs")
 	) {
-		console.log("publicRoutes", path);
 		if (
 			isUser &&
 			(path === "/user/login" ||

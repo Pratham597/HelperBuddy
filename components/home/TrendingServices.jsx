@@ -70,7 +70,7 @@ const TrendingServices = () => {
 	}, [services]); // Re-run when services are fetched
 
 	return (
-		<section className="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
+		<section className="py-16 px-4 bg-gradient-to-b  from-white to-gray-50">
 			<div className="max-w-screen-xl mx-auto">
 				<h2 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-gray-800 to-slate-700 bg-clip-text text-transparent">
 					Trending Services
