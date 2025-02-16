@@ -41,6 +41,7 @@ const data = {
       items: [
         { title: "Information", url: "/user/dashboard/profile/userInformation" },
         { title: "Wallet", url: "/user/dashboard/profile/wallet" },
+        {title: "Referrals",url:"/user/dashboard/profile/referrals"}
       ],
     },
     {
