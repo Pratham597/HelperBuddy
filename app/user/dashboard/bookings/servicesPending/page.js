@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
-import { ChevronDown, ChevronUp, ShoppingBag } from "lucide-react"
+import { ChevronDown, ChevronUp, ShoppingBag, Loader2, Calendar } from "lucide-react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -10,10 +10,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { motion, AnimatePresence } from "framer-motion"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { format, isSameDay, parseISO } from "date-fns"
 
 export default function Page() {
   const [dateGroups, setDateGroups] = useState([])
   const [expandedOrders, setExpandedOrders] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [dateFilter, setDateFilter] = useState("all")
+  const [customDate, setCustomDate] = useState(null)
 
   const formatDate = (dateString) => {
     try {
@@ -30,6 +37,7 @@ export default function Page() {
 
   useEffect(() => {
     const fetchOrders = async () => {
+      setIsLoading(true)
       try {
         const user = JSON.parse(localStorage.getItem("user") || "{}")
         if (!user || !user.token) return
@@ -53,14 +61,11 @@ export default function Page() {
 
         const responses = await Promise.all([servicePartnerAccepted, servicePending])
 
-        // Process both accepted and pending responses
         const processOrders = (response, status) => {
           const { booking, serviceOrder } = response.data
 
-          // Create a map of bookings for quick lookup
           const bookingMap = new Map(booking.map(b => [b._id, b]))
 
-          // Group service orders by booking ID
           const ordersByBooking = serviceOrder.reduce((acc, order) => {
             if (!order.booking) return acc
 
@@ -75,7 +80,6 @@ export default function Page() {
               acc[date] = []
             }
 
-            // Find existing booking group or create new one
             let bookingGroup = acc[date].find(b => b.bookingId === bookingId)
 
             if (!bookingGroup) {
@@ -110,13 +114,11 @@ export default function Page() {
         const acceptedGroups = processOrders(responses[0], "Partner Assigned")
         const pendingGroups = processOrders(responses[1], "Paid")
 
-        // Merge and sort date groups
         const allDates = [...new Set([
           ...Object.keys(acceptedGroups),
           ...Object.keys(pendingGroups)
         ])].sort((a, b) => new Date(b) - new Date(a))
 
-        // Create final date-grouped structure
         const groupedByDate = allDates.map(date => ({
           date,
           bookings: [
@@ -128,11 +130,13 @@ export default function Page() {
         setDateGroups(groupedByDate)
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchOrders()
-  }, [])
+  }, []); 
 
   const toggleDetails = (bookingId) => {
     setExpandedOrders((prev) => ({ ...prev, [bookingId]: !prev[bookingId] }))
@@ -145,6 +149,38 @@ export default function Page() {
   }
 
   const bookingStages = ["Paid", "Partner Assigned", "Completed"]
+
+  const filterOrders = () => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+    const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 6, 1)
+
+    return dateGroups.filter((group) => {
+      const groupDate = new Date(group.date)
+      switch (dateFilter) {
+        case "today":
+          return isSameDay(groupDate, today)
+        case "yesterday":
+          return isSameDay(groupDate, yesterday)
+        case "thisMonth":
+          return groupDate >= thisMonth
+        case "lastMonth":
+          return groupDate >= lastMonth && groupDate < thisMonth
+        case "last6Months":
+          return groupDate >= sixMonthsAgo
+        case "custom":
+          return customDate && isSameDay(groupDate, customDate)
+        default:
+          return true
+      }
+    })
+  }
+
+  const filteredDateGroups = filterOrders()
 
   return (
     <div className="min-h-screen bg-white">
@@ -165,34 +201,66 @@ export default function Page() {
           </div>
         </div>
       </header>
-      
+
       <main className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
         <div className="px-4 sm:px-0">
-          <h1 className="text-3xl font-bold text-black mb-8">Order Progress</h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-black">Order Progress</h1>
+            <div className="flex items-center gap-2">
+              <Select value={dateFilter} onValueChange={setDateFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by date" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Orders</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="yesterday">Yesterday</SelectItem>
+                  <SelectItem value="thisMonth">This Month</SelectItem>
+                  <SelectItem value="lastMonth">Last Month</SelectItem>
+                  <SelectItem value="last6Months">Last 6 Months</SelectItem>
+                  <SelectItem value="custom">Custom Date</SelectItem>
+                </SelectContent>
+              </Select>
+              {dateFilter === "custom" && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-[180px]">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {customDate ? format(customDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <CalendarComponent mode="single" selected={customDate} onSelect={setCustomDate} initialFocus />
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
+          </div>
 
-          {dateGroups.length > 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
+            </div>
+          ) : filteredDateGroups.length > 0 ? (
             <div className="space-y-12">
-              {dateGroups.map((dateGroup) => (
+              {filteredDateGroups.map((dateGroup) => (
                 <div key={dateGroup.date} className="space-y-6">
                   <h2 className="text-xl font-semibold text-black border-b border-gray-200 pb-2">
-                    {new Date(dateGroup.date).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
+                    {format(parseISO(dateGroup.date), "EEEE, MMMM d, yyyy")}
                   </h2>
                   <div className="space-y-4">
-                    {dateGroup.bookings.map((booking,index) => (
-                      <Card key={booking.bookingId} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    {dateGroup.bookings.map((booking, index) => (
+                      <Card
+                        key={booking.bookingId}
+                        className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                      >
                         <CardHeader className="bg-white px-6 py-5">
                           <div className="flex items-center justify-between flex-wrap sm:flex-nowrap">
                             <div>
-                              <CardTitle className="text-lg font-semibold text-black">
-                                Order {index+1}
-                              </CardTitle>
+                              <CardTitle className="text-lg font-semibold text-black">Order {index + 1}</CardTitle>
                               <CardDescription className="mt-1 text-sm text-gray-600">
-                                Total Amount: ₹{booking.totalAmount.toLocaleString()}<br />
+                                Total Amount: ₹{booking.totalAmount.toLocaleString()}
+                                <br />
                                 Booking ID: {booking.bookingId}
                               </CardDescription>
                             </div>
@@ -230,18 +298,16 @@ export default function Page() {
                                     </h3>
                                     <div className="mb-6">
                                       <div className="relative">
-                                        <Progress
-                                          value={statusPercentages[order.status]}
-                                          className="h-2 bg-gray-100"
-                                        />
+                                        <Progress value={statusPercentages[order.status]} className="h-2 bg-gray-100" />
                                         <div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2">
                                           {bookingStages.map((status) => (
                                             <div key={status} className="relative">
                                               <div
-                                                className={`w-4 h-4 rounded-full border-2 ${status === order.status
+                                                className={`w-4 h-4 rounded-full border-2 ${
+                                                  status === order.status
                                                     ? "bg-black border-black"
                                                     : "bg-white border-gray-300"
-                                                  }`}
+                                                }`}
                                               ></div>
                                             </div>
                                           ))}
@@ -251,8 +317,9 @@ export default function Page() {
                                         {bookingStages.map((status) => (
                                           <div
                                             key={status}
-                                            className={`w-1/3 text-center ${status === order.status ? "text-black font-medium" : "text-gray-500"
-                                              }`}
+                                            className={`w-1/3 text-center ${
+                                              status === order.status ? "text-black font-medium" : "text-gray-500"
+                                            }`}
                                           >
                                             {status}
                                           </div>
@@ -270,7 +337,9 @@ export default function Page() {
                                       </div>
                                       <div className="sm:col-span-1">
                                         <dt className="text-sm font-medium text-gray-600">Price</dt>
-                                        <dd className="mt-1 text-sm text-black">₹{order.service.price.toLocaleString()}</dd>
+                                        <dd className="mt-1 text-sm text-black">
+                                          ₹{order.service.price.toLocaleString()}
+                                        </dd>
                                       </div>
                                       <div className="sm:col-span-1">
                                         <dt className="text-sm font-medium text-gray-600">Timeline</dt>
@@ -318,3 +387,4 @@ export default function Page() {
     </div>
   )
 }
+
