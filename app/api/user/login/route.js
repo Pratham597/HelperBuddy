@@ -26,6 +26,7 @@ export const POST = async (req) => {
     phone: user.phone,
     wallet: user.wallet,
     id: user._id,
+    referralCode:user.referralCode,
     token: await generateToken(user._id),
   });
 };

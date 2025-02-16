@@ -21,7 +21,7 @@ export default function WalletPage() {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) {
         setWallet({
-          points: userData.walletPoints || 0,
+          points: userData.wallet || 0,
           referralCode: userData.referralCode || "N/A",
         });
       }

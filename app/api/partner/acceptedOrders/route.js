@@ -12,6 +12,6 @@ export const POST = async (req) => {
 
   const partner=await Partner.findById(userId);
   if(!partner) return NextResponse.json({error:"Partner not found!"},{status:403})
-  const serviceOrders=await ServiceOrder.find({partner:userId,userApproved:false}).populate("service").select("-userCode");
+  const serviceOrders=await ServiceOrder.find({partner:userId,userApproved:false}).populate("booking","paymentMethod").populate("service").select("-userCode");
   return NextResponse.json({ serviceOrders })
 }; 

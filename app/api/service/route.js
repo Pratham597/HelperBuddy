@@ -2,8 +2,8 @@ import Service from "@/models/Service";
 import Admin from "@/models/Admin";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
+import ServiceOrder from "@/models/ServiceOrder";
 
-/** Controller for creating the service */
 export const POST = async (req) => {
     await connectDB();
     const userId = req.headers.get("userId");
@@ -18,9 +18,33 @@ export const POST = async (req) => {
     const service = await Service.create(data);
     return NextResponse.json(service);
 }
-/** Controller for fetching all services */
+
 export const GET = async (req) => {
     await connectDB();
+
     const services = await Service.find({});
-    return NextResponse.json(services);
-}
+
+    const servicesWithReviews = await Promise.all(
+        services.map(async (service) => {
+            const orders = await ServiceOrder.find(
+                { service: service._id, }, 
+                { rating: 1, remarks: 1, _id: 0 } 
+            );
+            const ratings = orders.map(order => order.rating).filter(r => r !== undefined);
+            const reviews = orders.map(order => order.remarks).filter(r => r !== undefined);
+
+            const averageRating = ratings.length 
+                ? (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1) 
+                : null; 
+
+            return {
+                ...service.toObject(), 
+                rating: averageRating ? parseFloat(averageRating) : null, 
+                reviews,
+                total_bookings: orders.length
+            };
+        })
+    );
+    return NextResponse.json(servicesWithReviews);
+};
+
