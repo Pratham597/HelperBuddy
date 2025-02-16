@@ -102,7 +102,7 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 							Notifications
 						</Link>
 						<Link
-							href="/user/dashboard"
+							href="/user/dashboard/profile/userInformation"
 							className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
 								isActive("/profile") ? "bg-gray-100" : ""
 							}`}

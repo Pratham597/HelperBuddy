@@ -105,7 +105,7 @@ const UserMenu = ({ isLoggedIn }) => {
 						</svg>
 					</Link>
 					<Link
-						href="/user/dashboard"
+						href="/user/dashboard/profile/userInformation"
 						className="text-slate-100 hover:text-slate-400"
 					>
 						<svg
