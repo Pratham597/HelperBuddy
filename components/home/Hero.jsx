@@ -3,12 +3,11 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import ImageCollage from "./ImageCollage";
-import { useRouter } from "next/navigation";
 import MobileHero from "./MobileHero";
+import Link from "next/link";
 
 export default function Hero() {
 	const [isMobile, setIsMobile] = useState(false);
-	const router = useRouter();
 
 	useEffect(() => {
 		const checkMobile = () => {
@@ -20,7 +19,7 @@ export default function Hero() {
 	}, []);
 
 	if (isMobile) {
-		return <MobileHero />
+		return <MobileHero />;
 	}
 
 	return (
@@ -48,7 +47,9 @@ export default function Hero() {
 					</div>
 				)}
 				<motion.div
-					className={`w-full md:w-2/5 text-center md:text-left z-10 ${ isMobile ? 'py-5' : '' }`}
+					className={`w-full md:w-2/5 text-center md:text-left z-10 ${
+						isMobile ? "py-5" : ""
+					}`}
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
@@ -60,16 +61,15 @@ export default function Hero() {
 						Find trusted professionals for any job, anytime,
 						anywhere. Experience convenience like never before.
 					</p>
-					<motion.button
-						className="px-8 py-3  bg-gradient-to-r to-slate-500 from-neutral-800 text-white rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
-						onClick={() => {
-							router.push("/services");
-						}}
-					>
-						Get Started
-					</motion.button>
+					<Link href="/services">
+						<motion.button
+							className="px-8 py-3  bg-gradient-to-r to-slate-500 from-neutral-800 text-white rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+						>
+							Get Started
+						</motion.button>
+					</Link>
 				</motion.div>
 			</div>
 			{!isMobile && (

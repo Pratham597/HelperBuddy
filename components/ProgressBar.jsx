@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
 export default function ProgressBar() {
-	const pathname = usePathname(); // Detects route changes
+	const pathname = usePathname();
+	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
@@ -18,30 +19,42 @@ export default function ProgressBar() {
 	}, [loading]);
 
 	useEffect(() => {
-		// When pathname changes, stop loading
-		setLoading(false);
-	}, [pathname]);
+		// Start loading when pathname changes
+		setLoading(true);
+
+		// Stop loading once route change is complete
+		const timeout = setTimeout(() => setLoading(false), 500);
+
+		return () => clearTimeout(timeout);
+	}, [pathname]); // Watch for changes in the pathname
 
 	const handleClick = (event) => {
 		let target = event.target;
 
-		// Traverse up the DOM tree to check if the clicked element is inside a <a> tag
+		// Find the nearest anchor tag (<a>)
 		while (target && target.tagName !== "A") {
 			target = target.parentElement;
 		}
 
-		if (target && target.href) {
-			// If the clicked <a> tag has an href, start loading
-			setLoading(true);
-		}
+		// If no valid <a> tag found, exit
+		if (!target || !target.href) return;
+
+		// Extract the path (ignoring domain)
+		const targetPath = new URL(target.href, window.location.origin)
+			.pathname;
+
+		// 🛑 Prevent progress bar if already on the same page
+		if (targetPath === pathname) return;
+
+		setLoading(true);
 	};
 
 	useEffect(() => {
-		document.addEventListener("click", handleClick);
+		document.body.addEventListener("click", handleClick);
 		return () => {
-			document.removeEventListener("click", handleClick);
+			document.body.removeEventListener("click", handleClick);
 		};
-	}, []);
+	}, [pathname]);
 
 	return null;
 }

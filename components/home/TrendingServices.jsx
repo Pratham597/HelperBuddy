@@ -1,37 +1,20 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
-import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
 
-const TrendingServices = () => {
+const TrendingServices = ({ services }) => {
 	const containerRef = useRef(null);
 	const scrollRef = useRef(null);
-	const [services, setServices] = useState([]);
-
-	// Fetch services from API
-	useEffect(() => {
-		const fetchServices = async () => {
-			try {
-				const response = await axios.get(
-					`${process.env.NEXT_PUBLIC_URL}/api/analytics/most-sold-services`
-				);
-				setServices(response.data.services);
-			} catch (error) {
-				console.error("Error fetching services:", error);
-			}
-		};
-		fetchServices();
-	}, []);
 
 	// Auto-scrolling effect
 	useEffect(() => {
 		const scrollContainer = scrollRef.current;
-		if (!scrollContainer) return;
+		if (!scrollContainer || services.length === 0) return;
 
 		let animationFrame;
 
@@ -67,10 +50,10 @@ const TrendingServices = () => {
 			scrollContainer.removeEventListener("mouseenter", handleMouseEnter);
 			scrollContainer.removeEventListener("mouseleave", handleMouseLeave);
 		};
-	}, [services]); // Re-run when services are fetched
+	}, [services]); // Re-run when services are updated
 
 	return (
-		<section className="py-16 px-4 bg-gradient-to-b  from-white to-gray-50">
+		<section className="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
 			<div className="max-w-screen-xl mx-auto">
 				<h2 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-gray-800 to-slate-700 bg-clip-text text-transparent">
 					Trending Services
@@ -78,8 +61,7 @@ const TrendingServices = () => {
 
 				<div
 					ref={containerRef}
-					className="relative overflow-hidden shadow-xl rounded-lg bg-white/90 backdrop-blur-sm
-				"
+					className="relative overflow-hidden shadow-xl rounded-lg bg-white/90 backdrop-blur-sm"
 				>
 					<div
 						ref={scrollRef}
@@ -92,8 +74,8 @@ const TrendingServices = () => {
 								key={`${service._id._id}-${index}`}
 							>
 								<Card
-									key={index}
 									className="w-72 flex-shrink-0 hover:shadow-xl transition-all duration-300 bg-gray-50 backdrop-blur-sm border-0 hover:cursor-pointer hover:scale-105"
+									aria-label={`View ${service._id.name}`}
 								>
 									<div className="relative h-48 overflow-hidden rounded-t-lg">
 										<Image

@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search } from "lucide-react"
+import { Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fuse from "fuse.js";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const options = {
 	keys: ["name"], // Search based on 'name'
 	threshold: 0.3, // Controls fuzziness (lower is stricter, higher is looser)
 	distance: 100, // How far in the string Fuse.js will look for matches
 };
-
 
 const SearchBar = () => {
 	const [query, setQuery] = useState("");
@@ -26,7 +26,9 @@ const SearchBar = () => {
 	useEffect(() => {
 		const fetchServices = async () => {
 			try {
-				const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/service`); // Fetch all services once
+				const response = await fetch(
+					`${process.env.NEXT_PUBLIC_URL}/api/service`
+				); // Fetch all services once
 				const data = await response.json();
 				setAllServices(data);
 			} catch (error) {
@@ -87,34 +89,34 @@ const SearchBar = () => {
 							<div className="p-4 text-center">Loading...</div>
 						) : filteredResults.length > 0 ? (
 							filteredResults.map((service) => (
-								<div
+								<Link
 									key={service._id}
-									className="p-4 border-b border-gray-200 hover:bg-gray-100 hover:shadow-md cursor-pointer"
-									onClick={() =>
-										router.push(`/services/${service._id}`)
-									}
+									href={`/services/${service._id}`}
 								>
-									<div className="flex items-center space-x-4">
-										<Image
-											width={100}
-											height={100}
-											src={
-												service.image.trim() ||
-												"/placeholder.svg"
-											}
-											alt={service.name}
-											className=" object-cover rounded-md"
-										/>
-										<div>
-											<h3 className="font-semibold">
-												{service.name}
-											</h3>
-											<p className="text-sm text-gray-600">
-												Rs. {service.price.toFixed(2)}
-											</p>
+									<div className="p-4 border-b border-gray-200 hover:bg-gray-100 hover:shadow-md cursor-pointer">
+										<div className="flex items-center space-x-4">
+											<Image
+												width={100}
+												height={100}
+												src={
+													service.image.trim() ||
+													"/placeholder.svg"
+												}
+												alt={service.name}
+												className=" object-cover rounded-md"
+											/>
+											<div>
+												<h3 className="font-semibold">
+													{service.name}
+												</h3>
+												<p className="text-sm text-gray-600">
+													Rs.{" "}
+													{service.price.toFixed(2)}
+												</p>
+											</div>
 										</div>
 									</div>
-								</div>
+								</Link>
 							))
 						) : (
 							<div className="p-4 text-center">
