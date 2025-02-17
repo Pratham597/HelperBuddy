@@ -75,13 +75,21 @@ export default function Page() {
 
       // Group service orders by booking ID
       const groupedOrders = response.data.serviceOrder.reduce((acc, order) => {
-        if (!acc[order.booking]) {
-          acc[order.booking] = {
-            bookingDetails: response.data.booking.find((b) => b._id === order.booking),
-            services: [],
+        const bookingId = order.booking._id
+        if (!acc[bookingId]) {
+          acc[bookingId] = {
+            bookingDetails: {
+              _id: order.booking._id,
+              totalAmount: order.booking.totalAmount,
+              orderId: order.booking.orderId,
+              paymentMethod: order.booking.paymentMethod,
+              createdAt: order.booking.createdAt,
+              walletUsed: order.booking.walletUsed
+            },
+            services: []
           }
         }
-        acc[order.booking].services.push({
+        acc[bookingId].services.push({
           id: order._id,
           service: order.service,
           address: order.address,
@@ -90,7 +98,7 @@ export default function Page() {
           userCode: order.userCode,
           remarks: order.remarks,
           rating: order.rating,
-          key: order._id,
+          key: order._id
         })
         return acc
       }, {})
@@ -184,7 +192,12 @@ export default function Page() {
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 6, 1)
 
     return orders.filter((group) => {
+      if (!group?.bookingDetails?.createdAt) {
+        console.warn('Order found without valid booking details:', group)
+        return false
+      }
       const orderDate = new Date(group.bookingDetails.createdAt)
+      console.log(orderDate)
       switch (dateFilter) {
         case "today":
           return orderDate >= today
@@ -306,9 +319,14 @@ export default function Page() {
                           <CardTitle className="text-xl font-bold">Order {index + 1}</CardTitle>
                           <CardDescription className="text-blue-100">
                             Total: ₹{group.bookingDetails.totalAmount}
+                            {group.bookingDetails.walletUsed > 0 && 
+                              ` (Wallet: ₹${group.bookingDetails.walletUsed})`}
                           </CardDescription>
                           <CardDescription className="text-blue-100">
                             Booking ID: {group.bookingDetails._id}
+                          </CardDescription>
+                          <CardDescription className="text-blue-100">
+                            Payment Method: {group.bookingDetails.paymentMethod}
                           </CardDescription>
                         </div>
                         <Badge variant="secondary" className="text-xs px-2 py-1">

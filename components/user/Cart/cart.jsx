@@ -13,6 +13,7 @@ import axios from "axios";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { delay } from "framer-motion";
+import toast from "react-hot-toast";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -59,7 +60,8 @@ export default function Cart() {
       totalAmount += totalAmount * 0.18;
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user || !user.token || !user.id) {
-        console.error("User not authenticated");
+        toast.error("Please login to continue");
+        await delay(500);
         router.push("/user/login");
         return;
       }

@@ -133,7 +133,7 @@ export function ShippingForm({ onSubmit }) {
         </div>
         <div>
           <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
+          <Input id="phone" name="phone" type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value={formData.phone}  maxLength={10} onChange={handleChange} required />
         </div>
       </div>
 
