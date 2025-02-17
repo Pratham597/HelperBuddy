@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { Loader2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
-
+import { toast } from "react-hot-toast"
 export default function ServiceDetails({ service, onAddToCart }) {
   const [pincode, setPincode] = useState("")
   const [availabilityMessage, setAvailabilityMessage] = useState(null)
@@ -18,7 +18,9 @@ export default function ServiceDetails({ service, onAddToCart }) {
     setLoading(true)
     try {
       const res = await fetch(`/api/service/${service._id}/available?pincode=${pincode}`)
-      if (!res.ok) throw new Error("Failed to fetch availability")
+      if (!res.ok) {
+        toast.error("Please enter pincode")
+      }
 
       const data = await res.json()
 

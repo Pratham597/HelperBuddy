@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
-import { ChevronDown, ChevronUp, Star, Send, Store, MessageSquare, Package, Calendar } from "lucide-react"
+import { ChevronDown, ChevronUp, Star, Store, MessageSquare, Package, Calendar } from "lucide-react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -55,6 +55,9 @@ export default function OrderHistory() {
   const [customDate, setCustomDate] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState({})
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(5)
 
   useEffect(() => {
     fetchOrders()
@@ -84,9 +87,9 @@ export default function OrderHistory() {
               orderId: order.booking.orderId,
               paymentMethod: order.booking.paymentMethod,
               createdAt: order.booking.createdAt,
-              walletUsed: order.booking.walletUsed
+              walletUsed: order.booking.walletUsed,
             },
-            services: []
+            services: [],
           }
         }
         acc[bookingId].services.push({
@@ -98,7 +101,7 @@ export default function OrderHistory() {
           userCode: order.userCode,
           remarks: order.remarks,
           rating: order.rating,
-          key: order._id
+          key: order._id,
         })
         return acc
       }, {})
@@ -143,7 +146,7 @@ export default function OrderHistory() {
   }
 
   const handleFeedback = async (id) => {
-    setIsSubmitting(prev => ({ ...prev, [id]: true }))
+    setIsSubmitting((prev) => ({ ...prev, [id]: true }))
     const user = JSON.parse(localStorage.getItem("user"))
     try {
       const response = await axios.post(
@@ -178,7 +181,7 @@ export default function OrderHistory() {
       console.error(error)
       toast.error("Failed to submit feedback. Please try again.")
     } finally {
-      setIsSubmitting(prev => ({ ...prev, [id]: false }))
+      setIsSubmitting((prev) => ({ ...prev, [id]: false }))
     }
   }
 
@@ -193,11 +196,13 @@ export default function OrderHistory() {
 
     return orders.filter((group) => {
       if (!group?.bookingDetails?.createdAt) {
-        console.warn('Order found without valid booking details:', group)
+        console.warn("Order found without valid booking details:", group)
+        return false
+      }
+      if (searchQuery && !group.bookingDetails._id.includes(searchQuery)) {
         return false
       }
       const orderDate = new Date(group.bookingDetails.createdAt)
-      console.log(orderDate)
       switch (dateFilter) {
         case "today":
           return orderDate >= today
@@ -233,6 +238,13 @@ export default function OrderHistory() {
   const filteredOrders = filterOrders()
   const groupedFilteredOrders = groupOrdersByDate(filteredOrders)
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = groupedFilteredOrders.slice(indexOfFirstItem, indexOfLastItem)
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <header className="sticky top-0 z-10 flex h-16 items-center gap-2 px-4 bg-white dark:bg-gray-800 shadow-sm">
@@ -248,43 +260,49 @@ export default function OrderHistory() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+
+        {/* Filters moved to the top right */}
+        <div className="ml-auto flex items-center gap-4">
+          <input
+            type="text"
+            placeholder="Search by last 6 digits of Booking ID"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Select value={dateFilter} onValueChange={setDateFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by date" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Orders</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="yesterday">Yesterday</SelectItem>
+              <SelectItem value="thisMonth">This Month</SelectItem>
+              <SelectItem value="lastMonth">Last Month</SelectItem>
+              <SelectItem value="last6Months">Last 6 Months</SelectItem>
+              <SelectItem value="custom">Custom Date</SelectItem>
+            </SelectContent>
+          </Select>
+          {dateFilter === "custom" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-48">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {customDate ? format(customDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <CalendarComponent mode="single" selected={customDate} onSelect={setCustomDate} initialFocus />
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
       </header>
 
       <ScrollArea className="h-[calc(100vh-4rem)] w-full">
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Completed Orders</h1>
-            <div className="flex items-center gap-2">
-              <Select value={dateFilter} onValueChange={setDateFilter} disabled={isLoading}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by date" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Orders</SelectItem>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="yesterday">Yesterday</SelectItem>
-                  <SelectItem value="thisMonth">This Month</SelectItem>
-                  <SelectItem value="lastMonth">Last Month</SelectItem>
-                  <SelectItem value="last6Months">Last 6 Months</SelectItem>
-                  <SelectItem value="custom">Custom Date</SelectItem>
-                </SelectContent>
-              </Select>
-              {dateFilter === "custom" && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[180px]">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {customDate ? format(customDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <CalendarComponent mode="single" selected={customDate} onSelect={setCustomDate} initialFocus />
-                  </PopoverContent>
-                </Popover>
-              )}
-            </div>
-          </div>
-
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-6">Completed Orders</h1>
           <AnimatePresence>
             {isLoading ? (
               <motion.div
@@ -297,8 +315,8 @@ export default function OrderHistory() {
                   <OrderSkeleton key={n} />
                 ))}
               </motion.div>
-            ) : groupedFilteredOrders.length > 0 ? (
-              groupedFilteredOrders.map(([date, ordersForDate]) => (
+            ) : currentItems.length > 0 ? (
+              currentItems.map(([date, ordersForDate]) => (
                 <motion.div
                   key={date}
                   initial={{ opacity: 0, y: 20 }}
@@ -306,26 +324,28 @@ export default function OrderHistory() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <h2 className="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-200">
-                    {format(parseISO(date),  "EEEE, MMMM d, yyyy")}
+                  <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-200">
+                    {format(parseISO(date), "EEEE, MMMM d, yyyy")}
                   </h2>
-                  {ordersForDate.map((group, index) => (
+                  {ordersForDate.map((group) => (
                     <Card
                       key={group.bookingDetails._id}
                       className="border-0 shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl mb-4"
                     >
                       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white">
                         <div>
-                          <CardTitle className="text-xl font-bold">Order {index + 1}</CardTitle>
-                          <CardDescription className="text-blue-100">
+                          <CardTitle className="text-lg sm:text-xl font-bold">
+                            Order {group.bookingDetails._id.slice(-6)}
+                          </CardTitle>
+                          <CardDescription className="text-blue-100 text-sm">
                             Total: ₹{group.bookingDetails.totalAmount}
-                            {group.bookingDetails.walletUsed > 0 && 
+                            {group.bookingDetails.walletUsed > 0 &&
                               ` (Wallet: ₹${group.bookingDetails.walletUsed})`}
                           </CardDescription>
-                          <CardDescription className="text-blue-100">
+                          <CardDescription className="text-blue-100 text-sm">
                             Booking ID: {group.bookingDetails._id}
                           </CardDescription>
-                          <CardDescription className="text-blue-100">
+                          <CardDescription className="text-blue-100 text-sm">
                             Payment Method: {group.bookingDetails.paymentMethod}
                           </CardDescription>
                         </div>
@@ -337,14 +357,14 @@ export default function OrderHistory() {
                       {group.services.map((service) => (
                         <CardContent
                           key={service.key}
-                          className="p-6 space-y-4 border-t border-gray-200 dark:border-gray-700"
+                          className="p-4 sm:p-6 space-y-4 border-t border-gray-200 dark:border-gray-700"
                         >
                           <div className="space-y-2">
-                            <h3 className="text-lg font-semibold">{service.service.name}</h3>
+                            <h3 className="text-base sm:text-lg font-semibold">{service.service.name}</h3>
                             <div className="flex flex-wrap gap-2 justify-between items-center">
                               <div className="flex items-center gap-2">
                                 <Store className="w-4 h-4 text-gray-500" />
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                   {service.service.category}
                                 </span>
                               </div>
@@ -353,20 +373,28 @@ export default function OrderHistory() {
                               </span>
                             </div>
 
-                            <div className="flex gap-2 w-full">
+                            <div className="flex flex-col sm:flex-row gap-2 w-full">
                               <Button
                                 onClick={() => toggleDetails(service.id)}
-                                className={`flex-1 items-center gap-2 ${expandedOrders[service.id] ? "bg-gray-700 hover:bg-gray-800" : "bg-blue-600 hover:bg-blue-700"}`}
+                                className={`flex-1 items-center gap-2 text-xs sm:text-sm ${
+                                  expandedOrders[service.id]
+                                    ? "bg-gray-700 hover:bg-gray-800"
+                                    : "bg-blue-600 hover:bg-blue-700"
+                                }`}
                               >
                                 {expandedOrders[service.id] ? "Hide Details" : "View Details"}
-                                {expandedOrders[service.id] ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                {expandedOrders[service.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                               </Button>
                               <Button
                                 onClick={() => toggleFeedback(service.id)}
-                                className={`flex-1 items-center gap-2 ${feedbackOrders[service.id] ? "bg-gray-700 hover:bg-gray-800" : "bg-green-600 hover:bg-green-700"}`}
+                                className={`flex-1 items-center gap-2 text-xs sm:text-sm ${
+                                  feedbackOrders[service.id]
+                                    ? "bg-gray-700 hover:bg-gray-800"
+                                    : "bg-green-600 hover:bg-green-700"
+                                }`}
                               >
                                 {feedbackOrders[service.id] ? "Hide Feedback" : "Give Feedback"}
-                                <MessageSquare size={18} />
+                                <MessageSquare size={16} />
                               </Button>
                             </div>
 
@@ -379,21 +407,23 @@ export default function OrderHistory() {
                                   transition={{ duration: 0.3 }}
                                 >
                                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-4">
-                                    <h3 className="text-lg font-semibold">Order Details</h3>
+                                    <h3 className="text-base sm:text-lg font-semibold">Order Details</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <h4 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
                                           Delivery Address
                                         </h4>
-                                        <p className="mt-1">{service.address}</p>
-                                        <p className="mt-1">Pincode: {service.pincode}</p>
+                                        <p className="mt-1 text-xs sm:text-sm">{service.address}</p>
+                                        <p className="mt-1 text-xs sm:text-sm">Pincode: {service.pincode}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <h4 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
                                           Service Info
                                         </h4>
-                                        <p className="mt-1">Category: {service.service.category}</p>
-                                        <p className="mt-1">Timeline: {service.timeline}</p>
+                                        <p className="mt-1 text-xs sm:text-sm">
+                                          Category: {service.service.category}
+                                        </p>
+                                        <p className="mt-1 text-xs sm:text-sm">Timeline: {service.timeline}</p>
                                       </div>
                                     </div>
                                   </div>
@@ -408,25 +438,28 @@ export default function OrderHistory() {
                                   transition={{ duration: 0.3 }}
                                 >
                                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-4">
-                                    <h3 className="text-lg font-semibold">Your Feedback</h3>
+                                    <h3 className="text-base sm:text-lg font-semibold">Your Feedback</h3>
                                     {service.remarks && service.rating ? (
                                       <div>
-                                        <p>Rating: {service.rating} / 5</p>
-                                        <p>Remarks: {service.remarks}</p>
+                                        <p className="text-xs sm:text-sm">Rating: {service.rating} / 5</p>
+                                        <p className="text-xs sm:text-sm">Remarks: {service.remarks}</p>
                                       </div>
                                     ) : (
                                       <>
                                         <div className="space-y-2">
-                                          <label className="text-sm font-medium">Rating</label>
+                                          <label className="text-xs sm:text-sm font-medium">Rating</label>
                                           <div className="flex gap-1">
                                             {[1, 2, 3, 4, 5].map((star) => (
                                               <Star
                                                 key={star}
-                                                className={`w-6 h-6 cursor-pointer transition-all duration-200 ${star <= (isHovering[service.id] || ratings[service.id])
-                                                  ? "text-yellow-400 fill-yellow-400"
-                                                  : "text-gray-300"
-                                                  } ${star <= isHovering[service.id] ? "scale-110" : "scale-100"}`}
-                                                onClick={() => setRatings((prev) => ({ ...prev, [service.id]: star }))}
+                                                className={`w-5 h-5 sm:w-6 sm:h-6 cursor-pointer transition-all duration-200 ${
+                                                  star <= (isHovering[service.id] || ratings[service.id])
+                                                    ? "text-yellow-400 fill-yellow-400"
+                                                    : "text-gray-300"
+                                                } ${star <= isHovering[service.id] ? "scale-110" : "scale-100"}`}
+                                                onClick={() =>
+                                                  setRatings((prev) => ({ ...prev, [service.id]: star }))
+                                                }
                                                 onMouseEnter={() =>
                                                   setIsHovering((prev) => ({ ...prev, [service.id]: star }))
                                                 }
@@ -435,13 +468,13 @@ export default function OrderHistory() {
                                                 }
                                               />
                                             ))}
-                                            <span className="text-sm text-gray-500 ml-2">
+                                            <span className="text-xs sm:text-sm text-gray-500 ml-2">
                                               {ratings[service.id]} out of 5
                                             </span>
                                           </div>
                                         </div>
                                         <div className="space-y-2">
-                                          <label className="text-sm font-medium">Comments</label>
+                                          <label className="text-xs sm:text-sm font-medium">Comments</label>
                                           <Textarea
                                             value={feedbacks[service.id]}
                                             onChange={(e) =>
@@ -451,17 +484,20 @@ export default function OrderHistory() {
                                               }))
                                             }
                                             placeholder="Tell us about your experience..."
-                                            className="min-h-[100px] resize-none"
+                                            className="min-h-[80px] sm:min-h-[100px] text-xs sm:text-sm resize-none"
                                           />
                                         </div>
                                         <Button
-                                          onClick={() => handleFeedback(service.id)}
-                                          className={`flex-1 items-center gap-2 ${isSubmitting[service.id]
-                                            ? "opacity-75 cursor-not-allowed"
-                                            : feedbackOrders[service.id]
-                                              ? "bg-gray-700 hover:bg-gray-800"
-                                              : "bg-green-600 hover:bg-green-700"
-                                            }`}
+                                          onClick={() =>
+                                            handleFeedback(service.id, ratings[service.id], feedbacks[service.id])
+                                          }
+                                          className={`flex-1 items-center gap-2 text-xs sm:text-sm ${
+                                            isSubmitting[service.id]
+                                              ? "opacity-75 cursor-not-allowed"
+                                              : feedbackOrders[service.id]
+                                                ? "bg-gray-700 hover:bg-gray-800"
+                                                : "bg-green-600 hover:bg-green-700"
+                                          }`}
                                           disabled={isSubmitting[service.id]}
                                         >
                                           {isSubmitting[service.id] ? (
@@ -472,7 +508,7 @@ export default function OrderHistory() {
                                           ) : (
                                             <>
                                               {feedbackOrders[service.id] ? "Submit Feedback" : "Give Feedback"}
-                                              <MessageSquare size={18} />
+                                              <MessageSquare size={16} />
                                             </>
                                           )}
                                         </Button>
@@ -510,9 +546,23 @@ export default function OrderHistory() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Pagination */}
+          <div className="flex justify-center gap-2 mt-6">
+            {Array.from({ length: Math.ceil(groupedFilteredOrders.length / itemsPerPage) }, (_, i) => (
+              <Button
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={`px-4 py-2 rounded-lg ${
+                  currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                {i + 1}
+              </Button>
+            ))}
+          </div>
         </div>
       </ScrollArea>
     </div>
   )
 }
-
