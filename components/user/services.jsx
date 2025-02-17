@@ -129,7 +129,7 @@ const ServiceCard = ({ service, onServiceClick }) => (
   <motion.div
     whileHover={{ scale: 1.02 }}
     transition={{ type: "spring", stiffness: 300 }}
-    className="h-[440px]" 
+    className="h-[440px]"
   >
     <Card className="w-full h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
       <div className="relative w-full h-[60%]">
@@ -138,8 +138,9 @@ const ServiceCard = ({ service, onServiceClick }) => (
           alt={service.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-4 right-4 bg-white rounded-full px-3 py-1 text-sm font-medium">
-          {service.category}
+        <div className="absolute top-2 right-2 flex items-center bg-white shadow-md rounded-lg px-2 py-1 text-xs font-semibold">
+          <span className="text-gray-800">{service.rating}</span>
+          <Star className="w-4 h-4 ml-1 fill-yellow-400 text-yellow-400" />
         </div>
       </div>
 
@@ -159,8 +160,7 @@ const ServiceCard = ({ service, onServiceClick }) => (
               <span className="text-xl font-bold">₹{service.price.toLocaleString()}</span>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xs font-medium">{service.rating}</span>
+
                 </div>
                 <span className="text-xs font-medium">{service.total_bookings}+ Bookings</span>
               </div>
@@ -206,7 +206,7 @@ export default function ServicesPage() {
         setServices(res.data)
       } catch (error) {
         console.error("Failed to fetch services", error)
-      }finally{
+      } finally {
         setIsLoading(false);
       }
     }
@@ -321,47 +321,47 @@ export default function ServicesPage() {
               appliedFilters.priceRange.min > 0 ||
               appliedFilters.priceRange.max < 10000 ||
               appliedFilters.sortType !== "none") && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="flex flex-wrap items-center gap-2"
-              >
-                {appliedFilters.categories.map((category) => (
-                  <Badge
-                    key={category}
-                    variant="secondary"
-                    className="gap-1 bg-primary hover:text-black text-white px-2 py-1 rounded-full"
-                  >
-                    {category}
-                    <button
-                      onClick={() => removeCategory(category)}
-                      className="ml-1 hover:text-red-500 transition-colors duration-300"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                ))}
-                {(appliedFilters.priceRange.min > 0 || appliedFilters.priceRange.max < 10000) && (
-                  <Badge variant="secondary" className="bg-primary hover:text-black text-white px-2 py-1 rounded-full">
-                    ₹{appliedFilters.priceRange.min} - ₹{appliedFilters.priceRange.max}
-                  </Badge>
-                )}
-                {appliedFilters.sortType !== "none" && (
-                  <Badge variant="secondary" className="bg-primary hover:text-black text-white px-2 py-1 rounded-full">
-                    Price: {appliedFilters.sortType === "asc" ? "Low to High" : "High to Low"}
-                  </Badge>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-200 transition-colors duration-300"
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="flex flex-wrap items-center gap-2"
                 >
-                  Clear All
-                </Button>
-              </motion.div>
-            )}
+                  {appliedFilters.categories.map((category) => (
+                    <Badge
+                      key={category}
+                      variant="secondary"
+                      className="gap-1 bg-primary hover:text-black text-white px-2 py-1 rounded-full"
+                    >
+                      {category}
+                      <button
+                        onClick={() => removeCategory(category)}
+                        className="ml-1 hover:text-red-500 transition-colors duration-300"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {(appliedFilters.priceRange.min > 0 || appliedFilters.priceRange.max < 10000) && (
+                    <Badge variant="secondary" className="bg-primary hover:text-black text-white px-2 py-1 rounded-full">
+                      ₹{appliedFilters.priceRange.min} - ₹{appliedFilters.priceRange.max}
+                    </Badge>
+                  )}
+                  {appliedFilters.sortType !== "none" && (
+                    <Badge variant="secondary" className="bg-primary hover:text-black text-white px-2 py-1 rounded-full">
+                      Price: {appliedFilters.sortType === "asc" ? "Low to High" : "High to Low"}
+                    </Badge>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-200 transition-colors duration-300"
+                  >
+                    Clear All
+                  </Button>
+                </motion.div>
+              )}
           </AnimatePresence>
         </motion.div>
         {isLoading && (
