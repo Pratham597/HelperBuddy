@@ -32,7 +32,7 @@ export function ShippingForm({ onSubmit }) {
           ...prevData,
           name: storedUser.name || "",
           email: storedUser.email || "",
-          phone: storedUser.phone || "",
+          phone: storedUser.phone.slice(-10) || "",
         }))
       }
     } catch (error) {
@@ -133,7 +133,7 @@ export function ShippingForm({ onSubmit }) {
         </div>
         <div>
           <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" name="phone" type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value={formData.phone}  maxLength={10} onChange={handleChange} required />
+          <Input id="phone" name="phone" type="tel" pattern="[0-9]{10}" value={formData.phone}  maxLength={10} onChange={handleChange} required />
         </div>
       </div>
 
