@@ -17,7 +17,7 @@
 #nprogress .bar {
   background: #07042d !important;
   /* Change to desired color */
-  height: 6px !important;
+  height: 4px !important;
 }
 
 #nprogress .peg {
