@@ -5,6 +5,15 @@ import Logo from "./Logo";
 import SearchBar from "./SearchBar";
 import UserMenu from "./UserMenu";
 import MobileMenu from "./MobileMenu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 const Navbar = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,65 +31,101 @@ const Navbar = () => {
 	});
 
 	return (
-		<nav
-			className={`sticky top-2 z-50 bg-slate-950 text-white shadow-md  ${
-				isMobileMenuOpen ? "rounded-3xl" : "rounded-full"
-			} m-2`}
-		>
-			<div className=" mx-auto px-4 sm:px-6 lg:px-8  ">
-				<div className="flex justify-between items-center h-[4.5rem]">
-					<div className="flex items-center">
-						<Logo />
-					</div>
-					<div className="hidden lg:block flex-1 mx-4 max-w-md ">
-						<SearchBar />
-					</div>
-					<div className="hidden lg:flex items-center space-x-5">
-						<UserMenu isLoggedIn={isLoggedIn} />
-					</div>
-					<div className="lg:hidden flex items-center">
-						<button
-							onClick={() =>
-								setIsMobileMenuOpen(!isMobileMenuOpen)
-							}
-							className="text-slate-100 hover:text-gray-600 "
-						>
-							<span className="sr-only">Open main menu</span>
-							{isMobileMenuOpen ? (
-								<svg
-									className="h-6 w-6"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
+		<>
+			<div className="fixed w-full top-1 z-50">
+				<nav
+					className={` bg-slate-950 text-white shadow-md  ${
+						isMobileMenuOpen ? "rounded-3xl" : "rounded-full"
+					} m-2`}
+				>
+					<div className=" mx-auto px-4 sm:px-6 lg:px-8  ">
+						<div className="flex justify-between items-center h-[4.5rem]">
+							<div className="flex items-center">
+								<Logo />
+							</div>
+							<div className="hidden lg:block flex-1 mx-4 max-w-md ">
+								<SearchBar />
+							</div>
+							<div className="hidden lg:flex items-center space-x-5">
+								<UserMenu isLoggedIn={isLoggedIn} />
+							</div>
+
+							<div className="lg:hidden flex items-center">
+								{!isLoggedIn && (
+									<div className=" lg:hidden mr-4 bg-gray-800 p-2 rounded-md">
+										<DropdownMenu className="">
+											<DropdownMenuTrigger>
+												{" "}
+												Get Started
+											</DropdownMenuTrigger>
+											<DropdownMenuContent>
+												<DropdownMenuLabel>
+													Continue as
+												</DropdownMenuLabel>
+												<DropdownMenuSeparator />
+												<DropdownMenuItem>
+													<Link href="/user/login">
+														Customer
+													</Link>
+												</DropdownMenuItem>
+												<DropdownMenuItem>
+													<Link href="/partner/login">
+														Service Partner
+													</Link>
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</div>
+								)}
+								<button
+									onClick={() =>
+										setIsMobileMenuOpen(!isMobileMenuOpen)
+									}
+									className="text-slate-100 hover:text-gray-600 "
 								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M6 18L18 6M6 6l12 12"
-									/>
-								</svg>
-							) : (
-								<svg
-									className="h-6 w-6"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M4 6h16M4 12h16M4 18h16"
-									/>
-								</svg>
-							)}
-						</button>
+									<span className="sr-only">
+										Open main menu
+									</span>
+									{isMobileMenuOpen ? (
+										<svg
+											className="h-6 w-6"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M6 18L18 6M6 6l12 12"
+											/>
+										</svg>
+									) : (
+										<svg
+											className="h-6 w-6"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M4 6h16M4 12h16M4 18h16"
+											/>
+										</svg>
+									)}
+								</button>
+							</div>
+						</div>
 					</div>
-				</div>
+					<MobileMenu
+						isOpen={isMobileMenuOpen}
+						isLoggedIn={isLoggedIn}
+					/>
+				</nav>
 			</div>
-			<MobileMenu isOpen={isMobileMenuOpen} isLoggedIn={isLoggedIn} />
-		</nav>
+		</>
 	);
 };
 

@@ -24,10 +24,10 @@ export default function MobileHero() {
 	}, [controls]);
 
 	return (
-		<div ref={containerRef} className=" top-0 h-screen  overflow-hidden">
+		<div ref={containerRef} className=" h-screen relative  flex items-center justify-center">
 			{/* Background Image with Parallax Effect */}
 			<div
-				className="absolute inset-0 bg-cover bg-center"
+				className=" absolute inset-0 bg-cover bg-center"
 				style={{
 					backgroundImage:
 						'url("https://cdn.prod.website-files.com/5fbde3dc76aea24cb3b0ae52/6017bb2859b475c6f95ef05f_home-cleaning-hero-p-2000.jpeg")',

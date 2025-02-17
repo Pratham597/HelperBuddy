@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
 	Sparkles,
 	Zap,
@@ -67,13 +68,14 @@ const categories = [
 ];
 
 export default function ServiceCategories() {
+	const router = useRouter();
 	return (
 		<section className="py-16 px-4 bg-gray-50 ">
 			<div className="max-w-6xl mx-auto">
 				<h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-gray-800 to-slate-700 bg-clip-text text-transparent">
 					Our Services
 				</h2>
-				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 " onClick={() => router.push('/services')}>
 					{categories.map((category, index) => {
 						const IconComponent = category.icon;
 

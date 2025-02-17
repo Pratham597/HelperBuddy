@@ -41,7 +41,7 @@ const BlogPage = (req) => {
 		<>
 			<Navbar />
 			{loading && (
-				<div className="flex min-h-[90vh] items-center justify-center bg-white">
+				<div className="flex min-h-[90vh] mt-16 items-center justify-center bg-white">
 					<div className="flex flex-col items-center space-y-4">
 						{/* Shadcn Spinner */}
 						<Loader2 className="h-12 w-12 animate-spin text-gray-800" />
@@ -53,7 +53,7 @@ const BlogPage = (req) => {
 				</div>
 			)}
 			{!loading && (
-				<div className="min-h-screen bg-white">
+				<div className="min-h-screen mt-24 bg-white">
 					<BlogPost blog={blog} />
 					<ReadNext />
 					<CTA />

@@ -27,7 +27,7 @@ export function NavUser({ user }) {
 	const handleLogOut = () => {
 		// deleting user from local storage and redirecting him to /
 
-		localStorage.removeItem("user");
+		localStorage.removeItem("admin");
 		localStorage.removeItem("cart");
 
 		Cookies.remove("role");

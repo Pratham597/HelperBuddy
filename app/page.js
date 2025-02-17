@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
 	const [loading, setLoading] = useState(true);
-	const [progress, setProgress] = useState(20);
+	const [progress, setProgress] = useState(5);
 
 	useEffect(() => {
 		let interval = setInterval(() => {
@@ -33,18 +33,18 @@ export default function Home() {
 		return (
 			<div className="fixed top-0 left-0 w-full h-screen flex flex-col items-center justify-center bg-black z-50">
 				<Image
-					src="/logo.png"
+					src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=656,h=651,fit=crop/AzGeNv8QxRTqXJan/img_20241225_095321_917-AMqlqLEqp3tk7qEe.webp"
 					alt="Loading..."
 					width={150}
 					height={150}
 				/>
-				<div className="w-64 h-2 bg-gray-700 rounded-full mt-4 overflow-hidden">
+				<div className="w-48 h-2 bg-gray-700 rounded-full mt-1 overflow-hidden">
 					<div
 						className="h-full bg-slate-200 transition-all"
 						style={{ width: `${progress}%` }}
 					></div>
 				</div>
-				{/* <p className="text-white mt-2">{progress}%</p> */}
+				<p className="text-white mt-2">{progress}%</p>
 			</div>
 		);
 	}

@@ -6,54 +6,51 @@ import AnimatedCounter from "./AnimatedCounter";
 import { Users, Building, ShoppingBag, Package } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-// import registeredEntities from "@/actions/user/registeredEntities";
-
 
 export default function TrustSection() {
-	// const [bookings, setBookings] = useState(0);
-	// const [users, setUsers] = useState(0);
-	// const [partners, setPartners] = useState(0);
-	// const [services, setServices] = useState(0);
+	const [bookings, setBookings] = useState(0);
+	const [users, setUsers] = useState(0);
+	const [partners, setPartners] = useState(0);
+	const [services, setServices] = useState(0);
 
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		const data = await registeredEntities();
-	// 		console.log(data);
-	// 		setBookings(data.bookings);
-	// 		setUsers(data.users);
-	// 		setPartners(data.partners);
-	// 		setServices(data.services);
-	// 	};
-	// 	fetchData();
-	// }, []);
+	useEffect(() => {
+		const fetchData = async () => {
+			const { data } = await axios.get("/api/analytics/site");
+			console.log(data);
+			setBookings(data.bookings);
+			setUsers(data.users);
+			setPartners(data.partners);
+			setServices(data.services);
+		};
+		fetchData();
+	}, []);
 
 	const trustData = [
 		{
-			title: "Happy Customers",
-			description: "Satisfied customers who have used our services",
-			value: 50,
-			Icon: Users,
-		},
-		{
-			title: "Service Delivered",
-			description: "Services delivered to customers",
-			value: 44,
-			Icon: ShoppingBag,
-		},
-		{
-			title: "Partners",
-			description: "Partners who have joined our platform",
-			value: 44,
+			title: "Trusted Partners",
+			description: "Service Providing Partners",
+			value: partners,
 			Icon: Building,
 		},
 		{
-			title: "Bookings",
-			description: "Bookings made by customers",
-			value: 44,
+			title: "Happy Customers",
+			description: "Satisfied clients",
+			value: users,
+			Icon: Users,
+		},
+		{
+			title: "Service Types",
+			description: "Unique Services we offer",
+			value: services,
+			Icon: ShoppingBag,
+		},
+		{
+			title: "Services Dilevered",
+			description: "Successfully Executed Orders",
+			value: bookings,
 			Icon: Package,
 		},
 	];
-
 
 	const [ref, isInView] = useInView({ threshold: 0.2 });
 	return (
