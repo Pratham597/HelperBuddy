@@ -5,6 +5,7 @@ import Image from "next/legacy/image";
 import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ReadNext() {
 	const [relatedPosts, setRelatedPosts] = useState([]);
@@ -18,7 +19,7 @@ export default function ReadNext() {
 		try {
 			const res = await axios.get("/api/blog");
 			const shuffledBlogs = shuffleArray(res.data.blogs);
-			setRelatedPosts(shuffledBlogs.slice(0, 5)); 
+			setRelatedPosts(shuffledBlogs.slice(0, 5));
 		} catch (error) {
 			console.error(error);
 		}
@@ -68,47 +69,46 @@ export default function ReadNext() {
 						transition={{ duration: 0.8 }}
 					>
 						{relatedPosts.slice(0, 5).map((post) => (
-							<motion.div
-								key={post._id}
-								whileHover={{ scale: 1.03 }}
-								transition={{ duration: 0.3 }}
-								className="relative h-96 min-w-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer"
-								onClick={() =>
-									router.push(`/blogs/${post.slug}`)
-								}
-							>
-								<Image
-									src={post.image || "/placeholder.svg"}
-									alt={post.title}
-									layout="fill"
-									objectFit="cover"
-									className="transition-transform duration-300 group-hover:scale-110"
-								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-70 group-hover:opacity-80 transition-opacity duration-300"></div>
-								<div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-									<motion.h2
-										className="text-lg font-bold mb-2 leading-tight"
-										initial={{ y: 20, opacity: 0 }}
-										animate={{ y: 0, opacity: 1 }}
-										transition={{ duration: 0.5 }}
-									>
-										{post.title}
-									</motion.h2>
-									<motion.button
-										whileHover={{ scale: 1.05 }}
-										whileTap={{ scale: 0.95 }}
-										className="bg-white text-black font-bold py-2 px-4 rounded-full w-max text-sm transition-colors duration-300 hover:bg-gray-200"
-										initial={{ y: 20, opacity: 0 }}
-										animate={{ y: 0, opacity: 1 }}
-										transition={{
-											duration: 0.5,
-											delay: 0.2,
-										}}
-									>
-										Read More
-									</motion.button>
-								</div>
-							</motion.div>
+							<Link key={post._id} href={`/blogs/${post.slug}`}>
+								<motion.div
+									key={post._id}
+									whileHover={{ scale: 1.03 }}
+									transition={{ duration: 0.3 }}
+									className="relative h-96 min-w-80 rounded-xl overflow-hidden shadow-lg group cursor-pointer"
+								>
+									<Image
+										src={post.image || "/placeholder.svg"}
+										alt={post.title}
+										layout="fill"
+										objectFit="cover"
+										className="transition-transform duration-300 group-hover:scale-110"
+									/>
+									<div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-70 group-hover:opacity-80 transition-opacity duration-300"></div>
+									<div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+										<motion.h2
+											className="text-lg font-bold mb-2 leading-tight"
+											initial={{ y: 20, opacity: 0 }}
+											animate={{ y: 0, opacity: 1 }}
+											transition={{ duration: 0.5 }}
+										>
+											{post.title}
+										</motion.h2>
+										<motion.button
+											whileHover={{ scale: 1.05 }}
+											whileTap={{ scale: 0.95 }}
+											className="bg-white text-black font-bold py-2 px-4 rounded-full w-max text-sm transition-colors duration-300 hover:bg-gray-200"
+											initial={{ y: 20, opacity: 0 }}
+											animate={{ y: 0, opacity: 1 }}
+											transition={{
+												duration: 0.5,
+												delay: 0.2,
+											}}
+										>
+											Read More
+										</motion.button>
+									</div>
+								</motion.div>
+							</Link>
 						))}
 					</motion.div>
 				</div>

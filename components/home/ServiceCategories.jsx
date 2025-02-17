@@ -15,6 +15,7 @@ import {
 	Waves,
 	Droplet,
 } from "lucide-react";
+import Link from "next/link";
 
 const categories = [
 	{
@@ -75,53 +76,58 @@ export default function ServiceCategories() {
 				<h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-gray-800 to-slate-700 bg-clip-text text-transparent">
 					Our Services
 				</h2>
-				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 " onClick={() => router.push('/services')}>
-					{categories.map((category, index) => {
-						const IconComponent = category.icon;
+				<Link href="/services">
+					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ">
+						{categories.map((category, index) => {
+							const IconComponent = category.icon;
 
-						return (
-							<motion.div
-								key={category.name}
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{
-									duration: 0.5,
-									delay: index * 0.1,
-								}}
-								className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-							>
-								{/* Background Image */}
-								<div
-									className="absolute inset-0 bg-cover bg-center transition-all duration-300 group-hover:brightness-110"
-									style={{
-										backgroundImage: `url(${category.bgImage})`,
+							return (
+								<motion.div
+									key={category.name}
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{
+										duration: 0.5,
+										delay: index * 0.1,
 									}}
-								></div>
-
-								{/* Dark Overlay for Better Readability */}
-								<div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all duration-300"></div>
-
-								{/* Icon & Text */}
-								<div className="relative p-6 flex flex-col items-center justify-center h-full">
-									<motion.div
-										whileHover={{ scale: 1.2, rotate: 360 }}
-										transition={{
-											type: "spring",
-											stiffness: 260,
-											damping: 20,
+									className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+								>
+									{/* Background Image */}
+									<div
+										className="absolute inset-0 bg-cover bg-center transition-all duration-300 group-hover:brightness-110"
+										style={{
+											backgroundImage: `url(${category.bgImage})`,
 										}}
-										className="text-white mb-4"
-									>
-										<IconComponent size={48} />
-									</motion.div>
-									<h3 className="text-lg font-semibold text-white text-center group-hover:scale-110 transition-all duration-300">
-										{category.name}
-									</h3>
-								</div>
-							</motion.div>
-						);
-					})}
-				</div>
+									></div>
+
+									{/* Dark Overlay for Better Readability */}
+									<div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all duration-300"></div>
+
+									{/* Icon & Text */}
+									<div className="relative p-6 flex flex-col items-center justify-center h-full">
+										<motion.div
+											whileHover={{
+												scale: 1.2,
+												rotate: 360,
+											}}
+											transition={{
+												type: "spring",
+												stiffness: 260,
+												damping: 20,
+											}}
+											className="text-white mb-4"
+										>
+											<IconComponent size={48} />
+										</motion.div>
+										<h3 className="text-lg font-semibold text-white text-center group-hover:scale-110 transition-all duration-300">
+											{category.name}
+										</h3>
+									</div>
+								</motion.div>
+							);
+						})}
+					</div>
+				</Link>
 			</div>
 		</section>
 	);

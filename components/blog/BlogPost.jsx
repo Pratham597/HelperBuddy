@@ -87,7 +87,7 @@ export default function BlogPost({ blog }) {
 							</span>
 							<span className="w-2 h-2 rounded-full bg-white/70" />
 							<span className="text-xl md:text-2xl font-light">
-								{new Date(blog.createdAt).toLocaleDateString()}
+								{blog.formattedDate}
 							</span>
 						</motion.div>
 					</motion.div>

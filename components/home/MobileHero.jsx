@@ -4,11 +4,12 @@ import { useEffect, useRef } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function MobileHero() {
-    const router = useRouter()
+	const router = useRouter();
 	const controls = useAnimation();
-	const containerRef = useRef(null)
+	const containerRef = useRef(null);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -24,7 +25,10 @@ export default function MobileHero() {
 	}, [controls]);
 
 	return (
-		<div ref={containerRef} className=" h-screen relative  flex items-center justify-center">
+		<div
+			ref={containerRef}
+			className=" h-screen relative  flex items-center justify-center"
+		>
 			{/* Background Image with Parallax Effect */}
 			<div
 				className=" absolute inset-0 bg-cover bg-center"
@@ -60,19 +64,18 @@ export default function MobileHero() {
 				>
 					At Your Fingertips!
 				</motion.p>
-				<motion.button
-					className="bg-white text-black px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-200 transition-colors duration-300"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, delay: 0.6 }}
-					whileHover={{ scale: 1.05 }}
-					whileTap={{ scale: 0.95 }}
-					onClick={() => {
-						router.push("/services");
-					}}
-				>
-					Get Started
-				</motion.button>
+				<Link href="/services">
+					<motion.button
+						className="bg-white text-black px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-200 transition-colors duration-300"
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.8, delay: 0.6 }}
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+					>
+						Get Started
+					</motion.button>
+				</Link>
 			</motion.div>
 
 			{/* Scroll Indicator */}

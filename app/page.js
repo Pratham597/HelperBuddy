@@ -1,63 +1,63 @@
-"use client";
-import Hero from "@/components/home/Hero";
-import ServiceCategories from "@/components/home/ServiceCategories";
-import TrendingServices from "@/components/home/TrendingServices";
-import TrustSection from "@/components/home/TrustSection";
-import Testimonials from "@/components/home/Testimonials";
-import CallToAction from "@/components/home/CallToAction";
-import Footer from "@/components/home/Footer";
-import Navbar from "@/components/navbar/Navbar";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import HomePage from "@/components/home/HomePage";
+import axios from "axios";
 
-export default function Home() {
-	const [loading, setLoading] = useState(true);
-	const [progress, setProgress] = useState(5);
 
-	useEffect(() => {
-		let interval = setInterval(() => {
-			setProgress((oldProgress) => {
-				if (oldProgress >= 100) {
-					clearInterval(interval);
-					setTimeout(() => setLoading(false), 200); // Small delay before showing the main content
-					return 100;
-				}
-				return oldProgress + 5; // Increase progress by 5% every 100ms
-			});
-		}, 100);
-
-		return () => clearInterval(interval);
-	}, []);
-
-	if (loading) {
-		return (
-			<div className="fixed top-0 left-0 w-full h-screen flex flex-col items-center justify-center bg-black z-50">
-				<Image
-					src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=656,h=651,fit=crop/AzGeNv8QxRTqXJan/img_20241225_095321_917-AMqlqLEqp3tk7qEe.webp"
-					alt="Loading..."
-					width={150}
-					height={150}
-				/>
-				<div className="w-48 h-2 bg-gray-700 rounded-full mt-1 overflow-hidden">
-					<div
-						className="h-full bg-slate-200 transition-all"
-						style={{ width: `${progress}%` }}
-					></div>
-				</div>
-				<p className="text-white mt-2">{progress}%</p>
-			</div>
+// Fetch data for TrendingServices and TrustSection
+async function fetchTrendingServices() {
+	try {
+		const res = await axios.get(
+			`${process.env.NEXT_PUBLIC_URL}/api/analytics/most-sold-services`
 		);
+		return res.data.services;
+	} catch (error) {
+		console.error("Error fetching trending services:", error);
+		return [];
 	}
+}
+
+async function fetchTrustSection() {
+	try {
+		const res = await axios.get(
+			`${process.env.NEXT_PUBLIC_URL}/api/analytics/site`
+		);
+		return res.data;
+	} catch (error) {
+		console.error("Error fetching trust section:", error);
+		return {};
+	}
+}
+// Fixed data for ServiceCategories
+
+
+// Generate metadata for SEO
+export async function generateMetadata() {
+	return {
+		title: "Home | HelperBuddy",
+		description:
+			"Discover top-rated services, trending categories, and trusted solutions for your needs.",
+		openGraph: {
+			title: "Home | HelperBuddy",
+			description:
+				"Discover top-rated services, trending categories, and trusted solutions for your needs.",
+			images: [
+				{
+					url: "https://cdn.zyrosite.com/cdn-cgi/image/format=auto,w=656,h=492,fit=crop/cdn-ecommerce/store_01JCYZKF09EKDA2HS3ZXYAX2G1%2Fassets%2F1734724269763-washing-machine-installation-services.webp",
+					alt: "HelperBuddy",
+				},
+			],
+		},
+	};
+}
+
+export default async function Page() {
+	// Fetch data on the server
+	const trendingServices = await fetchTrendingServices();
+	const trustSection = await fetchTrustSection();
+	// Pass data to the Home component
 	return (
-		<main className="bg-white text-black">
-			<Navbar />
-			<Hero />
-			<TrendingServices />
-			<ServiceCategories />
-			<TrustSection />
-			<Testimonials />
-			{/* <CallToAction /> */}
-			<Footer />
-		</main>
+		<HomePage
+			services = {trendingServices}
+			trustSection={trustSection}
+		/>
 	);
 }
