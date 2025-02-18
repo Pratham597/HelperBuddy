@@ -15,6 +15,7 @@ export const POST = async (req) => {
   const serviceOrders = await ServiceOrder.find({
     partner: userId,
     userApproved: true,
+    isPaid:true
   })
     .populate("service")
     .select("-userCode");

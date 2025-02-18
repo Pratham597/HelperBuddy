@@ -25,11 +25,10 @@ const serviceOrderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "partner",
   },
-  booking:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:"booking",
-    required:true
-  },
+  cancel:{
+      type:Boolean,
+      default:false,
+    },
   userCode:{
     type:String,
     required:true,
@@ -42,6 +41,10 @@ const serviceOrderSchema = new mongoose.Schema({
     type:Number,
     default:5,
     max:[5,"Max rating is 5"]
+  },
+  isPaid:{
+    type:Boolean,
+    default:false
   }
 },{
   timestamps:true

@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
-const bookingSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    required: true,
-  },
+const paymentSchema = new mongoose.Schema({
   totalAmount: {
     type: Number,
     default: 0,
@@ -13,10 +8,6 @@ const bookingSchema = new mongoose.Schema({
   orderId: {
     type: String,
     required: true,
-  },
-  isPaid: {
-    type: Boolean,
-    default: false,
   },
   paymentId:{
     type:String,
@@ -30,9 +21,14 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  serviceOrder:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"serviceOrder",
+    required:true
+  }
 },{
   timestamps:true
 });
 
 export default mongoose.models.booking ||
-  mongoose.model("booking", bookingSchema);
+  mongoose.model("payment", paymentSchema);
