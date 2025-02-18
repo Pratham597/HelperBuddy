@@ -231,31 +231,32 @@ export default function ServicePending() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <header className="sticky top-0 z-10 flex h-16 items-center gap-2 px-4 bg-white dark:bg-gray-800 shadow-sm">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbPage className="flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                Order History
-              </BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <header className="sticky top-0 z-10 flex flex-col sm:flex-row items-start sm:items-center gap-2 p-4 bg-white dark:bg-gray-800 shadow-sm">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="h-4 hidden sm:block" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Order History
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
 
-        {/* Filters moved to the top right */}
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto sm:ml-auto">
           <input
             type="text"
-            placeholder="Search by last 6 digits of Booking ID"
+            placeholder="Search by Booking ID"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Select value={dateFilter} onValueChange={setDateFilter}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Filter by date" />
             </SelectTrigger>
             <SelectContent>
@@ -271,7 +272,7 @@ export default function ServicePending() {
           {dateFilter === "custom" && (
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-48">
+                <Button variant="outline" className="w-full sm:w-48">
                   <Calendar className="mr-2 h-4 w-4" />
                   {customDate ? format(customDate, "PPP") : <span>Pick a date</span>}
                 </Button>
@@ -286,246 +287,170 @@ export default function ServicePending() {
 
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="sm:px-0">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
-            <h1 className="text-3xl font-bold text-black">Order Progress</h1>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-black mb-8">Order Progress</h1>
 
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
               <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
             </div>
           ) : filteredDateGroups.length > 0 ? (
-            <div className="space-y-12">
-              {(() => {
-                const allBookings = filteredDateGroups.flatMap((dateGroup) =>
-                  dateGroup.bookings.map((booking) => ({
-                    ...booking,
-                    groupDate: dateGroup.date,
-                  })),
-                )
-
-                const totalBookings = allBookings.length
-                const totalPages = Math.ceil(totalBookings / ordersPerPage)
-
-                const indexOfLastBooking = currentPage * ordersPerPage
-                const indexOfFirstBooking = indexOfLastBooking - ordersPerPage
-                const currentBookings = allBookings.slice(indexOfFirstBooking, indexOfLastBooking)
-
-                const groupedBookings = currentBookings.reduce((acc, booking) => {
-                  const date = booking.groupDate
-                  if (!acc[date]) {
-                    acc[date] = []
-                  }
-                  acc[date].push(booking)
-                  return acc
-                }, {})
-
-                return (
-                  <>
-                    {Object.entries(groupedBookings).map(([date, bookings]) => (
-                      <div key={date} className="space-y-6">
-                        <h2 className="text-xl font-semibold text-black border-b border-gray-200 pb-2">
-                          {format(parseISO(date), "EEEE, MMMM d, yyyy")}
-                        </h2>
-                        <div className="space-y-4">
-                          {bookings.map((booking, idx) => (
-                            <Card
-                              key={booking.bookingId}
-                              className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+            <div className="space-y-8">
+              {filteredDateGroups.map((dateGroup) => (
+                <div key={dateGroup.date} className="space-y-6">
+                  <h2 className="text-lg sm:text-xl font-semibold text-black border-b border-gray-200 pb-2">
+                    {format(parseISO(dateGroup.date), "EEEE, MMMM d, yyyy")}
+                  </h2>
+                  <div className="space-y-4">
+                    {dateGroup.bookings.map((booking) => (
+                      <Card
+                        key={booking.bookingId}
+                        className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <CardHeader className="bg-white px-4 sm:px-6 py-4 sm:py-5">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between sm:flex-nowrap">
+                            <div>
+                              <CardTitle className="text-base sm:text-lg font-semibold text-black">
+                                Order {booking.bookingId.slice(-6)}
+                              </CardTitle>
+                              <CardDescription className="mt-1 text-xs sm:text-sm text-gray-600">
+                                Total Amount: ₹{booking.totalAmount.toLocaleString()}
+                                <br />
+                                Booking ID: {booking.bookingId}
+                              </CardDescription>
+                            </div>
+                            <Button
+                              onClick={() => toggleDetails(booking.bookingId)}
+                              variant="outline"
+                              size="sm"
+                              className="mt-2 sm:mt-0 w-full sm:w-auto flex items-center justify-center border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
                             >
-                              <CardHeader className="bg-white px-6 py-5">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between sm:flex-nowrap">
-                                  <div>
-                                    <CardTitle className="text-lg font-semibold text-black">
-                                      Order {booking.bookingId.slice(-6)}
-                                    </CardTitle>
-                                    <CardDescription className="mt-1 text-sm text-gray-600">
-                                      Total Amount: ₹{booking.totalAmount.toLocaleString()}
-                                      <br />
-                                      Booking ID: {booking.bookingId}
-                                    </CardDescription>
-                                  </div>
-                                  <div className="mt-4 sm:mt-0 sm:ml-4 flex-shrink-0">
-                                    <Button
-                                      onClick={() => toggleDetails(booking.bookingId)}
-                                      variant="outline"
-                                      size="sm"
-                                      className="flex items-center border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
-                                    >
-                                      {expandedOrders[booking.bookingId] ? "Hide" : "View"} Details
-                                      {expandedOrders[booking.bookingId] ? (
-                                        <ChevronUp className="ml-2 h-4 w-4" />
-                                      ) : (
-                                        <ChevronDown className="ml-2 h-4 w-4" />
-                                      )}
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardHeader>
+                              {expandedOrders[booking.bookingId] ? "Hide" : "View"} Details
+                              {expandedOrders[booking.bookingId] ? (
+                                <ChevronUp className="ml-2 h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="ml-2 h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </CardHeader>
 
-                              <CardContent className="px-6 py-5">
-                                <AnimatePresence>
-                                  {expandedOrders[booking.bookingId] && (
-                                    <motion.div
-                                      initial={{ opacity: 0, height: 0 }}
-                                      animate={{ opacity: 1, height: "auto" }}
-                                      exit={{ opacity: 0, height: 0 }}
-                                      transition={{ duration: 0.3 }}
-                                    >
-                                      {booking.orders.map((order, index) => (
-                                        <div
-                                          key={order.id}
-                                          className={index > 0 ? "mt-8 pt-8 border-t border-gray-200" : ""}
-                                        >
-                                          <div className="flex items-center justify-between">
-                                            <h3 className="text-lg font-medium text-black">
-                                              Service {index + 1}: {order.service.name}
-                                            </h3>
-                                            <Button
-                                              onClick={() => toggleServiceDetails(order.id)}
-                                              variant="outline"
-                                              size="sm"
-                                              className="flex items-center my-3 border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
-                                            >
-                                              {expandedServices[order.id] ? (
-                                                <ChevronUp className=" h-4 w-4" />
-                                              ) : (
-                                                <ChevronDown className="h-4 w-4" />
-                                              )}
-                                            </Button>
-                                          </div>
-                                          <div className="mb-6">
-                                            <div className="relative">
-                                              <Progress
-                                                value={statusPercentages[order.status]}
-                                                className="h-2 bg-gray-100"
-                                              />
-                                              <div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2">
-                                                {bookingStages.map((status) => (
-                                                  <div key={status} className="relative">
-                                                    <div
-                                                      className={`w-4 h-4 rounded-full border-2 ${status === order.status
-                                                          ? "bg-black border-black"
-                                                          : "bg-white border-gray-300"
-                                                        }`}
-                                                    ></div>
-                                                  </div>
-                                                ))}
-                                              </div>
+                        <CardContent className="px-4 sm:px-6 py-4 sm:py-5">
+                          <AnimatePresence>
+                            {expandedOrders[booking.bookingId] && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {booking.orders.map((order, index) => (
+                                  <div key={order.id} className={index > 0 ? "mt-6 pt-6 border-t border-gray-200" : ""}>
+                                    <div className="flex items-center justify-between">
+                                      <h3 className="text-base sm:text-lg font-medium text-black">
+                                        Service {index + 1}: {order.service.name}
+                                      </h3>
+                                      <Button
+                                        onClick={() => toggleServiceDetails(order.id)}
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex items-center my-2 border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
+                                      >
+                                        {expandedServices[order.id] ? (
+                                          <ChevronUp className="h-4 w-4" />
+                                        ) : (
+                                          <ChevronDown className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                    <div className="mb-4 sm:mb-6">
+                                      <div className="relative">
+                                        <Progress value={statusPercentages[order.status]} className="h-2 bg-gray-100" />
+                                        <div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2">
+                                          {bookingStages.map((status) => (
+                                            <div key={status} className="relative">
+                                              <div
+                                                className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 ${
+                                                  status === order.status
+                                                    ? "bg-black border-black"
+                                                    : "bg-white border-gray-300"
+                                                }`}
+                                              ></div>
                                             </div>
-                                            <div className="flex justify-between text-xs mt-2">
-                                              {bookingStages.map((status) => (
-                                                <div
-                                                  key={status}
-                                                  className={`w-1/3 text-center ${status === order.status ? "text-black font-medium" : "text-gray-500"
-                                                    }`}
-                                                >
-                                                  {status}
-                                                </div>
-                                              ))}
-                                            </div>
-                                          </div>
-                                          <AnimatePresence>
-                                            {expandedServices[order.id] && (
-                                              <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: "auto" }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                transition={{ duration: 0.3 }}
-                                              >
-                                                <dl className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-                                                  <div className="sm:col-span-1">
-                                                    <dt className="text-sm font-medium text-gray-600">Status</dt>
-                                                    <dd className="mt-1 text-sm text-black">{order.status}</dd>
-                                                  </div>
-                                                  <div className="sm:col-span-1">
-                                                    <dt className="text-sm font-medium text-gray-600">Category</dt>
-                                                    <dd className="mt-1 text-sm text-black">{order.service.category}</dd>
-                                                  </div>
-                                                  <div className="sm:col-span-1">
-                                                    <dt className="text-sm font-medium text-gray-600">Price</dt>
-                                                    <dd className="mt-1 text-sm text-black">
-                                                      ₹{order.service.price.toLocaleString()}
-                                                    </dd>
-                                                  </div>
-                                                  <div className="sm:col-span-1">
-                                                    <dt className="text-sm font-medium text-gray-600">Timeline</dt>
-                                                    <dd className="mt-1 text-sm text-black">{order.timeline}</dd>
-                                                  </div>
-                                                  <div className="sm:col-span-2">
-                                                    <dt className="text-sm font-medium text-gray-600">Address</dt>
-                                                    <dd className="mt-1 text-sm text-black">{order.address}</dd>
-                                                  </div>
-                                                  <div className="sm:col-span-1">
-                                                    <dt className="text-sm font-medium text-gray-600">Pincode</dt>
-                                                    <dd className="mt-1 text-sm text-black">{order.pincode}</dd>
-                                                  </div>
-                                                  <div className="sm:col-span-1">
-                                                    <dt className="text-sm font-medium text-gray-600">User Code</dt>
-                                                    <dd className="mt-1 text-sm text-black">{order.userCode}</dd>
-                                                  </div>
-                                                </dl>
-                                              </motion.div>
-                                            )}
-                                          </AnimatePresence>
+                                          ))}
                                         </div>
-                                      ))}
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      </div>
+                                      </div>
+                                      <div className="flex justify-between text-xs mt-2">
+                                        {bookingStages.map((status) => (
+                                          <div
+                                            key={status}
+                                            className={`w-1/3 text-center ${
+                                              status === order.status ? "text-black font-medium" : "text-gray-500"
+                                            }`}
+                                          >
+                                            {status}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <AnimatePresence>
+                                      {expandedServices[order.id] && (
+                                        <motion.div
+                                          initial={{ opacity: 0, height: 0 }}
+                                          animate={{ opacity: 1, height: "auto" }}
+                                          exit={{ opacity: 0, height: 0 }}
+                                          transition={{ duration: 0.3 }}
+                                        >
+                                          <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 text-sm">
+                                            <div className="sm:col-span-1">
+                                              <dt className="font-medium text-gray-600">Status</dt>
+                                              <dd className="mt-1 text-black">{order.status}</dd>
+                                            </div>
+                                            <div className="sm:col-span-1">
+                                              <dt className="font-medium text-gray-600">Category</dt>
+                                              <dd className="mt-1 text-black">{order.service.category}</dd>
+                                            </div>
+                                            <div className="sm:col-span-1">
+                                              <dt className="font-medium text-gray-600">Price</dt>
+                                              <dd className="mt-1 text-black">
+                                                ₹{order.service.price.toLocaleString()}
+                                              </dd>
+                                            </div>
+                                            <div className="sm:col-span-1">
+                                              <dt className="font-medium text-gray-600">Timeline</dt>
+                                              <dd className="mt-1 text-black">{order.timeline}</dd>
+                                            </div>
+                                            <div className="sm:col-span-2">
+                                              <dt className="font-medium text-gray-600">Address</dt>
+                                              <dd className="mt-1 text-black">{order.address}</dd>
+                                            </div>
+                                            <div className="sm:col-span-1">
+                                              <dt className="font-medium text-gray-600">Pincode</dt>
+                                              <dd className="mt-1 text-black">{order.pincode}</dd>
+                                            </div>
+                                            <div className="sm:col-span-1">
+                                              <dt className="font-medium text-gray-600">User Code</dt>
+                                              <dd className="mt-1 text-black">{order.userCode}</dd>
+                                            </div>
+                                          </dl>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </div>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </CardContent>
+                      </Card>
                     ))}
-
-                    {/* Pagination Controls */}
-                    <div className="mt-8 flex flex-wrap justify-center items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                      >
-                        Previous
-                      </Button>
-
-                      {[...Array(totalPages)].map((_, index) => (
-                        <Button
-                          key={index + 1}
-                          variant={currentPage === index + 1 ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handlePageChange(index + 1)}
-                          className={currentPage === index + 1 ? "bg-black text-white" : ""}
-                        >
-                          {index + 1}
-                        </Button>
-                      ))}
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </Button>
-                    </div>
-
-                    {/* Page information */}
-                    <div className="text-center text-sm text-gray-600 mt-2">
-                      Showing {indexOfFirstBooking + 1} to {Math.min(indexOfLastBooking, totalBookings)} of{" "}
-                      {totalBookings} orders
-                    </div>
-                  </>
-                )
-              })()}
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
-            <Card className="text-center py-12 border border-gray-200">
+            <Card className="text-center py-8 sm:py-12 border border-gray-200">
               <CardContent>
-                <ShoppingBag className="mx-auto h-12 w-12 text-gray-400" />
+                <ShoppingBag className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-medium text-black">No orders</h3>
                 <p className="mt-1 text-sm text-gray-600">Get started by creating a new order.</p>
                 <div className="mt-6">
@@ -539,3 +464,4 @@ export default function ServicePending() {
     </div>
   )
 }
+

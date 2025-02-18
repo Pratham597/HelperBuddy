@@ -13,17 +13,28 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "../ui/skeleton";
 import Link from "next/link";
+import { useEffect } from "react";
 
-
+const shuffleArray = (array) => {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
+	}
+	return array;
+};
 export default function BlogGrid({ blogs }) {
 	const [currentPage, setCurrentPage] = useState(1);
+	const [shuffledBlogs, setShuffledBlogs] = useState([]);
 	const blogsPerPage = 9;
 
+	useEffect(() => {
+		setShuffledBlogs(shuffleArray([...blogs]));
+	}, [blogs]);
 
 	const indexOfLastBlog = currentPage * blogsPerPage;
 	const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-	const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
-	const totalPages = Math.ceil(blogs.length / blogsPerPage);
+	const currentBlogs = shuffledBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+	const totalPages = Math.ceil(shuffledBlogs.length / blogsPerPage);
 
 	const handleNext = () => {
 		if (currentPage < totalPages) setCurrentPage(currentPage + 1);
@@ -44,16 +55,16 @@ export default function BlogGrid({ blogs }) {
 			>
 				{currentBlogs.map((blog, index) => (
 					<Link key={blog._id} href={`/blogs/${blog.slug}`}>
-					<motion.div
-						key={blog._id}
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{
-							duration: 0.5,
-							delay: index * 0.1,
-						}}
-					>
-						<BlogCard blog={blog} />
+						<motion.div
+							key={blog._id}
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{
+								duration: 0.5,
+								delay: index * 0.1,
+							}}
+						>
+							<BlogCard blog={blog} />
 						</motion.div>
 					</Link>
 				))}
