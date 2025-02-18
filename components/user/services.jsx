@@ -181,7 +181,7 @@ const ServiceCard = ({ service, onServiceClick }) => (
 
 
 
-export default function ServicesPage() {
+export default function ServicesPage({ }) {
   const [services, setServices] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [priceFilter, setPriceFilter] = useState({ type: "none", min: 0, max: 10000 })
@@ -210,10 +210,9 @@ export default function ServicesPage() {
         setIsLoading(false);
       }
     }
-
     fetchServices()
-  }, [])
-
+  }, []);
+  
   useEffect(() => {
     if (params.id) {
       setSelectedServiceId(params.id)
