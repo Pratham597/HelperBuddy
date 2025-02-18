@@ -4,12 +4,10 @@ import { motion } from "framer-motion";
 import Image from "next/legacy/image";
 import { useRef, useState, useEffect } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function ReadNext() {
 	const [relatedPosts, setRelatedPosts] = useState([]);
-	const router = useRouter();
 
 	const shuffleArray = (array) => {
 		return array.sort(() => Math.random() - 0.5);
