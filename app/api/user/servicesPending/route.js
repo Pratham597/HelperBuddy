@@ -15,8 +15,8 @@ export const POST = async (req) => {
         $or:[{isPaid: true},{paymentMethod:"COD"}],
         $or:[{paymentId: { $ne: null }},{paymentMethod:"COD"}],
       });
-      console.log(booking)
+      
     const serviceOrder = await ServiceOrder.find({ booking: { $in: booking }, partner: null }).populate("service").populate("booking")
-    // console.log(serviceOrder)
+
     return NextResponse.json({ booking, serviceOrder });
 }
