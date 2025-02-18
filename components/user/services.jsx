@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { poppins } from "../fonts/font"
 import { Skeleton } from "@/components/ui/skeleton";
 import { Star } from "lucide-react";
+import useServiceStore from "@/Store/useServiceStore"
 
 const ServiceCardSkeleton = () => (
   <Card className="w-full h-[440px] bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -185,8 +186,8 @@ export default function ServicesPage({ }) {
   const [services, setServices] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [priceFilter, setPriceFilter] = useState({ type: "none", min: 0, max: 10000 })
-  const [selectedServiceId, setSelectedServiceId] = useState(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const { selectedServiceId, clearSelectedService, setSelectedServiceId } = useServiceStore();
   const [appliedFilters, setAppliedFilters] = useState({
     categories: [],
     priceRange: { min: 0, max: 10000 },
@@ -276,12 +277,12 @@ export default function ServicesPage({ }) {
 
   const handleServiceClick = (serviceId) => {
     setSelectedServiceId(serviceId)
-    router.push(`/services/${serviceId}`, undefined, { shallow: true })
+    // router.push(`/services/${serviceId}`, undefined, { shallow: true })
   }
 
   const handleCloseDetails = () => {
     setSelectedServiceId(null)
-    router.push("/services", undefined, { shallow: true })
+    // router.push("/services", undefined, { shallow: true })
   }
 
   return (

@@ -6,10 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import useServiceStore from "@/Store/useServiceStore";
 
 const TrendingServices = ({ services }) => {
 	const containerRef = useRef(null);
 	const scrollRef = useRef(null);
+	const { setSelectedServiceId } = useServiceStore();
+
 
 	// Auto-scrolling effect
 	useEffect(() => {
@@ -69,7 +72,10 @@ const TrendingServices = ({ services }) => {
 					>
 						{[...services, ...services].map((service, index) => (
 							<Link
-								href={`/services/${service._id._id}`}
+								href={`/services`}
+								onClick={() => {
+									setSelectedServiceId(service._id._id);
+								}}
 								passHref
 								key={`${service._id._id}-${index}`}
 							>

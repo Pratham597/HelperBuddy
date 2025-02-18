@@ -7,6 +7,8 @@ import Fuse from "fuse.js";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import axios from "axios";
+import useServiceStore from "@/Store/useServiceStore";
 
 const options = {
 	keys: ["name"], // Search based on 'name'
@@ -15,6 +17,7 @@ const options = {
 };
 
 const SearchBar = () => {
+	const { setSelectedServiceId } = useServiceStore();
 	const [query, setQuery] = useState("");
 	const [allServices, setAllServices] = useState([]); // Store all services
 	const [filteredResults, setFilteredResults] = useState([]);
@@ -26,11 +29,10 @@ const SearchBar = () => {
 	useEffect(() => {
 		const fetchServices = async () => {
 			try {
-				const response = await fetch(
+				const res = await axios.get(
 					`${process.env.NEXT_PUBLIC_URL}/api/service`
-				); // Fetch all services once
-				const data = await response.json();
-				setAllServices(data);
+				);
+				setAllServices(res.data);
 			} catch (error) {
 				console.error("Error fetching services:", error);
 			} finally {
@@ -91,7 +93,11 @@ const SearchBar = () => {
 							filteredResults.map((service) => (
 								<Link
 									key={service._id}
-									href={`/services/${service._id}`}
+									href={`/services`}
+									onClick={() => {
+										setSelectedServiceId(service._id);
+										setShowDropdown(false);
+									}}
 								>
 									<div className="p-4 border-b border-gray-200 hover:bg-gray-100 hover:shadow-md cursor-pointer">
 										<div className="flex items-center space-x-4">
