@@ -89,7 +89,7 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 			const data = await res.json();
 			console.log("res", data);
 			if (!res.ok) {
-				toast.error(data.message || "Signup failed.");
+				toast.error(data.error || "Signup failed.");
 				setIsSubmitting(false);
 				return;
 			}
@@ -110,7 +110,7 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 			toast.success("Signup successful!");
 		} catch (error) {
 			console.error(error);
-			toast.error("Something went wrong.");
+			toast.error(error);
 		} finally {
 			setIsSubmitting(false);
 		}

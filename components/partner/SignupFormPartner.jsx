@@ -95,7 +95,7 @@ export default function Form({ isLogin, setIsLogin }) {
 			const data = await res.json();
 			console.log("res", data);
 			if (!res.ok) {
-				toast.error(data.message || "Signup failed.");
+				toast.error(data.error || "Signup failed.");
 				setIsSubmitting(false);
 				return;
 			}
