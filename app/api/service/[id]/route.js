@@ -47,7 +47,6 @@ export const GET = async (req, { params }) => {
         averageRating: averageRating ? parseFloat(averageRating) : null,
         reviews: filteredReviews
     };
-    console.log(serviceWithReviews);
     return NextResponse.json(serviceWithReviews);
 };
 

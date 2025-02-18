@@ -281,7 +281,7 @@ export default function ServicesPage({ }) {
 
   const handleCloseDetails = () => {
     setSelectedServiceId(null)
-    router.push("/services", undefined, { shallow: true })
+    router.back();
   }
 
   return (
