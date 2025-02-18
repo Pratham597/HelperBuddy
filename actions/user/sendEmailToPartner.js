@@ -42,7 +42,7 @@ async function sendEmailToPartner(emails, userDetails, service) {
         <li><strong>📌 Pincode:</strong> ${userDetails.pincode}</li>
         <li><strong>⏳ Timeline:</strong> ${userDetails.timeline}</li>
       </ul>
-      <p> Click here to go dashboard: ${process.env.NEXT_PUBLIC_URL}/partner/services/orderRequests
+      <p> Click here to go dashboard: ${process.env.NEXT_PUBLIC_URL}/partner/dashboard/services/orderRequests
       <p>Please review the request and respond at your earliest convenience.</p>
       <br/>
       <p>Best regards,</p>

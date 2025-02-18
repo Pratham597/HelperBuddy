@@ -247,31 +247,32 @@ export default function OrderHistory() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <header className="sticky top-0 z-10 flex h-16 items-center gap-2 px-4 bg-white dark:bg-gray-800 shadow-sm">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbPage className="flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                Order History
-              </BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <header className="sticky top-0 z-10 flex flex-col sm:flex-row items-center gap-2 p-4 bg-white dark:bg-gray-800 shadow-sm">
+        <div className="flex items-center w-full sm:w-auto">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="h-4 mx-2" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Order History
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
 
-        {/* Filters moved to the top right */}
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto sm:ml-auto">
           <input
             type="text"
-            placeholder="Search by last 6 digits of Booking ID"
+            placeholder="Search by Booking ID"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Select value={dateFilter} onValueChange={setDateFilter}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Filter by date" />
             </SelectTrigger>
             <SelectContent>
@@ -287,7 +288,7 @@ export default function OrderHistory() {
           {dateFilter === "custom" && (
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-48">
+                <Button variant="outline" className="w-full sm:w-48">
                   <Calendar className="mr-2 h-4 w-4" />
                   {customDate ? format(customDate, "PPP") : <span>Pick a date</span>}
                 </Button>
@@ -305,12 +306,7 @@ export default function OrderHistory() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-6">Completed Orders</h1>
           <AnimatePresence>
             {isLoading ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-4"
-              >
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                 {[1, 2, 3].map((n) => (
                   <OrderSkeleton key={n} />
                 ))}
@@ -332,24 +328,23 @@ export default function OrderHistory() {
                       key={group.bookingDetails._id}
                       className="border-0 shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl mb-4"
                     >
-                      <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white">
-                        <div>
-                          <CardTitle className="text-lg sm:text-xl font-bold">
+                      <CardHeader className="flex flex-col justify-between items-start space-y-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white p-4 sm:p-6">
+                        <div className="w-full">
+                          <CardTitle className="text-lg sm:text-xl font-bold mb-2">
                             Order {group.bookingDetails._id.slice(-6)}
                           </CardTitle>
-                          <CardDescription className="text-blue-100 text-sm">
+                          <CardDescription className="text-blue-100 text-sm mb-1">
                             Total: ₹{group.bookingDetails.totalAmount}
-                            {group.bookingDetails.walletUsed > 0 &&
-                              ` (Wallet: ₹${group.bookingDetails.walletUsed})`}
+                            {group.bookingDetails.walletUsed > 0 && ` (Wallet: ₹${group.bookingDetails.walletUsed})`}
                           </CardDescription>
-                          <CardDescription className="text-blue-100 text-sm">
+                          <CardDescription className="text-blue-100 text-sm mb-1">
                             Booking ID: {group.bookingDetails._id}
                           </CardDescription>
                           <CardDescription className="text-blue-100 text-sm">
                             Payment Method: {group.bookingDetails.paymentMethod}
                           </CardDescription>
                         </div>
-                        <Badge variant="secondary" className="text-xs px-2 py-1">
+                        <Badge variant="secondary" className="text-xs px-2 py-1 self-end">
                           {format(parseISO(group.bookingDetails.createdAt), "h:mm a")}
                         </Badge>
                       </CardHeader>
@@ -376,7 +371,7 @@ export default function OrderHistory() {
                             <div className="flex flex-col sm:flex-row gap-2 w-full">
                               <Button
                                 onClick={() => toggleDetails(service.id)}
-                                className={`flex-1 items-center gap-2 text-xs sm:text-sm ${
+                                className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${
                                   expandedOrders[service.id]
                                     ? "bg-gray-700 hover:bg-gray-800"
                                     : "bg-blue-600 hover:bg-blue-700"
@@ -387,7 +382,7 @@ export default function OrderHistory() {
                               </Button>
                               <Button
                                 onClick={() => toggleFeedback(service.id)}
-                                className={`flex-1 items-center gap-2 text-xs sm:text-sm ${
+                                className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${
                                   feedbackOrders[service.id]
                                     ? "bg-gray-700 hover:bg-gray-800"
                                     : "bg-green-600 hover:bg-green-700"
@@ -408,7 +403,7 @@ export default function OrderHistory() {
                                 >
                                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-4">
                                     <h3 className="text-base sm:text-lg font-semibold">Order Details</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 gap-4">
                                       <div>
                                         <h4 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
                                           Delivery Address
@@ -420,9 +415,7 @@ export default function OrderHistory() {
                                         <h4 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
                                           Service Info
                                         </h4>
-                                        <p className="mt-1 text-xs sm:text-sm">
-                                          Category: {service.service.category}
-                                        </p>
+                                        <p className="mt-1 text-xs sm:text-sm">Category: {service.service.category}</p>
                                         <p className="mt-1 text-xs sm:text-sm">Timeline: {service.timeline}</p>
                                       </div>
                                     </div>
@@ -457,9 +450,7 @@ export default function OrderHistory() {
                                                     ? "text-yellow-400 fill-yellow-400"
                                                     : "text-gray-300"
                                                 } ${star <= isHovering[service.id] ? "scale-110" : "scale-100"}`}
-                                                onClick={() =>
-                                                  setRatings((prev) => ({ ...prev, [service.id]: star }))
-                                                }
+                                                onClick={() => setRatings((prev) => ({ ...prev, [service.id]: star }))}
                                                 onMouseEnter={() =>
                                                   setIsHovering((prev) => ({ ...prev, [service.id]: star }))
                                                 }
@@ -491,7 +482,7 @@ export default function OrderHistory() {
                                           onClick={() =>
                                             handleFeedback(service.id, ratings[service.id], feedbacks[service.id])
                                           }
-                                          className={`flex-1 items-center gap-2 text-xs sm:text-sm ${
+                                          className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${
                                             isSubmitting[service.id]
                                               ? "opacity-75 cursor-not-allowed"
                                               : feedbackOrders[service.id]
@@ -548,12 +539,12 @@ export default function OrderHistory() {
           </AnimatePresence>
 
           {/* Pagination */}
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex flex-wrap justify-center gap-2 mt-6">
             {Array.from({ length: Math.ceil(groupedFilteredOrders.length / itemsPerPage) }, (_, i) => (
               <Button
                 key={i + 1}
                 onClick={() => paginate(i + 1)}
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-3 py-1 text-sm rounded-lg ${
                   currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
                 }`}
               >
