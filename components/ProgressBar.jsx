@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
 export default function ProgressBar() {
 	const pathname = usePathname();
-	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
@@ -19,32 +18,45 @@ export default function ProgressBar() {
 	}, [loading]);
 
 	useEffect(() => {
-		// Start loading when pathname changes
-		setLoading(true);
+		const prevPath = sessionStorage.getItem("prevPath");
 
-		// Stop loading once route change is complete
+		// Skip progress bar when navigating between /services and /services/[slug]
+		const isWithinServices =
+			prevPath?.startsWith("/services") &&
+			pathname.startsWith("/services");
+
+		if (!isWithinServices) {
+			setLoading(true);
+		}
+
+		// Store the previous path for comparison
+		sessionStorage.setItem("prevPath", pathname);
+
+		// Stop loading after a delay
 		const timeout = setTimeout(() => setLoading(false), 500);
 
 		return () => clearTimeout(timeout);
-	}, [pathname]); // Watch for changes in the pathname
+	}, [pathname]);
 
 	const handleClick = (event) => {
 		let target = event.target;
 
-		// Find the nearest anchor tag (<a>)
 		while (target && target.tagName !== "A") {
 			target = target.parentElement;
 		}
 
-		// If no valid <a> tag found, exit
 		if (!target || !target.href) return;
 
-		// Extract the path (ignoring domain)
 		const targetPath = new URL(target.href, window.location.origin)
 			.pathname;
 
-		// 🛑 Prevent progress bar if already on the same page
-		if (targetPath === pathname) return;
+		// Skip progress bar when navigating within /services
+		if (
+			targetPath.startsWith("/services") &&
+			pathname.startsWith("/services")
+		) {
+			return;
+		}
 
 		setLoading(true);
 	};
