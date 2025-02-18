@@ -75,7 +75,7 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 				Cookies.remove("salt");
 				Cookies.remove("role");
 				Cookies.set("salt", salt, { expires: 7 });
-				Cookies.set("role", hashedRole), { expires: 7 };
+				Cookies.set("role", hashedRole, { expires: 7 });
 
 				router.push("/");
 				toast.success("Logged in successfully");

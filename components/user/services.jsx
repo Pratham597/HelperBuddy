@@ -181,8 +181,8 @@ const ServiceCard = ({ service, onServiceClick }) => (
 
 
 
-export default function ServicesPage({initialServices }) {
-  const [services, setServices] = useState(initialServices || [])
+export default function ServicesPage({ }) {
+  const [services, setServices] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [priceFilter, setPriceFilter] = useState({ type: "none", min: 0, max: 10000 })
   const [selectedServiceId, setSelectedServiceId] = useState(null)
@@ -198,11 +198,21 @@ export default function ServicesPage({initialServices }) {
   const params = useParams()
 
   useEffect(() => {
-    if (initialServices) {
-      setIsLoading(false); 
+    setIsLoading(true);
+    setError(null);
+    const fetchServices = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/service`)
+        setServices(res.data)
+      } catch (error) {
+        console.error("Failed to fetch services", error)
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }, [initialServices]);
-
+    fetchServices()
+  }, []);
+  
   useEffect(() => {
     if (params.id) {
       setSelectedServiceId(params.id)
