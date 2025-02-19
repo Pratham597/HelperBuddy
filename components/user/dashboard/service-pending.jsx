@@ -217,7 +217,7 @@ export default function ServicePending() {
         // Filter bookings within the group based on searchQuery
         const filteredBookings = group.bookings.filter((booking) => {
           const bookingIdMatch = searchQuery
-            ? booking.bookingId.toLowerCase().includes(searchQuery.toLowerCase())
+            ? booking.id.toLowerCase().includes(searchQuery.toLowerCase())
             : true
 
           return bookingIdMatch
@@ -236,6 +236,7 @@ export default function ServicePending() {
   }
 
   const filteredDateGroups = filterOrders()
+  console.log(filteredDateGroups)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -309,31 +310,31 @@ export default function ServicePending() {
                     {format(parseISO(dateGroup.date), "EEEE, MMMM d, yyyy")}
                   </h2>
                   <div className="space-y-4">
-                    {dateGroup.bookings.map((booking) => (
+                    {dateGroup.bookings.map((booking, index) => (
                       <Card
-                        key={booking.bookingId}
+                        key={booking.id}
                         className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                       >
                         <CardHeader className="bg-white px-4 sm:px-6 py-4 sm:py-5">
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between sm:flex-nowrap">
                             <div>
                               <CardTitle className="text-base sm:text-lg font-semibold text-black">
-                                Order {booking.bookingId.slice(-6)}
+                                Order {booking.id.slice(-6)}
                               </CardTitle>
                               <CardDescription className="mt-1 text-xs sm:text-sm text-gray-600">
-                                Total Amount: ₹{booking.totalAmount.toLocaleString()}
+                                Total Amount: ₹{booking.service.price.toLocaleString()}
                                 <br />
-                                Booking ID: {booking.bookingId}
+                                Booking ID: {booking.id}
                               </CardDescription>
                             </div>
                             <Button
-                              onClick={() => toggleDetails(booking.bookingId)}
+                              onClick={() => toggleDetails(booking.id)}
                               variant="outline"
                               size="sm"
                               className="mt-2 sm:mt-0 w-full sm:w-auto flex items-center justify-center border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
                             >
-                              {expandedOrders[booking.bookingId] ? "Hide" : "View"} Details
-                              {expandedOrders[booking.bookingId] ? (
+                              {expandedOrders[booking.id] ? "Hide" : "View"} Details
+                              {expandedOrders[booking.id] ? (
                                 <ChevronUp className="ml-2 h-4 w-4" />
                               ) : (
                                 <ChevronDown className="ml-2 h-4 w-4" />
@@ -344,107 +345,108 @@ export default function ServicePending() {
 
                         <CardContent className="px-4 sm:px-6 py-4 sm:py-5">
                           <AnimatePresence>
-                            {expandedOrders[booking.bookingId] && (
+                            {expandedOrders[booking.id] && (
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
                                 exit={{ opacity: 0, height: 0 }}
                                 transition={{ duration: 0.3 }}
                               >
-                                {booking.orders.map((order, index) => (
-                                  <div key={order.id} className={index > 0 ? "mt-6 pt-6 border-t border-gray-200" : ""}>
-                                    <div className="flex items-center justify-between">
-                                      <h3 className="text-base sm:text-lg font-medium text-black">
-                                        Service {index + 1}: {order.service.name}
-                                      </h3>
-                                      <Button
-                                        onClick={() => toggleServiceDetails(order.id)}
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex items-center my-2 border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
-                                      >
-                                        {expandedServices[order.id] ? (
-                                          <ChevronUp className="h-4 w-4" />
-                                        ) : (
-                                          <ChevronDown className="h-4 w-4" />
-                                        )}
-                                      </Button>
-                                    </div>
-                                    <div className="mb-4 sm:mb-6">
-                                      <div className="relative">
-                                        <Progress value={statusPercentages[order.status]} className="h-2 bg-gray-100" />
-                                        <div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2">
-                                          {bookingStages.map((status) => (
-                                            <div key={status} className="relative">
-                                              <div
-                                                className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 ${status === order.status
-                                                  ? "bg-black border-black"
-                                                  : "bg-white border-gray-300"
-                                                  }`}
-                                              ></div>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                      <div className="flex justify-between text-xs mt-2">
-                                        {bookingStages.map((status) => (
+                                <div className="mb-4 sm:mb-6">
+                                  <div className="relative">
+                                    <Progress value={statusPercentages[booking.status]} className="h-2 bg-gray-100" />
+                                    <div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2">
+                                      {bookingStages.map((status) => (
+                                        <div key={status} className="relative">
                                           <div
-                                            key={status}
-                                            className={`w-1/3 text-center ${status === order.status ? "text-black font-medium" : "text-gray-500"
+                                            className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 ${status === booking.status
+                                              ? "bg-black border-black"
+                                              : "bg-white border-gray-300"
                                               }`}
-                                          >
-                                            {status}
-                                          </div>
-                                        ))}
-                                      </div>
+                                          ></div>
+                                        </div>
+                                      ))}
                                     </div>
-                                    <AnimatePresence>
-                                      {expandedServices[order.id] && (
-                                        <motion.div
-                                          initial={{ opacity: 0, height: 0 }}
-                                          animate={{ opacity: 1, height: "auto" }}
-                                          exit={{ opacity: 0, height: 0 }}
-                                          transition={{ duration: 0.3 }}
-                                        >
-                                          <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 text-sm">
-                                            <div className="sm:col-span-1">
-                                              <dt className="font-medium text-gray-600">Status</dt>
-                                              <dd className="mt-1 text-black">{order.status}</dd>
-                                            </div>
-                                            <div className="sm:col-span-1">
-                                              <dt className="font-medium text-gray-600">Category</dt>
-                                              <dd className="mt-1 text-black">{order.service.category}</dd>
-                                            </div>
-                                            <div className="sm:col-span-1">
-                                              <dt className="font-medium text-gray-600">Price</dt>
-                                              <dd className="mt-1 text-black">
-                                                ₹{order.service.price.toLocaleString()}
-                                              </dd>
-                                            </div>
-                                            <div className="sm:col-span-1">
-                                              <dt className="font-medium text-gray-600">Timeline</dt>
-                                              <dd className="mt-1 text-black">{order.timeline}</dd>
-                                            </div>
-                                            <div className="sm:col-span-2">
-                                              <dt className="font-medium text-gray-600">Address</dt>
-                                              <dd className="mt-1 text-black">{order.address}</dd>
-                                            </div>
-                                            <div className="sm:col-span-1">
-                                              <dt className="font-medium text-gray-600">Pincode</dt>
-                                              <dd className="mt-1 text-black">{order.pincode}</dd>
-                                            </div>
-                                            <div className="sm:col-span-1">
-                                              <dt className="font-medium text-gray-600">User Code</dt>
-                                              <dd className="mt-1 text-black">{order.userCode}</dd>
-                                            </div>
-                                          </dl>
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
                                   </div>
-                                ))}
+                                  <div className="flex justify-between text-xs mt-2">
+                                    {bookingStages.map((status) => (
+                                      <div
+                                        key={status}
+                                        className={`w-1/3 text-center ${status === booking.status ? "text-black font-medium" : "text-gray-500"
+                                          }`}
+                                      >
+                                        {status}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div className="mt-6 pt-6 border-t border-gray-200">
+                                  <div className="flex items-center justify-between">
+                                    <h3 className="text-base sm:text-lg font-medium text-black">
+                                      Service {index + 1}: {booking.service.name}
+                                    </h3>
+                                    <Button
+                                      onClick={() => toggleServiceDetails(booking.id)}
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex items-center my-2 border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
+                                    >
+                                      {expandedServices[booking.id] ? (
+                                        <ChevronUp className="h-4 w-4" />
+                                      ) : (
+                                        <ChevronDown className="h-4 w-4" />
+                                      )}
+                                    </Button>
+
+                                  </div>
+                                  <AnimatePresence>
+                                    {expandedServices[booking.id] && (
+                                      <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                      >
+                                        <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 text-sm">
+                                          <div className="sm:col-span-1">
+                                            <dt className="font-medium text-gray-600">Status</dt>
+                                            <dd className="mt-1 text-black">{booking.status}</dd>
+                                          </div>
+                                          <div className="sm:col-span-1">
+                                            <dt className="font-medium text-gray-600">Category</dt>
+                                            <dd className="mt-1 text-black">{booking.service.category}</dd>
+                                          </div>
+                                          <div className="sm:col-span-1">
+                                            <dt className="font-medium text-gray-600">Price</dt>
+                                            <dd className="mt-1 text-black">
+                                              ₹{booking.service.price.toLocaleString()}
+                                            </dd>
+                                          </div>
+                                          <div className="sm:col-span-1">
+                                            <dt className="font-medium text-gray-600">Timeline</dt>
+                                            <dd className="mt-1 text-black">{booking.timeline}</dd>
+                                          </div>
+                                          <div className="sm:col-span-2">
+                                            <dt className="font-medium text-gray-600">Address</dt>
+                                            <dd className="mt-1 text-black">{booking.address}</dd>
+                                          </div>
+                                          <div className="sm:col-span-1">
+                                            <dt className="font-medium text-gray-600">Pincode</dt>
+                                            <dd className="mt-1 text-black">{booking.pincode}</dd>
+                                          </div>
+                                          <div className="sm:col-span-1">
+                                            <dt className="font-medium text-gray-600">User Code</dt>
+                                            <dd className="mt-1 text-black">{booking.userCode}</dd>
+                                          </div>
+                                        </dl>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
                               </motion.div>
+
                             )}
+
                           </AnimatePresence>
                         </CardContent>
                       </Card>
