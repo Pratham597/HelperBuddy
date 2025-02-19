@@ -297,7 +297,7 @@ export default function ServicePending() {
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt
               });
-            } else {  // Fixed undefined variable
+            } else {  
               acc[date].push({
                 id: order._id,
                 status,

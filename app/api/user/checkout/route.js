@@ -40,6 +40,9 @@ export const POST = async (req, res) => {
       paymentMethod: "COD",
       serviceOrder: serviceOrder._id
     });
+    serviceOrder.isPaid=true;
+    serviceOrder.payment=payment._id;
+    await serviceOrder.save();
     await payment.save();
     return NextResponse.json({ success: true, payment });
   }
