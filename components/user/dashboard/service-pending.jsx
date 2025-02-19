@@ -17,6 +17,7 @@ import { format, isSameDay, parseISO } from "date-fns"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input"
 import axios from "axios";
 
 export default function ServicePending() {
@@ -39,6 +40,7 @@ export default function ServicePending() {
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     const fetchWalletBalance = async () => {
       try {
@@ -93,24 +95,20 @@ export default function ServicePending() {
     return true
   }
 
-  // const handlePayment = async (booking) => {
-  //   setSelectedBooking(booking)
-  //   setIsPaymentModalOpen(true)
-  // }
 
-  const handleWalletAmountChange = (e) => {
+  const handleWalletAmountChange = (e, booking) => {
     const amount = e.target.value
     setWalletUsed(amount)
-    if (selectedBooking) {
-      validateWalletAmount(amount, selectedBooking.service.price)
-    }
+    validateWalletAmount(amount, booking.service.price)
   }
 
   const handlePayment = async (booking) => {
     try {
+      setSelectedBooking(booking)
+      setIsPaymentModalOpen(true)
       setIsLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
-      const data ={
+      const data = {
         totalAmount: booking.service.price,
         paymentMethod: paymentMethod,
         walletUsed: walletUsed,
@@ -130,6 +128,9 @@ export default function ServicePending() {
         if (res.data.success) {
           setPaymentStatus("success");
           setIsModalOpen(true);
+          setTimeout(() => {
+            router.refresh();
+          }, 2000);
         }
       } else {
         const res = await axios.post(
@@ -189,6 +190,9 @@ export default function ServicePending() {
                 const data = await res.json();
                 if (data.success) {
                   setPaymentStatus("success");
+                  setTimeout(() => {
+                    router.refresh();
+                  }, 2000);
                 } else {
                   setPaymentStatus("error");
                 }
@@ -201,9 +205,9 @@ export default function ServicePending() {
             },
             modal: {
               ondismiss: () => {
-                setIsLoading(false); 
-                setPaymentStatus("error"); 
-                setIsModalOpen(true); 
+                setIsLoading(false);
+                setPaymentStatus("error");
+                setIsModalOpen(true);
               },
             },
           };
@@ -216,8 +220,8 @@ export default function ServicePending() {
         }
       }
     } catch (error) {
-      console.error("Payment error:", error)    
-      
+      console.error("Payment error:", error)
+
     }
   }
 
@@ -263,7 +267,12 @@ export default function ServicePending() {
           { headers }
         )
 
-        const responses = await Promise.all([servicePartnerAccepted, servicePending])
+        const paymentDone = axios.post(
+          `${process.env.NEXT_PUBLIC_URL}/api/user/paymentDone`,
+          {},
+          { headers }
+        )
+        const responses = await Promise.all([servicePartnerAccepted, servicePending, paymentDone])
 
         const processOrders = (response, status) => {
           const { serviceOrder } = response;
@@ -297,7 +306,30 @@ export default function ServicePending() {
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt
               });
-            } else {  // Fixed undefined variable
+            } else if (status === "Payment Completed" && order.partner) {
+              acc[date].push({
+                id: order._id,
+                status,
+                service: {
+                  serviceId: order.service._id,
+                  name: order.service.name,
+                  category: order.service.category,
+                  price: order.service.price,
+                  description: order.service.description,
+                  image: order.service.image
+                },
+                timeline: order.timeline,
+                pincode: order.pincode,
+                address: order.address,
+                userCode: order.userCode,
+                userApproved: order.userApproved,
+                rating: order.rating,
+                isPaid: order.isPaid,
+                createdAt: order.createdAt,
+                updatedAt: order.updatedAt
+              });
+            }
+            else {  // Fixed undefined variable
               acc[date].push({
                 id: order._id,
                 status,
@@ -328,19 +360,21 @@ export default function ServicePending() {
         // Ensure responses exist before calling the function
         const acceptedGroups = responses[0] ? processOrders(responses[0].data, "Partner Assigned") : {};
         const pendingGroups = responses[1] ? processOrders(responses[1].data, "Order Received") : {};
+        const paymentDoneGroups = responses[2] ? processOrders(responses[2].data, "Payment Completed") : {};
 
-        
 
         const allDates = [...new Set([
           ...Object.keys(acceptedGroups),
-          ...Object.keys(pendingGroups)
+          ...Object.keys(pendingGroups),
+          ...Object.keys(paymentDoneGroups)
         ])].sort((a, b) => new Date(b) - new Date(a))
 
         const groupedByDate = allDates.map(date => ({
           date,
           bookings: [
             ...(acceptedGroups[date] || []),
-            ...(pendingGroups[date] || [])
+            ...(pendingGroups[date] || []),
+            ...(paymentDoneGroups[date] || [])
           ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         }))
 
@@ -370,7 +404,7 @@ export default function ServicePending() {
     "Service Completed": 100,
   }
 
-  const bookingStages = ["Order Received", "Partner Assigned", "Payment Completed","Service Completed"]
+  const bookingStages = ["Order Received", "Partner Assigned", "Payment Completed", "Service Completed"]
 
   const renderPaymentButton = (booking) => {
     if (booking.status === "Partner Assigned" && !booking.isPaid) {
@@ -483,14 +517,14 @@ export default function ServicePending() {
             </Breadcrumb>
           </div>
           <PaymentStatusModal
-                isOpen={isModalOpen}
-                onClose={() => {
-                  setIsModalOpen(false);
-                  setPaymentStatus(null);
-                }}
-                status={paymentStatus}
-                onComplete={() => router.push("/user/dashboard/booking/servicesPending")}
-              />
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false);
+              setPaymentStatus(null);
+            }}
+            status={paymentStatus}
+            onComplete={() => router.push("/user/dashboard/booking/servicesPending")}
+          />
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto sm:ml-auto">
             <input
               type="text"
@@ -642,8 +676,8 @@ export default function ServicePending() {
                                             <Input
                                               type="number"
                                               value={walletUsed}
-                                              onChange={handleWalletAmountChange}
-                                              max={Math.min(walletAmount, calculateTotal())}
+                                              onChange={(e) => handleWalletAmountChange(e, booking)}
+                                              max={Math.min(walletAmount, booking.service.price - 1)}
                                               min={0}
                                               className="w-full"
                                             />
@@ -659,7 +693,7 @@ export default function ServicePending() {
                                           <div className="space-y-2">
                                             <div className="flex justify-between text-sm">
                                               <span>Total Amount:</span>
-                                              <span>₹{calculateTotal()}</span>
+                                              <span>₹{booking.service.price}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                               <span>Wallet Amount Used:</span>
@@ -668,7 +702,7 @@ export default function ServicePending() {
                                             <Separator />
                                             <div className="flex justify-between font-semibold">
                                               <span>Amount to Pay Online:</span>
-                                              <span>₹{calculateTotal() - walletUsed}</span>
+                                              <span>₹{booking.service.price - walletUsed}</span>
                                             </div>
                                           </div>
                                         )}
