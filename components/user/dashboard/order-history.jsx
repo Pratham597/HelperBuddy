@@ -75,19 +75,20 @@ export default function OrderHistory() {
       }
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/serviceDone`, {}, { headers })
+      console.log(response.data)
 
       // Group service orders by booking ID
       const groupedOrders = response.data.serviceOrder.reduce((acc, order) => {
-        const bookingId = order.booking._id
+        const bookingId = order.payment._id
         if (!acc[bookingId]) {
           acc[bookingId] = {
             bookingDetails: {
-              _id: order.booking._id,
-              totalAmount: order.booking.totalAmount,
-              orderId: order.booking.orderId,
-              paymentMethod: order.booking.paymentMethod,
-              createdAt: order.booking.createdAt,
-              walletUsed: order.booking.walletUsed,
+              _id: order.payment._id,
+              totalAmount: order.payment.totalAmount,
+              orderId: order.payment.orderId,
+              paymentMethod: order.payment.paymentMethod,
+              createdAt: order.payment.createdAt,
+              walletUsed: order.payment.walletUsed,
             },
             services: [],
           }
@@ -371,22 +372,20 @@ export default function OrderHistory() {
                             <div className="flex flex-col sm:flex-row gap-2 w-full">
                               <Button
                                 onClick={() => toggleDetails(service.id)}
-                                className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${
-                                  expandedOrders[service.id]
-                                    ? "bg-gray-700 hover:bg-gray-800"
-                                    : "bg-blue-600 hover:bg-blue-700"
-                                }`}
+                                className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${expandedOrders[service.id]
+                                  ? "bg-gray-700 hover:bg-gray-800"
+                                  : "bg-blue-600 hover:bg-blue-700"
+                                  }`}
                               >
                                 {expandedOrders[service.id] ? "Hide Details" : "View Details"}
                                 {expandedOrders[service.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                               </Button>
                               <Button
                                 onClick={() => toggleFeedback(service.id)}
-                                className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${
-                                  feedbackOrders[service.id]
-                                    ? "bg-gray-700 hover:bg-gray-800"
-                                    : "bg-green-600 hover:bg-green-700"
-                                }`}
+                                className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${feedbackOrders[service.id]
+                                  ? "bg-gray-700 hover:bg-gray-800"
+                                  : "bg-green-600 hover:bg-green-700"
+                                  }`}
                               >
                                 {feedbackOrders[service.id] ? "Hide Feedback" : "Give Feedback"}
                                 <MessageSquare size={16} />
@@ -445,11 +444,10 @@ export default function OrderHistory() {
                                             {[1, 2, 3, 4, 5].map((star) => (
                                               <Star
                                                 key={star}
-                                                className={`w-5 h-5 sm:w-6 sm:h-6 cursor-pointer transition-all duration-200 ${
-                                                  star <= (isHovering[service.id] || ratings[service.id])
-                                                    ? "text-yellow-400 fill-yellow-400"
-                                                    : "text-gray-300"
-                                                } ${star <= isHovering[service.id] ? "scale-110" : "scale-100"}`}
+                                                className={`w-5 h-5 sm:w-6 sm:h-6 cursor-pointer transition-all duration-200 ${star <= (isHovering[service.id] || ratings[service.id])
+                                                  ? "text-yellow-400 fill-yellow-400"
+                                                  : "text-gray-300"
+                                                  } ${star <= isHovering[service.id] ? "scale-110" : "scale-100"}`}
                                                 onClick={() => setRatings((prev) => ({ ...prev, [service.id]: star }))}
                                                 onMouseEnter={() =>
                                                   setIsHovering((prev) => ({ ...prev, [service.id]: star }))
@@ -482,13 +480,12 @@ export default function OrderHistory() {
                                           onClick={() =>
                                             handleFeedback(service.id, ratings[service.id], feedbacks[service.id])
                                           }
-                                          className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${
-                                            isSubmitting[service.id]
-                                              ? "opacity-75 cursor-not-allowed"
-                                              : feedbackOrders[service.id]
-                                                ? "bg-gray-700 hover:bg-gray-800"
-                                                : "bg-green-600 hover:bg-green-700"
-                                          }`}
+                                          className={`flex-1 items-center justify-center gap-2 text-xs sm:text-sm ${isSubmitting[service.id]
+                                            ? "opacity-75 cursor-not-allowed"
+                                            : feedbackOrders[service.id]
+                                              ? "bg-gray-700 hover:bg-gray-800"
+                                              : "bg-green-600 hover:bg-green-700"
+                                            }`}
                                           disabled={isSubmitting[service.id]}
                                         >
                                           {isSubmitting[service.id] ? (
@@ -544,9 +541,8 @@ export default function OrderHistory() {
               <Button
                 key={i + 1}
                 onClick={() => paginate(i + 1)}
-                className={`px-3 py-1 text-sm rounded-lg ${
-                  currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-                }`}
+                className={`px-3 py-1 text-sm rounded-lg ${currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+                  }`}
               >
                 {i + 1}
               </Button>

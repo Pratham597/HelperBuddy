@@ -16,18 +16,16 @@ export const GET = async (req, { params }) => {
 
     const orders = await ServiceOrder.find(
         { service: service._id, partner: { $ne: null }, userApproved: true, remarks: { $ne: null } },
-        { rating: 1, remarks: 1, booking: 1 }
+        { rating: 1, remarks: 1, payment: 1,user:1 }
     );
 
     const ratings = [];
     const reviews = await Promise.all(
         orders.map(async (order) => {
             if (order.rating !== undefined) ratings.push(order.rating);
+            if (!order.user) return null;
 
-            const booking = await Booking.findById(order.booking).select("user");
-            if (!booking || !booking.user) return null;
-
-            const user = await User.findById(booking.user).select("name");
+            const user = await User.findById(order.user).select("name");
             if (!user) return null;
 
             return {
@@ -40,11 +38,11 @@ export const GET = async (req, { params }) => {
     const filteredReviews = reviews.filter(review => review !== null);
     const averageRating = ratings.length
         ? (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1)
-        : null;
+        : 5;
 
     const serviceWithReviews = {
         ...service.toObject(),
-        averageRating: averageRating ? parseFloat(averageRating) : null,
+        averageRating: averageRating ? parseFloat(averageRating) : 5,
         reviews: filteredReviews
     };
     return NextResponse.json(serviceWithReviews);

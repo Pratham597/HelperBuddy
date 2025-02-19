@@ -39,7 +39,7 @@ export const GET = async (req) => {
 
             return {
                 ...service.toObject(), 
-                rating: averageRating ? parseFloat(averageRating) : null, 
+                rating: averageRating ? parseFloat(averageRating) : 5, 
                 reviews,
                 total_bookings: orders.length
             };
