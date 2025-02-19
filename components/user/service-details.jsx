@@ -22,8 +22,8 @@ export default function ServiceDetails({ service, onAddToCart }) {
 
 			try {
 				const res = await fetch(`/api/service/faq?service=${service._id}`);
-        const data = await res.json();
-        console.log(data)
+				const data = await res.json();
+				console.log(data)
 				if (res.ok && data.success) {
 					setFaqs(data.faq);
 				} else {
@@ -132,11 +132,10 @@ export default function ServiceDetails({ service, onAddToCart }) {
 					</div>
 					{availabilityMessage && (
 						<p
-							className={`mt-2 text-sm ${
-								availabilityMessage.includes("not")
+							className={`mt-2 text-sm ${availabilityMessage.includes("not")
 									? "text-red-600"
 									: "text-green-600"
-							}`}
+								}`}
 						>
 							{availabilityMessage}
 						</p>
@@ -170,6 +169,44 @@ export default function ServiceDetails({ service, onAddToCart }) {
 								No FAQs available.
 							</p>
 						)}
+					</ScrollArea>
+				</div>
+				<div className="mb-4">
+					<h3 className="text-lg font-semibold text-black mb-2">Customer Feedback</h3>
+					<ScrollArea className="h-40 border border-gray-200 rounded-md p-3">
+						<div className="space-y-2">
+							{service.reviews && service.reviews.length > 0 ? (
+								service.reviews.map((review, index) => (
+									<Card key={index} className="bg-gray-50 border border-gray-200 p-3 rounded">
+										<p className="text-gray-600 text-sm">"{review.review}"</p>
+										<p className="text-right text-gray-500 text-xs">- {review.customerName}</p>
+									</Card>
+								))
+							) : (
+								<>
+									<Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+										<p className="text-gray-600 text-sm">"Amazing service! The team was professional and on time."</p>
+										<p className="text-right text-gray-500 text-xs">- Rohan M.</p>
+									</Card>
+									<Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+										<p className="text-gray-600 text-sm">"Very affordable and efficient! Highly recommended."</p>
+										<p className="text-right text-gray-500 text-xs">- Priya K.</p>
+									</Card>
+									<Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+										<p className="text-gray-600 text-sm">"Excellent service quality. Will definitely use again!"</p>
+										<p className="text-right text-gray-500 text-xs">- Amit S.</p>
+									</Card>
+									<Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+										<p className="text-gray-600 text-sm">"Prompt and courteous. Exceeded my expectations."</p>
+										<p className="text-right text-gray-500 text-xs">- Neha R.</p>
+									</Card>
+									<Card className="bg-gray-50 border border-gray-200 p-3 rounded">
+										<p className="text-gray-600 text-sm">"Great value for money. Highly satisfied with the results."</p>
+										<p className="text-right text-gray-500 text-xs">- Vikram P.</p>
+									</Card>
+								</>
+							)}
+						</div>
 					</ScrollArea>
 				</div>
 

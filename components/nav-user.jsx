@@ -59,7 +59,7 @@ export function NavUser({
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}>
-            <Link href={`/user/dashboard/notifications`}>
+            {/* <Link href={`/user/dashboard/notifications`}>
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Bell />
@@ -67,7 +67,7 @@ export function NavUser({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </Link>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
             <DropdownMenuItem>
               <LogOut />
               Log out

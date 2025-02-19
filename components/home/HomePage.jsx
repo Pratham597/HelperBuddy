@@ -1,6 +1,6 @@
 "use client";
-import Hero from "@/components/home/Hero";
-import ServiceCategories from "@/components/home/ServiceCategories";
+import Hero from "@/components/home/Hero.jsx";
+import ServiceCategories from "@/components/home/ServiceCategories.jsx";
 import TrendingServices from "@/components/home/TrendingServices";
 import TrustSection from "@/components/home/TrustSection";
 import Testimonials from "@/components/home/Testimonials";

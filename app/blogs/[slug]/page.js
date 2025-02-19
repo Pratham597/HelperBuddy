@@ -1,4 +1,4 @@
-import BlogPage from "@/components/blog/BlogPage";
+import BlogPage from "@/components/blog/BlogPage.jsx";
 import axios from "axios";
 
 // Fetch blog data on the server

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import LoginForm from "@/components/partner/LoginFormPartner";
-import SignupForm from "@/components/partner/SignupFormPartner";
-import LoginPageImage from "@/components/LoginPageImage";
+import LoginForm from "@/components/partner/LoginFormPartner.jsx";
+import SignupForm from "@/components/partner/SignupFormPartner.jsx";
+import LoginPageImage from "@/components/LoginPageImage.jsx";
 import { useRouter } from "next/navigation"
 
 const colors = {

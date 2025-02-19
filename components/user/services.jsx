@@ -16,6 +16,7 @@ import { poppins } from "../fonts/font"
 import { Skeleton } from "@/components/ui/skeleton";
 import { Star } from "lucide-react";
 import useServiceStore from "@/Store/useServiceStore"
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ServiceCardSkeleton = () => (
   <Card className="w-full h-[440px] bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -60,71 +61,77 @@ const FilterPanel = ({
     initial={{ opacity: 0, y: -20 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: -20 }}
-    className="p-4 space-y-6 w-[300px] bg-white rounded-lg shadow-lg"
+    className="p-4 w-[300px] bg-white rounded-lg shadow-lg flex flex-col h-[calc(80vh-80px)]"
   >
-    <div>
-      <h3 className="text-lg font-semibold mb-3">Categories</h3>
-      <div className="grid grid-cols-2 gap-2">
-        {allCategories.map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategories.includes(category) ? "default" : "outline"}
-            onClick={() => toggleCategory(category)}
-            className="text-sm justify-start h-8 w-max transition-all duration-300 hover:scale-105"
-          >
-            {category}
-          </Button>
-        ))}
-      </div>
-    </div>
+    <ScrollArea className="flex-grow pr-4">
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Categories</h3>
+          <div className="flex flex-wrap gap-2">
+            {allCategories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategories.includes(category) ? "default" : "outline"}
+                onClick={() => toggleCategory(category)}
+                className="text-sm justify-start h-8 whitespace-nowrap transition-all duration-300 hover:scale-105"
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+        </div>
 
-    <div>
-      <h3 className="text-lg font-semibold mb-3">Price Range</h3>
-      <div className="space-y-4">
-        <Slider
-          defaultValue={[priceFilter.min, priceFilter.max]}
-          max={10000}
-          step={100}
-          onValueChange={(value) => setPriceFilter((prev) => ({ ...prev, min: value[0], max: value[1] }))}
-          className="mt-2"
-        />
-        <div className="flex justify-between text-sm">
-          <span>₹{priceFilter.min}</span>
-          <span>₹{priceFilter.max}</span>
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Price Range</h3>
+          <div className="space-y-4">
+            <Slider
+              defaultValue={[priceFilter.min, priceFilter.max]}
+              max={10000}
+              step={100}
+              onValueChange={(value) => setPriceFilter((prev) => ({ ...prev, min: value[0], max: value[1] }))}
+              className="mt-2"
+            />
+            <div className="flex justify-between text-sm">
+              <span>₹{priceFilter.min.toLocaleString()}</span>
+              <span>₹{priceFilter.max.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Sort By</h3>
+          <div className="flex flex-col gap-2">
+            <Button
+              variant={priceFilter.type === "asc" ? "default" : "outline"}
+              onClick={() => setPriceFilter((prev) => ({ ...prev, type: "asc" }))}
+              className="justify-start transition-all duration-300 hover:scale-105"
+            >
+              <ChevronUp className="w-4 h-4 mr-2" />
+              Price: Low to High
+            </Button>
+            <Button
+              variant={priceFilter.type === "desc" ? "default" : "outline"}
+              onClick={() => setPriceFilter((prev) => ({ ...prev, type: "desc" }))}
+              className="justify-start transition-all duration-300 hover:scale-105"
+            >
+              <ChevronDown className="w-4 h-4 mr-2" />
+              Price: High to Low
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </ScrollArea>
 
-    <div>
-      <h3 className="text-lg font-semibold mb-3">Sort By</h3>
-      <div className="flex flex-col gap-2">
-        <Button
-          variant={priceFilter.type === "asc" ? "default" : "outline"}
-          onClick={() => setPriceFilter((prev) => ({ ...prev, type: "asc" }))}
-          className="justify-start transition-all duration-300 hover:scale-105"
-        >
-          <ChevronUp className="w-4 h-4 mr-2" />
-          Price: Low to High
-        </Button>
-        <Button
-          variant={priceFilter.type === "desc" ? "default" : "outline"}
-          onClick={() => setPriceFilter((prev) => ({ ...prev, type: "desc" }))}
-          className="justify-start transition-all duration-300 hover:scale-105"
-        >
-          <ChevronDown className="w-4 h-4 mr-2" />
-          Price: High to Low
-        </Button>
-      </div>
+    <div className="pt-4 mt-4 border-t">
+      <Button
+        onClick={onApplyFilters}
+        className="w-full bg-primary text-white hover:bg-primary/90 transition-all duration-300"
+      >
+        Apply Filters
+      </Button>
     </div>
-
-    <Button
-      onClick={onApplyFilters}
-      className="w-full bg-primary text-white hover:bg-primary/90 transition-all duration-300"
-    >
-      Apply Filters
-    </Button>
   </motion.div>
-)
+);
 
 const ServiceCard = ({ service, onServiceClick }) => (
   <motion.div

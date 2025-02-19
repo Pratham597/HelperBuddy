@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import SearchBar from "./SearchBar"
+import SearchBar from "./SearchBar.jsx"
 
 
 const MobileMenu = ({ isOpen, isLoggedIn }) => {
@@ -93,13 +93,6 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 				)}
 			  {isLoggedIn && (
 				  <>
-					  <Link
-						  href="/user/dashboard/notifications"
-						  className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${isActive("/notifications") ? "bg-gray-100" : ""
-							  }`}
-					  >
-						  Notifications
-					  </Link>
 					  <Link
 						  href="/user/dashboard/profile/userInformation"
 						  className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${isActive("/profile") ? "bg-gray-100" : ""

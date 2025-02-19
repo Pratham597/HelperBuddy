@@ -8,96 +8,23 @@ import { Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ShippingForm } from "./shipping-form";
 import { Timeline } from "./timeline";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import Script from "next/script";
 import axios from "axios";
 import { useIsMobile } from "@/hooks/use-mobile";
-import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { delay } from "framer-motion";
 import toast from "react-hot-toast";
-import { set } from "lodash";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
   const [shippingAddress, setShippingAddress] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [walletAmount, setWalletAmount] = useState(0);
-  const [walletUsed, setWalletUsed] = useState(0);
-  const [walletError, setWalletError] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(storedCart);
-
-    const fetchWalletBalance = async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user?.token) {
-          const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/wallet`, {}, {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          });
-          setWalletAmount(response.data.wallet || 0);
-        }
-      } catch (error) {
-        console.error("Error fetching wallet balance:", error);
-      }
-    };
-    fetchWalletBalance();
   }, []);
-
-  useEffect(() => {
-    setWalletError("");
-    setWalletUsed(0);
-  }, [paymentMethod]);
-
-  useEffect(() => {
-    if (paymentMethod === "Wallet+Online") {
-      validateWalletAmount(walletUsed);
-    }
-  }, [walletUsed]);
-
-  const validateWalletAmount = (amount) => {
-    const numAmount = Number(amount);
-    const total = calculateTotal();
-
-    setWalletError("");
-
-    if (numAmount > walletAmount) {
-      setWalletError(`Amount cannot exceed wallet balance of ₹${walletAmount}`);
-      return false;
-    }
-
-    if (numAmount >= total) {
-      setWalletError(`Amount must be less than total order amount. Maximum allowed: ₹${(total - 1).toFixed(2)}`);
-      return false;
-    }
-
-    if (numAmount < 0) {
-      setWalletError("Amount cannot be negative");
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleWalletAmountChange = (e) => {
-    const amount = e.target.value;
-    setWalletUsed(amount);
-  };
 
   const formatTimelineString = (cart) => {
     return cart.map((item) => `${item.timeline.date}`).join(", ");
@@ -146,128 +73,8 @@ export default function Cart() {
           timeline:
             formatDate(item.timeline.date) + " " + item.timeline.timeSlot,
         })),
-        // paymentMethod,
-        // walletUsed: paymentMethod === "Wallet+Online" ? Number(walletUsed) : 0
+        
       };
-      // if (paymentMethod === "COD") {
-      //   const res = await axios.post(
-      //     `${process.env.NEXT_PUBLIC_URL}/api/user/checkout`,
-      //     data,
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ${user.token}`,
-      //       },
-      //     }
-      //   );
-      //   if (res.data.success) {
-      //     setPaymentStatus("success");
-      //     setIsModalOpen(true);
-      //     setCart([]);
-      //     localStorage.removeItem("cart");
-      //     window.dispatchEvent(new Event("storage"));
-      //   }
-      // } else {
-      //   const res = await axios.post(
-      //     `${process.env.NEXT_PUBLIC_URL}/api/user/checkout`,
-      //     data,
-      //     {
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //         Authorization: `Bearer ${user.token}`,
-      //       },
-      //     }
-      //   );
-
-      //   // if (res.status === 200) {
-      //   //   const { booking } = res.data;
-      //   //   const orderId = booking.orderId;
-      //   //   const options = {
-      //   //     key: process.env.RAZORPAY_KEY_ID,
-      //   //     amount: Number(booking.totalAmount) * 100,
-      //   //     currency: "INR",
-      //   //     name: `HelperBuddy Services`,
-      //   //     description: "Order Payment",
-      //   //     image: "./avatar.gif",
-      //   //     order_id: orderId,
-      //   //     prefill: {
-      //   //       name: user.name,
-      //   //       email: user.email,
-      //   //       contact: user.phone,
-      //   //     },
-      //   //     notes: {
-      //   //       address: "Razorpay Corporate Office",
-      //   //     },
-      //   //     theme: {
-      //   //       color: "#3399cc",
-      //   //     },
-      //   //     handler: async (response) => {
-      //   //       try {
-      //   //         setPaymentStatus("processing");
-      //   //         setIsModalOpen(true);
-
-      //   //         const res = await fetch(
-      //   //           `${process.env.NEXT_PUBLIC_URL}/api/user/payment`,
-      //   //           {
-      //   //             method: "POST",
-      //   //             headers: {
-      //   //               "Content-Type": "application/json",
-      //   //               Authorization: `Bearer ${user.token}`,
-      //   //             },
-      //   //             body: JSON.stringify({
-      //   //               razorpay_payment_id: response.razorpay_payment_id,
-      //   //               razorpay_order_id: response.razorpay_order_id,
-      //   //               razorpay_signature: response.razorpay_signature,
-      //   //             }),
-      //   //           }
-      //   //         );
-
-      //   //         const data = await res.json();
-      //   //         if (data.success) {
-      //   //           setPaymentStatus("success");
-      //   //           setCart([]);
-      //   //           localStorage.removeItem("cart");
-      //   //           window.dispatchEvent(new Event("storage"));
-      //   //           try {
-      //   //             await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/postPayment`, {
-      //   //               method: "POST",
-      //   //               headers: {
-      //   //                 "Content-Type": "application/json",
-      //   //                 Authorization: `Bearer ${user.token}`,
-      //   //               },
-      //   //               body: JSON.stringify(
-      //   //                 { booking: data.booking }
-      //   //               ),
-      //   //             });
-      //   //           } catch (error) {
-      //   //             console.error("Sending emails failed!")
-      //   //           }
-      //   //         } else {
-      //   //           setPaymentStatus("error");
-      //   //         }
-      //   //       } catch (error) {
-      //   //         console.error("Payment verification error:", error);
-      //   //         setPaymentStatus("error");
-      //   //       } finally {
-      //   //         setIsLoading(false);
-      //   //       }
-      //   //     },
-      //   //     modal: {
-      //   //       ondismiss: () => {
-      //   //         setIsLoading(false); // Stop loading
-      //   //         setPaymentStatus("error"); // Mark as error since payment is canceled
-      //   //         setIsModalOpen(true); // Open the payment status modal with failure status
-      //   //       },
-      //   //     },
-      //   //   };
-
-      //   //   const rzp1 = new window.Razorpay(options);
-      //   //   rzp1.open();
-      //   // } else {
-      //   //   alert("Error Occurred! Try again later");
-      //   //   setIsLoading(false);
-      //   // }
-      // }
-      console.log(data.services);
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_URL}/api/user/order`, data  ,{
           headers: {
@@ -276,8 +83,6 @@ export default function Cart() {
         })
 
         if (res.data.success) {
-          setPaymentStatus("success");
-          setIsModalOpen(true);
           setCart([]);
           localStorage.removeItem("cart");
           window.dispatchEvent(new Event("storage"));
@@ -439,60 +244,7 @@ export default function Cart() {
                   </ScrollArea>
                 )}
               </Card>
-              {/* <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl mt-4">
-                <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
-                <div className="space-y-4">
-                  <Select onValueChange={setPaymentMethod} value={paymentMethod}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select payment method" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="COD">Cash on Delivery</SelectItem>
-                      <SelectItem value="Online">Online Payment</SelectItem>
-                      {walletAmount > 0 && (
-                        <SelectItem value="Wallet+Online">Wallet + Online Payment (Balance: ₹{walletAmount})</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-
-                  {paymentMethod === "Wallet+Online" && (
-                    <div className="space-y-2">
-                      <label className="text-sm text-gray-600">Enter amount to use from wallet</label>
-                      <Input
-                        type="number"
-                        value={walletUsed}
-                        onChange={handleWalletAmountChange}
-                        max={Math.min(walletAmount, calculateTotal())}
-                        min={0}
-                        className="w-full"
-                      />
-                      {walletError && (
-                        <Alert variant="destructive">
-                          <AlertDescription>{walletError}</AlertDescription>
-                        </Alert>
-                      )}
-                    </div>
-                  )}
-
-                  {paymentMethod === "Wallet+Online" && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Total Amount:</span>
-                        <span>₹{calculateTotal()}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Wallet Amount Used:</span>
-                        <span>₹{walletUsed}</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between font-semibold">
-                        <span>Amount to Pay Online:</span>
-                        <span>₹{calculateTotal() - walletUsed}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Card> */}
+              
 
               <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl">
                 <h2 className="text-2xl font-semibold mb-4">Bill Summary</h2>

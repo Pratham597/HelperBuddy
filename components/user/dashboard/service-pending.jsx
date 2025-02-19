@@ -17,6 +17,7 @@ import { format, isSameDay, parseISO } from "date-fns"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input"
 import axios from "axios";
 import toast from "react-hot-toast"
 
@@ -39,6 +40,7 @@ export default function ServicePending() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false)
   const router = useRouter();
+
   useEffect(() => {
     const fetchWalletBalance = async () => {
       try {
@@ -96,13 +98,13 @@ export default function ServicePending() {
   const handleWalletAmountChange = (e) => {
     const amount = e.target.value
     setWalletUsed(amount)
-    if (selectedBooking) {
-      validateWalletAmount(amount, selectedBooking.service.price)
-    }
+    validateWalletAmount(amount, booking.service.price)
   }
 
   const handlePayment = async (booking) => {
     try {
+      setSelectedBooking(booking)
+      setIsPaymentModalOpen(true)
       setIsLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
       const data = {
@@ -125,6 +127,9 @@ export default function ServicePending() {
         if (res.data.success) {
           setPaymentStatus("success");
           setIsModalOpen(true);
+          setTimeout(() => {
+            router.refresh();
+          }, 2000);
         }
       } else {
         const res = await axios.post(
@@ -183,6 +188,9 @@ export default function ServicePending() {
                 const data = await res.json();
                 if (data.success) {
                   setPaymentStatus("success");
+                  setTimeout(() => {
+                    router.refresh();
+                  }, 2000);
                 } else {
                   setPaymentStatus("error");
                 }
@@ -650,8 +658,8 @@ export default function ServicePending() {
                                             <Input
                                               type="number"
                                               value={walletUsed}
-                                              onChange={handleWalletAmountChange}
-                                              max={Math.min(walletAmount, calculateTotal())}
+                                              onChange={(e) => handleWalletAmountChange(e, booking)}
+                                              max={Math.min(walletAmount, booking.service.price - 1)}
                                               min={0}
                                               className="w-full"
                                             />
@@ -667,7 +675,7 @@ export default function ServicePending() {
                                           <div className="space-y-2">
                                             <div className="flex justify-between text-sm">
                                               <span>Total Amount:</span>
-                                              <span>₹{calculateTotal()}</span>
+                                              <span>₹{booking.service.price}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                               <span>Wallet Amount Used:</span>
@@ -676,7 +684,7 @@ export default function ServicePending() {
                                             <Separator />
                                             <div className="flex justify-between font-semibold">
                                               <span>Amount to Pay Online:</span>
-                                              <span>₹{calculateTotal() - walletUsed}</span>
+                                              <span>₹{booking.service.price - walletUsed}</span>
                                             </div>
                                           </div>
                                         )}
