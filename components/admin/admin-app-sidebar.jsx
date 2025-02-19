@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GalleryVerticalEnd, User, ShoppingBag, Mail, Wallet, HandshakeIcon } from "lucide-react";
+import { GalleryVerticalEnd, User, ShoppingBag, Mail, Wallet, HandshakeIcon, Newspaper } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/admin/admin-nav-user";
@@ -98,6 +98,22 @@ const data = {
 				{
 					title: "Analytics",
 					url: "/admin/dashboard/wallet/analytics",
+				},
+			],
+		},
+		{
+			title: "Blogs",
+			url: "#",
+			isActive: false,
+			icon: Newspaper,
+			items: [
+				{
+					title: "Add a Blog",
+					url: "/admin/dashboard/blogs/add",
+				},
+				{
+					title: "Remove a Blog",
+					url: "/admin/dashboard/blogs/remove",
 				},
 			],
 		},

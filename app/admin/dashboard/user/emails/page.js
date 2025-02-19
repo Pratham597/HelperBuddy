@@ -92,6 +92,10 @@ export default function EmailsSubscribedPage() {
 		if (currentPage > 1) setCurrentPage(currentPage - 1);
 	};
 
+	const handlePageChange = (i) => {
+		setCurrentPage(i);
+	}
+
 	return (
 		<>
 			<header className="flex h-16 shrink-0 items-center gap-2">
@@ -172,6 +176,7 @@ export default function EmailsSubscribedPage() {
 									<PaginationPrevious
 										onClick={handlePrev}
 										disabled={currentPage === 1}
+										className={`cursor-pointer`}
 									/>
 								</PaginationItem>
 								{Array.from({ length: totalPages }, (_, i) => (
@@ -180,6 +185,7 @@ export default function EmailsSubscribedPage() {
 											onClick={() =>
 												handlePageChange(i + 1)
 											}
+											className={`cursor-pointer`}
 											isActive={currentPage === i + 1}
 										>
 											{i + 1}
@@ -189,6 +195,7 @@ export default function EmailsSubscribedPage() {
 								<PaginationItem>
 									<PaginationNext
 										onClick={handleNext}
+										className={`cursor-pointer`}
 										disabled={currentPage === totalPages}
 									/>
 								</PaginationItem>

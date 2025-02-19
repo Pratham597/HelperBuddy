@@ -186,12 +186,14 @@ export default function ConnectUsMessagesPage() {
 								<PaginationItem>
 									<PaginationPrevious
 										onClick={handlePrev}
+										className={`cursor-pointer`}
 										disabled={currentPage === 1}
 									/>
 								</PaginationItem>
 								{Array.from({ length: totalPages }, (_, i) => (
 									<PaginationItem key={i + 1}>
 										<PaginationLink
+											className={`cursor-pointer`}
 											onClick={() =>
 												handlePageChange(i + 1)
 											}
@@ -204,6 +206,7 @@ export default function ConnectUsMessagesPage() {
 								<PaginationItem>
 									<PaginationNext
 										onClick={handleNext}
+										className={`cursor-pointer`}
 										disabled={currentPage === totalPages}
 									/>
 								</PaginationItem>

@@ -28,7 +28,7 @@ const data = {
   teams: [
     {
       name: "Helper Buddy",
-      logo: GalleryVerticalEnd,
+      logo: "/logo.png",
       plan: "Enterprise",
     },
   ],
@@ -80,7 +80,7 @@ export function AppSidebar({ ...props }) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <Link href={`/user/dashboard`}>
+      <Link href={`/`}>
         <SidebarHeader>
           <TeamSwitcher teams={data.teams} />
         </SidebarHeader>
