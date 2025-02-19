@@ -32,11 +32,11 @@ const Navbar = () => {
 
 	return (
 		<>
-			<div className="fixed w-full top-1 z-50">
+			<div className="fixed w-full top-0 z-50">
 				<nav
-					className={` bg-slate-950 text-white shadow-md  ${
-						isMobileMenuOpen ? "rounded-3xl" : "rounded-full"
-					} m-2`}
+					className={" bg-slate-950 text-white shadow-md "
+						//  isMobileMenuOpen ? "rounded-3xl" : "rounded-full" m-2
+						}
 				>
 					<div className=" mx-auto px-4 sm:px-6 lg:px-8  ">
 						<div className="flex justify-between items-center w-auto h-[4.5rem]">

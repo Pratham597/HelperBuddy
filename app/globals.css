@@ -15,13 +15,13 @@
 }
 
 #nprogress .bar {
-  background: #07042d !important;
+  background: #dfdef3 !important;
   /* Change to desired color */
   height: 4px !important;
 }
 
 #nprogress .peg {
-  box-shadow: 0 0 10px #000000, 0 0 5px #000000;
+  /* box-shadow: 0 0 10px #000000, 0 0 5px #000000; */
 }
 
 @layer base {

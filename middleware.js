@@ -21,10 +21,21 @@ export async function middleware(req) {
 	const path = req.nextUrl.pathname;
 	const method = req.method;
 	const cookies = parseCookies(req);
-	const arr = ["/api/user/login", "/api/partner/login", "/api/admin/login", "/api/user/complaint", "/api/user/sign-up", "/api/partner/sign-up"];
+	const arr = ["/api/user/login", "/api/partner/login", "/api/admin/login", "/api/user/complaint", "/api/user/sign-up", "/api/partner/sign-up", "/api/newsletter"];
 
 	// API Authentication
 	if (path.startsWith("/api")) {
+		if (method === "GET" && path === "/api/newsletter") {
+			const isAdmin = await verifyAdmin(cookies);
+			if (!isAdmin) {
+				return NextResponse.json(
+					{ error: "Unauthorized access" },
+					{ status: 403 }
+				);
+			}
+			return NextResponse.next();
+		}
+
 		if (method !== "GET" && !arr.includes(path)) return auth(req);
 		else if (path === "/api/partner/service") {
 			return auth(req);

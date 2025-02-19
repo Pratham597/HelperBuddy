@@ -13,6 +13,33 @@ async function fetchBlogs() {
 	}
 }
 
+export const metadata = {
+	title: "Blogs | HelperBuddy",
+	description:
+		"Stay informed with the latest home service trends, expert tips, and maintenance guides. Explore our blogs on plumbing, electrical repairs, home improvement, and more.",
+	keywords:
+		"home repair blog, home maintenance tips, plumbing advice, electrical fixes, appliance repair, handyman insights, home improvement, HelperBuddy blog",
+	robots: "index, follow",
+	viewport: "width=device-width, initial-scale=1.0",
+	openGraph: {
+		title: "HelperBuddy Blog - Expert Home Service Tips & Trends",
+		description:
+			"Explore expert advice, home maintenance guides, and service insights to keep your home in top shape.",
+		url: "https://helperbuddy.com/blogs",
+		siteName: "HelperBuddy",
+		type: "website",
+		images: [
+			{
+				url: "/blog-preview.png",
+				width: 1200,
+				height: 630,
+				alt: "Blogs | HelperBuddy",
+			},
+		],
+	},
+};
+
+
 export default async function BlogListingPage() {
 	const blogs = await fetchBlogs();
 	return (
