@@ -1,13 +1,32 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 import AnimatedCounter from "./AnimatedCounter";
 import { Users, Building, ShoppingBag, Package } from "lucide-react";
 
-export default function TrustSection(data) {
-	const bookings = data.data.payments;
-	const users = data.data.users;
-	const partners = data.data.partners;
-	const services = data.data.services;
+export default function TrustSection() {
+	const [bookings, setBookings] = useState(0);
+	const [users, setUsers] = useState(0);
+	const [partners, setPartners] = useState(0);
+	const [services, setServices] = useState(0);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const { data } = await axios.get("/api/analytics/site");
+			console.log(data);
+			setBookings(data.payments);
+			setUsers(data.users);
+			setPartners(data.partners);
+			setServices(data.services);
+		};
+		fetchData();
+	}, []);
+	// const bookings = data.payments;
+	// const users = data.users;
+	// const partners = data.partners;
+	// const services = data.services;
 
 	const trustData = [
 		{

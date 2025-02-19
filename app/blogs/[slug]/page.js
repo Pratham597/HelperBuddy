@@ -39,7 +39,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
 	// Fetch blog data on the server
-	const blog = await fetchBlog(params.slug);
+	// const blog = await fetchBlog(params.slug);
 
 	// Format the date on the server
 	const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
@@ -49,5 +49,5 @@ export default async function Page({ params }) {
 	});
 
 	// Pass the blog data and formatted date to the BlogPage component
-	return <BlogPage blog={{ ...blog, formattedDate }} />;
+	return <BlogPage slug={params.slug} />;
 }
