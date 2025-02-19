@@ -442,17 +442,13 @@ export default function ActiveOrders() {
 																										<dt className="text-sm font-medium text-gray-600">Timeline</dt>
 																										<dd className="mt-1 text-sm text-black">{order.timeline}</dd>
 																									</div>
-																									<div className="sm:col-span-2">
-																										<dt className="text-sm font-medium text-gray-600">Address</dt>
-																										<dd className="mt-1 text-sm text-black">{order.address}</dd>
-																									</div>
 																									<div className="sm:col-span-1">
 																										<dt className="text-sm font-medium text-gray-600">Pincode</dt>
 																										<dd className="mt-1 text-sm text-black">{order.pincode}</dd>
 																									</div>
-																									<div className="sm:col-span-1">
-																										<dt className="text-sm font-medium text-gray-600">User Code</dt>
-																										<dd className="mt-1 text-sm text-black">{order.userCode}</dd>
+																									<div className="sm:col-span-2">
+																										<dt className="text-sm font-medium text-gray-600">Address</dt>
+																										<dd className="mt-1 text-sm text-black">{order.address}</dd>
 																									</div>
 																								</dl>
 																								<div className="mt-4">

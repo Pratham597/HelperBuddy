@@ -45,7 +45,7 @@ export const POST = async (req) => {
   );
 
   if (xx) {
-    await ServiceOrder.findByIdAndUpdate(booking.serviceOrder, { isPaid: true }, { new: true });
+    await ServiceOrder.findByIdAndUpdate(booking.serviceOrder, { isPaid: true, booking: booking._id }, { new: true });
     booking.paymentId = body.razorpay_payment_id;
 
     user.wallet = user.wallet - booking.walletUsed;

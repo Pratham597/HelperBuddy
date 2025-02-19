@@ -6,6 +6,11 @@ const serviceOrderSchema = new mongoose.Schema({
     ref: "service",
     required: true,
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
   timeline: {
     type: String,
     required: true,
@@ -25,29 +30,33 @@ const serviceOrderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "partner",
   },
-  cancel:{
-      type:Boolean,
-      default:false,
-    },
-  userCode:{
-    type:String,
-    required:true,
+  cancel: {
+    type: Boolean,
+    default: false,
   },
-  userApproved:{
-    type:Boolean,
-    default:false
+  userCode: {
+    type: String,
+    required: true,
   },
-  rating:{
-    type:Number,
-    default:5,
-    max:[5,"Max rating is 5"]
+  userApproved: {
+    type: Boolean,
+    default: false
   },
-  isPaid:{
-    type:Boolean,
-    default:false
+  rating: {
+    type: Number,
+    default: 5,
+    max: [5, "Max rating is 5"]
+  },
+  isPaid: {
+    type: Boolean,
+    default: false
+  },
+  booking: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "payment"
   }
-},{
-  timestamps:true
+}, {
+  timestamps: true
 });
 
 export default mongoose.models.serviceOrder ||

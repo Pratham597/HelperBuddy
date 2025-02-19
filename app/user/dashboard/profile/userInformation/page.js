@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
+import axios from "axios"
+import toast from "react-hot-toast"
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -22,14 +24,19 @@ export default function ProfilePage() {
 	const [profile, setProfile] = useState(null)
 	const [isChanged, setIsChanged] = useState(false)
 	const [originalProfile, setOriginalProfile] = useState(null)
+	const [loading, setLoading] = useState(false)
 
 	useEffect(() => {
 		const storedProfile = JSON.parse(localStorage.getItem("user"))
 		if (storedProfile) {
 			setProfile({
+				id: storedProfile.id || "",
 				name: storedProfile.name || "",
 				email: storedProfile.email || "",
 				phone: storedProfile.phone || "",
+				token: storedProfile.token || "",
+				referralCode: storedProfile.referralCode || "",
+				wallet: storedProfile.wallet || "",
 			})
 			setOriginalProfile({ ...storedProfile })
 		}
@@ -44,12 +51,33 @@ export default function ProfilePage() {
 		setIsChanged(value !== originalProfile[name])
 	}
 
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
-		localStorage.setItem("user", JSON.stringify(profile))
-		console.log("Profile updated:", profile)
-		setIsChanged(false)
-		setOriginalProfile({ ...profile })
+		setLoading(true)
+
+		const storedProfile = JSON.parse(localStorage.getItem("user"))
+
+		try {
+			const response = await axios.patch(
+				"/api/user/profile",
+				profile,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${storedProfile.token}`
+					},
+				}
+			)
+
+			localStorage.setItem("user", JSON.stringify(response.data.user))
+			setOriginalProfile(response.data.user)
+			setIsChanged(false)
+			toast.success("Profile updated successfully!")
+		} catch (error) {
+			toast.error(error.response?.data?.error || "Failed to update profile")
+		} finally {
+			setLoading(false)
+		}
 	}
 
 	return (
@@ -85,7 +113,7 @@ export default function ProfilePage() {
 								</div>
 								<div className="space-y-2">
 									<Label htmlFor="email">Email</Label>
-									<Input id="email" name="email" type="email" value={profile.email} onChange={handleChange} required />
+									<Input id="email" name="email" type="email" value={profile.email} disabled />
 								</div>
 								<div className="space-y-2">
 									<Label htmlFor="phone">Phone</Label>
@@ -93,7 +121,9 @@ export default function ProfilePage() {
 								</div>
 							</CardContent>
 							<CardFooter className="px-6 py-4">
-								<Button type="submit" disabled={!isChanged}>Update Profile</Button>
+								<Button type="submit" disabled={!isChanged || loading}>
+									{loading ? "Updating..." : "Update Profile"}
+								</Button>
 							</CardFooter>
 						</form>
 					) : (
