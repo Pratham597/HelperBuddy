@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import SearchBar from "./SearchBar"
+import SearchBar from "./SearchBar.jsx"
 
 
 const MobileMenu = ({ isOpen, isLoggedIn }) => {

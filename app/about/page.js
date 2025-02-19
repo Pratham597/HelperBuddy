@@ -1,7 +1,7 @@
-import AboutSection from "@/components/AboutSection";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/home/Footer";
-import Navbar from "@/components/navbar/Navbar";
+import AboutSection from "@/components/AboutSection.jsx";
+import ContactSection from "@/components/ContactSection.jsx";
+import Footer from "@/components/home/Footer.jsx";
+import Navbar from "@/components/navbar/Navbar.jsx";
 import React from "react";
 
 export const metadata = {

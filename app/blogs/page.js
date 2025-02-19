@@ -1,6 +1,6 @@
-import BlogGrid from "@/components/blog/BlogGrid";
-import Footer from "@/components/home/Footer";
-import Navbar from "@/components/navbar/Navbar";
+import BlogGrid from "@/components/blog/BlogGrid.jsx";
+import Footer from "@/components/home/Footer.jsx";
+import Navbar from "@/components/navbar/Navbar.jsx";
 
 async function fetchBlogs() {
 	try {
