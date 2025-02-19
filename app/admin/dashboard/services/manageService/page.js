@@ -19,21 +19,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 export default function ManageServicePage() {
   const [services, setServices] = useState([]);
   const [selectedServiceId, setSelectedServiceId] = useState("");
-  const [service, setService] = useState({ name: "", description: "", price: "", category: "", image: "" });
+  const [service, setService] = useState({ name: "", description: "", price: "", category: "", image: "", threshold: "" });
   const [originalService, setOriginalService] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isModified, setIsModified] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const response = await axios.get("/api/service");
+        console.log(response.data);
         setServices(response.data);
       } catch (error) {
         toast.error("Failed to fetch services");
@@ -45,7 +44,7 @@ export default function ManageServicePage() {
   useEffect(() => {
     if (selectedServiceId) {
       const selected = services.find((s) => s._id === selectedServiceId);
-      setService(selected || { name: "", description: "", price: "", category: "", image: "" });
+      setService(selected || { name: "", description: "", price: "", category: "", image: "", threshold: "" });
       setOriginalService(selected);
       setIsModified(false);
     }
@@ -61,7 +60,7 @@ export default function ManageServicePage() {
   };
 
   const validateFields = () => {
-    if (!service.name || !service.description || !service.price || !service.category) {
+    if (!service.name || !service.description || !service.price || !service.category || !service.threshold) {
       toast.error("Please fill in all required fields.");
       return false;
     }
@@ -88,31 +87,6 @@ export default function ManageServicePage() {
       console.error(error.message);
     }
     setLoading(false);
-  };
-
-  const handleDelete = async () => {
-    if (!selectedServiceId) return;
-    setLoading(true);
-
-    try {
-      const admin = localStorage.getItem("admin");
-      const { token } = JSON.parse(admin);
-      if (!token) throw new Error("No authentication token found.");
-      await axios.delete(`/api/service/${selectedServiceId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success("Service deleted successfully!");
-      setServices(services.filter((s) => s._id !== selectedServiceId));
-      setSelectedServiceId("");
-      setService({ name: "", description: "", price: "", category: "", image: "" });
-      setOriginalService(null);
-      setIsModified(false);
-    } catch (error) {
-      toast.error("Failed to delete service. Please try again.");
-      console.error(error.message);
-    }
-    setLoading(false);
-    setShowDialog(false);
   };
 
   return (
@@ -184,22 +158,13 @@ export default function ManageServicePage() {
               <Label htmlFor="image">Image URL</Label>
               <Input id="image" name="image" type="text" value={service.image} onChange={handleInputChange} placeholder="Service image Url" required />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="threshold">Threshold Period</Label>
+              <Input id="threshold" name="threshold" type="number" value={service.threshold} onChange={handleInputChange} placeholder="Enter threshold period" required />
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row justify-between gap-2">
             <Button onClick={handleSubmit} disabled={!isModified || loading}>{loading ? "Updating..." : "Edit Service"}</Button>
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-              <DialogTrigger asChild>
-                <Button variant="destructive" disabled={!selectedServiceId || loading}>Remove Service</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>Confirm Deletion</DialogTitle>
-                <DialogDescription>Are you sure you want to delete this service? This action cannot be undone.</DialogDescription>
-                <DialogFooter>
-                  <Button onClick={() => setShowDialog(false)}>Cancel</Button>
-                  <Button onClick={handleDelete} variant="destructive">Delete</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
           </CardFooter>
         </Card>
       </div>
