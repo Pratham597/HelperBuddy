@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import {toast} from 'react-hot-toast'
+import { toast } from 'react-hot-toast'
 import axios from "axios";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export default function WalletPage({ }) {
     const [wallet, setWallet] = useState(0);
@@ -49,7 +49,7 @@ export default function WalletPage({ }) {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
-                                <Link href={`/user/dashboard`}>User</Link>
+                                <Link href={`/user/dashboard/profile/userInformation`}>User</Link>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator className="hidden md:block" />
                             <BreadcrumbItem>

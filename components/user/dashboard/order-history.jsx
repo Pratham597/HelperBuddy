@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { ChevronDown, ChevronUp, Star, Store, MessageSquare, Package, Calendar } from "lucide-react"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { format, isSameDay, parseISO } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
+import Link from "next/link"
 
 const OrderSkeleton = () => (
   <Card className="border-0 shadow-lg overflow-hidden mb-4">
@@ -256,7 +257,12 @@ export default function OrderHistory() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbPage className="flex items-center gap-2">
-                  <Package className="w-4 h-4" />
+                  <Link href={"/user/dashboard/profile/userInformation"}>User</Link>
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="flex items-center gap-2">
                   Order History
                 </BreadcrumbPage>
               </BreadcrumbItem>

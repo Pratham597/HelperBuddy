@@ -88,7 +88,7 @@ export default function ProfilePage() {
 				<Breadcrumb>
 					<BreadcrumbList>
 						<BreadcrumbItem className="hidden md:block">
-							<Link href={`/user/dashboard`}>User</Link>
+							<Link href={`/user/dashboard/profile/userInformation`}>User</Link>
 						</BreadcrumbItem>
 						<BreadcrumbSeparator className="hidden md:block" />
 						<BreadcrumbItem>

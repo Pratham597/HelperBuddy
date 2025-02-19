@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Script from "next/script"
 import { ChevronDown, ChevronUp, ShoppingBag, Loader2, Calendar, Package } from "lucide-react"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input"
 import axios from "axios";
 import toast from "react-hot-toast"
+import Link from "next/link"
 
 export default function ServicePending() {
   const [dateGroups, setDateGroups] = useState([])
@@ -95,7 +96,7 @@ export default function ServicePending() {
     return true
   }
 
-  const handleWalletAmountChange = (e,booking) => {
+  const handleWalletAmountChange = (e, booking) => {
     const amount = e.target.value
     setWalletUsed(amount)
     validateWalletAmount(amount, booking.service.price)
@@ -130,7 +131,7 @@ export default function ServicePending() {
           setTimeout(() => {
             fetchOrders();
           }, 600);
-          
+
         }
       } else {
         const res = await axios.post(
@@ -341,7 +342,7 @@ export default function ServicePending() {
     }
   };
 
-  useEffect(() => {  
+  useEffect(() => {
     fetchOrders();
   }, [refresh]);
 
@@ -492,7 +493,12 @@ export default function ServicePending() {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbPage className="flex items-center gap-2">
-                    <Package className="w-4 h-4" />
+                    <Link href={"/user/dashboard/profile/userInformation"}>User</Link>
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="flex items-center gap-2">
                     Order History
                   </BreadcrumbPage>
                 </BreadcrumbItem>
