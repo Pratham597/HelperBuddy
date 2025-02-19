@@ -9,8 +9,8 @@ const paymentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  paymentId:{
-    type:String,
+  paymentId: {
+    type: String,
   },
   paymentMethod: {
     type: String,
@@ -21,13 +21,8 @@ const paymentSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  serviceOrder:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:"serviceOrder",
-    required:true
-  }
-},{
-  timestamps:true
+}, {
+  timestamps: true
 });
 
 export default mongoose.models.payment ||
