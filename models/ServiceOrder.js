@@ -45,6 +45,11 @@ const serviceOrderSchema = new mongoose.Schema({
   isPaid:{
     type:Boolean,
     default:false
+  },
+  user:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"user",
+    required:true
   }
 },{
   timestamps:true
