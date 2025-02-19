@@ -72,9 +72,9 @@ export default function PendingPartnersPage() {
       const admin = localStorage.getItem("admin");
       const { token } = JSON.parse(admin);
       if (!token) throw new Error("No authentication token found.");
-
+      console.log("lund")
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_URL}api/partner/${id}/approve`,
+        `${process.env.NEXT_PUBLIC_URL}/api/partner/${id}/approve`,
         { isApproved: action },
         { headers: { Authorization: `Bearer ${token}` } }
       );
