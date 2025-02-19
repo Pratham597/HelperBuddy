@@ -70,60 +70,68 @@ export default function ServicePending() {
         const responses = await Promise.all([servicePartnerAccepted, servicePending])
 
         const processOrders = (response, status) => {
-          const { serviceOrder } = response.data
+          const { serviceOrder } = response;
 
-          const ordersByBooking = serviceOrder.reduce((acc, order) => {
-            if (!order.booking) return acc
-
-            const date = formatDate(order.booking.createdAt)
+          return serviceOrder.reduce((acc, order) => {
+            const date = order.createdAt.split("T")[0]; // Extract only the date part
 
             if (!acc[date]) {
-              acc[date] = []
-            }
-            let bookingGroup = acc[date].find(b => b.bookingId === order.booking._id)
-
-            if (!bookingGroup) {
-              bookingGroup = {
-                bookingId: order.booking._id,
-                orderId: order.booking.orderId,
-                totalAmount: order.booking.totalAmount,
-                isPaid: order.booking.isPaid,
-                paymentMethod: order.booking.paymentMethod || 'Online',
-                walletUsed: order.booking.walletUsed || 0,
-                date,
-                orders: []
-              }
-              acc[date].push(bookingGroup)
+              acc[date] = [];
             }
 
-            bookingGroup.orders.push({
-              id: order._id,
-              status,
-              service: {
-                name: order.service.name,
-                category: order.service.category,
-                price: order.service.price,
-                description: order.service.description,
-                image: order.service.image
-              },
-              timeline: order.timeline,
-              pincode: order.pincode,
-              address: order.address,
-              userCode: order.userCode,
-              userApproved: order.userApproved,
-              rating: order.rating,
-              createdAt: order.createdAt,
-              updatedAt: order.updatedAt
-            })
+            if (status === "Partner Assigned" && order.partner) {  // Fixed condition
+              acc[date].push({
+                id: order._id,
+                status,
+                service: {
+                  name: order.service.name,
+                  category: order.service.category,
+                  price: order.service.price,
+                  description: order.service.description,
+                  image: order.service.image
+                },
+                timeline: order.timeline,
+                pincode: order.pincode,
+                address: order.address,
+                userCode: order.userCode,
+                userApproved: order.userApproved,
+                rating: order.rating,
+                isPaid: order.isPaid,
+                createdAt: order.createdAt,
+                updatedAt: order.updatedAt
+              });
+            } else if (status === "Paid" && order.isPaid) {  // Fixed undefined variable
+              acc[date].push({
+                id: order._id,
+                status,
+                service: {
+                  name: order.service.name,
+                  category: order.service.category,
+                  price: order.service.price,
+                  description: order.service.description,
+                  image: order.service.image
+                },
+                timeline: order.timeline,
+                pincode: order.pincode,
+                address: order.address,
+                userCode: order.userCode,
+                userApproved: order.userApproved,
+                rating: order.rating,
+                isPaid: order.isPaid,
+                createdAt: order.createdAt,
+                updatedAt: order.updatedAt
+              });
+            }
 
-            return acc
-          }, {})
+            return acc;
+          }, {});
+        };
 
-          return ordersByBooking
-        }
+        // Ensure responses exist before calling the function
+        const acceptedGroups = responses[0] ? processOrders(responses[0].data, "Partner Assigned") : {};
+        const pendingGroups = responses[1] ? processOrders(responses[1].data, "Paid") : {};
 
-        const acceptedGroups = processOrders(responses[0], "Partner Assigned")
-        const pendingGroups = processOrders(responses[1], "Paid")
+        console.log(acceptedGroups, pendingGroups);
 
         const allDates = [...new Set([
           ...Object.keys(acceptedGroups),
@@ -369,11 +377,10 @@ export default function ServicePending() {
                                           {bookingStages.map((status) => (
                                             <div key={status} className="relative">
                                               <div
-                                                className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 ${
-                                                  status === order.status
-                                                    ? "bg-black border-black"
-                                                    : "bg-white border-gray-300"
-                                                }`}
+                                                className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 ${status === order.status
+                                                  ? "bg-black border-black"
+                                                  : "bg-white border-gray-300"
+                                                  }`}
                                               ></div>
                                             </div>
                                           ))}
@@ -383,9 +390,8 @@ export default function ServicePending() {
                                         {bookingStages.map((status) => (
                                           <div
                                             key={status}
-                                            className={`w-1/3 text-center ${
-                                              status === order.status ? "text-black font-medium" : "text-gray-500"
-                                            }`}
+                                            className={`w-1/3 text-center ${status === order.status ? "text-black font-medium" : "text-gray-500"
+                                              }`}
                                           >
                                             {status}
                                           </div>

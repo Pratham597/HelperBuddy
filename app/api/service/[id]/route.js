@@ -5,7 +5,7 @@ import connectDB from "@/db/connect";
 import ServiceOrder from "@/models/ServiceOrder";
 import User from "@/models/User";
 import Partner from "@/models/Partner";
-import Booking from "@/models/Booking";
+import Booking from "@/models/Payment";
 
 export const GET = async (req, { params }) => {
     await connectDB();

@@ -29,6 +29,8 @@ export const POST = async (req) => {
 			{ error: "ServiceOrder not found!" },
 			{ status: 404 }
 		);
+	
+	if(!serviceOrder.isPaid) return NextResponse.json({error:"Please ask user to paid service order!"},{status:403});
 	if (
 		serviceOrder.partner?.equals(partner._id) &&
 		serviceOrder.userCode === userCode

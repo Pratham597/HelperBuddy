@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
 import generateOrderId from "@/actions/user/generateOrderId";
-import Booking from "@/models/Booking";
+import Payment from "@/models/Payment";
 import { generateCode } from "@/actions/user/refferalCode";
 
 
-/** Controller for checking out cart */
+/** Controller for checking out order */
 export const POST = async (req, res) => {
   await connectDB();
   const userId = req.headers.get("userId");
@@ -20,62 +20,38 @@ export const POST = async (req, res) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const data = await req.json();
+  // Contain serviceOrder Id paymentMethod walletUsed 
 
-  for (let i = 0; i < data.services.length; i++) {
-    const service = data.services[i];
-    const serviceId = service.serviceId;
-    if (!serviceId || !service.timeline) {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
-    }
-  }
-
-  const createServiceOrders = async (services, booking) => {
-    const orders = services.map((service) => {
-      return new ServiceOrder({
-        service: service.serviceId,
-        timeline: service.timeline,
-        pincode: data.pincode,
-        address: data.address,
-        userCode: generateCode(),
-        booking: booking._id,
-      });
-    });
-    await ServiceOrder.insertMany(orders);
-  };
-
-  if (!data.totalAmount || !data.pincode || !data.address)
-    return NextResponse.json(
-      { error: "Total amount required" },
-      { status: 403 }
-    );
-
-  if (!data.paymentMethod || data.walletUsed === undefined) {
+  if (!data.serviceOrderId || !data.paymentMethod || data.walletUsed === undefined || data.totalAmount === undefined) {
     return NextResponse.json(
       { error: "Required Fields are empty!" },
       { status: 403 }
     );
   }
+  const serviceOrder = await ServiceOrder.findById(data.serviceOrderId);
+  if (!serviceOrder) return NextResponse.json({ error: "Service Order not found!" }, { status: 404 });
+
+  // Setting up total Amount!
   if (data.paymentMethod === "COD") {
     const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const booking = new Booking({
-      user: userId,
+    const payment = new Payment({
       orderId: orderId,
       totalAmount: parseInt(data.totalAmount),
       paymentMethod: "COD",
+      serviceOrder: serviceOrder._id
     });
-    await booking.save();
-    await createServiceOrders(data.services,booking)
-    return NextResponse.json({ success: true, booking });
+    await payment.save();
+    return NextResponse.json({ success: true, Payment });
   }
-   else if (data.paymentMethod === "Wallet+Online") {
+  else if (data.paymentMethod === "Wallet+Online") {
     const walletUsed = Number(data.walletUsed);
     if (user.wallet < walletUsed)
       return NextResponse.json(
-        { success: false, error: "Walled is unsufficient for booking" },
+        { success: false, error: "Wallet balance is insufficient for Payment" },
         { status: 403 }
       );
-    
-    if(walletUsed>=Number(data.totalAmount)){
+
+    if (walletUsed >= Number(data.totalAmount)) {
       return NextResponse.json(
         { success: false, error: "Wallet amount must less than total amount!" },
         { status: 403 }
@@ -85,30 +61,28 @@ export const POST = async (req, res) => {
     const orderId = await generateOrderId(
       Number(data.totalAmount) - walletUsed
     );
-    const booking = new Booking({
-      user: userId,
+    const payment = new Payment({
       orderId: orderId,
       totalAmount: Number(data.totalAmount),
       walletUsed: walletUsed,
       paymentMethod: "Wallet+Online",
+      serviceOrder: serviceOrder._id
     });
-    await booking.save();
-    await createServiceOrders(data.services,booking);
-    return NextResponse.json({ success: true, booking });
+    await payment.save();
+    return NextResponse.json({ success: true, Payment });
   } else if (data.paymentMethod === "Online") {
     const orderId = await generateOrderId(data.totalAmount);
-    const booking = new Booking({
-      user: userId,
+    const payment = new Payment({
       orderId: orderId,
-      totalAmount: parseInt(data.totalAmount),
+      totalAmount: Number(data.totalAmount),
       paymentMethod: "Online",
+      serviceOrder: serviceOrder._id
     });
-      await booking.save();
-      await createServiceOrders(data.services,booking)
-      return NextResponse.json({ success: true, booking });
+    await payment.save();
+    return NextResponse.json({ success: true, Payment });
   } else
     return NextResponse.json(
-      { error: "Payment Method is altered!" },
+      { error: "Unable to process payment!" },
       { status: 403 }
     );
 };
@@ -119,9 +93,6 @@ export const GET = async (req) => {
   if (!user) {
     return NextResponse.json({ error: "User unauthorized" }, { status: 403 });
   }
-  const bookings = await Booking.find({ user: userId }).select("_id");
-  const service = await ServiceOrder.find({ booking: { $in: bookings } })
-    .populate("partner")
-    .populate("service");
+  const service = await ServiceOrder.find({ user: userId, cancel: false, partner: null }).populate("service");
   return NextResponse.json({ service });
 };

@@ -6,6 +6,11 @@ const serviceSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     category: { type: String, required: true },
     image: { type: String },
+    threshold:{
+      type:Number,
+      required:true,
+      default:1
+    }
   },
   { timestamps: true }
 );

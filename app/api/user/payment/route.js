@@ -1,4 +1,4 @@
-import Booking from "@/models/Booking";
+import Booking from "@/models/Payment";
 import { NextResponse } from "next/server";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
 import Razorpay from "razorpay";
@@ -29,7 +29,7 @@ export const POST = async (req) => {
       { status: 403 }
     );
   }
-  
+
   const booking = await Booking.findOne({ orderId });
   if (!booking) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
@@ -45,13 +45,32 @@ export const POST = async (req) => {
   );
 
   if (xx) {
-    booking.isPaid = true;
+    await ServiceOrder.findByIdAndUpdate(booking.serviceOrder, { isPaid: true, booking: booking._id }, { new: true });
     booking.paymentId = body.razorpay_payment_id;
 
     user.wallet = user.wallet - booking.walletUsed;
     await user.save();
     await booking.save();
 
+    if (user && user.referredBy && !user.referredBonus) {
+      const referrer = await User.findById(user.referredBy);
+      if (referrer) {
+        const referralBonus = Number(process.env.REFFER_POINTS);
+        const maxWalletLimit = 1000;
+        const updatedWallet = Math.min(
+          referrer.wallet + referralBonus,
+          maxWalletLimit
+        );
+        if (updatedWallet > referrer.wallet) {
+          await User.findByIdAndUpdate(
+            user.referredBy,
+            { $set: { wallet: updatedWallet } },
+            { new: true }
+          );
+        }
+        await User.findByIdAndUpdate(user._id, { referredBonus: true });
+      }
+    }
     return NextResponse.json({
       success: true,
       message: "Payment successful :)",

@@ -1,5 +1,5 @@
 import connectDB from "@/db/connect";
-import Booking from "@/models/Booking";
+import Booking from "@/models/Payment";
 import { NextResponse } from "next/server";
 import Admin from "@/models/Admin";
 
@@ -28,7 +28,6 @@ export const POST = async (req) => {
     const monthlySalesData = await Booking.aggregate([
       {
         $match: {
-          isPaid: true,
           createdAt: { $gte: startDate, $lte: endDate },
         },
       },

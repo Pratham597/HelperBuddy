@@ -2,14 +2,14 @@ import connectDB from "@/db/connect";
 import Partner from "@/models/Partner";
 import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
-import Booking from "@/models/Booking";
+import Payment from "@/models/Payment";
 import { NextResponse } from "next/server";
 import Service from "@/models/Service";
 
 export const POST = async (req) => {
   await connectDB();
   const userId = req.headers.get("userId");
-  
+
   if (!userId) {
     return NextResponse.json({ error: "User unauthorized" }, { status: 401 });
   }
@@ -29,23 +29,9 @@ export const POST = async (req) => {
   const serviceOrders = await ServiceOrder.aggregate([
     {
       $match: {
-        partner: null, 
-        service: { $in: partnerServiceIds }, 
+        partner: null,
+        service: { $in: partnerServiceIds },
         pincode: { $in: partner.pincode }
-      }
-    },
-    {
-      $lookup: {
-        from: "bookings",
-        localField: "booking",
-        foreignField: "_id",
-        as: "bookingDetails"
-      }
-    },
-    { $unwind: "$bookingDetails" }, 
-    {
-      $match: {
-        $or: [{ "bookingDetails.isPaid": true }, { "bookingDetails.paymentMethod": "COD" }]
       }
     },
     {
@@ -59,5 +45,5 @@ export const POST = async (req) => {
     { $unwind: "$service" }
   ]);
 
-  return NextResponse.json({ serviceOrders });
+  return NextResponse.json({ success: true, serviceOrders });
 };

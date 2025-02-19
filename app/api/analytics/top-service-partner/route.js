@@ -24,7 +24,7 @@ export const POST = async (req) => {
     const totalPartners = await Partner.countDocuments({});
 
     const topServicePartners = await ServiceOrder.aggregate([
-      { $match: { partner: { $ne: null }, userApproved: true } },
+      { $match: { partner: { $ne: null }, userApproved: true ,isPaid:true} },
       { $group: { _id: "$partner", completedOrders: { $sum: 1 } } },
       { $sort: { completedOrders: -1 } },
     ]);

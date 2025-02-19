@@ -2,6 +2,7 @@ import Partner from "@/models/Partner";
 import ServiceOrder from "@/models/ServiceOrder";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
+import Booking from "@/models/Payment";
 
 export const POST = async (req) => {
   await connectDB();
@@ -15,8 +16,10 @@ export const POST = async (req) => {
   const serviceOrders = await ServiceOrder.find({
     partner: userId,
     userApproved: true,
+    isPaid: true
   })
     .populate("service")
-    .select("-userCode");
+    .select("-userCode")
+    .populate("payment");
   return NextResponse.json({ serviceOrders });
 };
