@@ -30,5 +30,5 @@ const paymentSchema = new mongoose.Schema({
   timestamps:true
 });
 
-export default mongoose.models.booking ||
+export default mongoose.models.payment ||
   mongoose.model("payment", paymentSchema);
