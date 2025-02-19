@@ -1,4 +1,4 @@
-import Booking from "@/models/Payment";
+import Payment from "@/models/Payment";
 import { NextResponse } from "next/server";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
 import Razorpay from "razorpay";
@@ -30,8 +30,8 @@ export const POST = async (req) => {
     );
   }
 
-  const booking = await Booking.findOne({ orderId });
-  if (!booking) {
+  const payment = await Payment.findOne({ orderId });
+  if (!payment) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
 
@@ -45,12 +45,12 @@ export const POST = async (req) => {
   );
 
   if (xx) {
-    await ServiceOrder.findByIdAndUpdate(booking.serviceOrder, { isPaid: true, booking: booking._id }, { new: true });
-    booking.paymentId = body.razorpay_payment_id;
+    await ServiceOrder.findByIdAndUpdate(payment.serviceOrder, { isPaid: true, payment: payment._id }, { new: true });
+    payment.paymentId = body.razorpay_payment_id;
 
-    user.wallet = user.wallet - booking.walletUsed;
+    user.wallet = user.wallet - payment.walletUsed;
     await user.save();
-    await booking.save();
+    await payment.save();
 
     if (user && user.referredBy && !user.referredBonus) {
       const referrer = await User.findById(user.referredBy);
@@ -74,7 +74,7 @@ export const POST = async (req) => {
     return NextResponse.json({
       success: true,
       message: "Payment successful :)",
-      booking,
+      payment,
     });
   } else {
     return NextResponse.json(
