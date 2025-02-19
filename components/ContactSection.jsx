@@ -32,11 +32,10 @@ export default function ContactSection() {
 					email,
 					message,
 				});
-				console.log(data);
 				toast.success("Submitted successfully");
 				setFormData({ firstName: "", lastName: "", email: "", message: "" });
 			} catch (error) {
-				console.log(error);
+				// console.log(error);
 				toast.error("Something went wrong");
 			}
 		}

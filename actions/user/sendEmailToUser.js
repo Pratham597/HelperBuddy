@@ -49,6 +49,5 @@ const sendEmailToUser = async (userEmail, userName, serviceOrder, partner) => {
   };
 
   let info = await transporter.sendMail(mailOptions);
-  console.log("Email sent successfully:", info.response);
 };
 export default sendEmailToUser  

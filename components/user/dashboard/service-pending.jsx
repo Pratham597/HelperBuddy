@@ -142,7 +142,6 @@ export default function ServicePending() {
             },
           }
         );
-        console.log(res);
         if (res.status === 200) {
           const { payment } = res.data;
           const orderId = payment.orderId;
@@ -315,7 +314,6 @@ export default function ServicePending() {
           "Payment Completed"
         );
 
-        console.log(acceptedGroups, pendingGroups, paymentDoneGroups);
 
         // Combine and sort dates
         const allDates = [...new Set([

@@ -57,8 +57,6 @@ export default function AddBlogPage() {
 		try {
 			const admin = localStorage.getItem("admin");
             const { token, id: id } = JSON.parse(admin);
-            console.log(id)
-            console.log(token)
 			if (!token || !id)
 				throw new Error("No authentication token found.");
 

@@ -23,7 +23,6 @@ export default function ServiceDetails({ service, onAddToCart }) {
 			try {
 				const res = await fetch(`/api/service/faq?service=${service._id}`);
 				const data = await res.json();
-				console.log(data)
 				if (res.ok && data.success) {
 					setFaqs(data.faq);
 				} else {

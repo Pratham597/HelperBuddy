@@ -38,7 +38,6 @@ export const GET = async (req) => {
                 };
             })
         );
-        console.log("Most sold services:", servicesWithRatings);
         return NextResponse.json({ services: servicesWithRatings });
     } catch (error) {
         console.error("Error fetching most sold services:", error);

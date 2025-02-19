@@ -9,7 +9,6 @@ export const POST = async (req) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const data = await req.json();
-  console.log(data);
   if (!data.pincode || data.pincode.length == 0)
     return NextResponse.json({ error: "Pincode array is absent!" });
 

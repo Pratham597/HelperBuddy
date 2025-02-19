@@ -105,7 +105,6 @@ export default function Cart() {
 
   const updateItemTimeline = (index, timeline) => {
     const updatedCart = [...cart];
-    console.log(timeline);
     updatedCart[index].timeline = timeline;
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
