@@ -446,6 +446,32 @@ export default function ServicePending() {
       .filter((group) => group !== null) // Remove groups that were excluded
   }
 
+  const handleCancelOrder = async (serviceOrderId) => {
+    const user = JSON.parse(localStorage.getItem("user"))
+    if (!user || !user.token) {
+      console.error("Error: No auth token found")
+      return
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/api/user/servicesPending/cancelOrder`,
+        { serviceOrderId },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+      console.log("Order cancelled successfully:", response.data)
+      toast.success("Service cancelled successfully")
+      setRefresh((prev) => !prev)
+    } catch (error) {
+      toast.error(error.response?.data.error)
+      console.error("Error cancelling order:", error.response?.data)
+    }
+  }
+
   const filteredDateGroups = filterOrders()
   return (
     <>
@@ -729,6 +755,11 @@ export default function ServicePending() {
                                               <dt className="font-medium text-gray-600">User Code</dt>
                                               <dd className="mt-1 text-black">{booking.userCode}</dd>
                                             </div>
+                                            {!booking.isPaid && <div className="sm:col-span-1">
+                                              <Button variant="destructive" onClick={() => handleCancelOrder(booking.id)}>
+                                                Cancel Order
+                                              </Button>
+                                            </div>}
                                           </dl>
                                         </motion.div>
                                       )}
