@@ -33,7 +33,7 @@ export default function PendingPartnersPage() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const pageSize = 2;
+  const pageSize = 10;
 
   useEffect(() => {
     const fetchPartners = async () => {

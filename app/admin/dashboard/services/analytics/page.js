@@ -40,8 +40,8 @@ export default function Page() {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/analytics/most-sold-services`);
         if (response.data.services) {
           const formattedBarData = response.data.services.map((service) => ({
-            name: service._id.name,
-            revenue: service.count,
+            name: service.name,
+            revenue: service.price * service.total_bookings,
           }));
           setBarData(formattedBarData);
 
@@ -171,7 +171,7 @@ export default function Page() {
           </Card>
         </div>
       </div>
-      <MonthlySalesGraph  />
+      <MonthlySalesGraph />
     </>
   );
 }
