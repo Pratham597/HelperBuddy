@@ -38,15 +38,7 @@ const PaymentStatusModal = ({
             </div>
             <h3 className="text-xl font-semibold mb-2">Order Successful!</h3>
             <p className="text-gray-500 text-center mb-4">Your order has been confirmed.</p>
-            <Button 
-              onClick={() => {
-                onClose();
-                onComplete();
-              }}
-              className="bg-black hover:bg-gray-800 text-white"
-            >
-              View Order Details
-            </Button>
+            
           </div>
         );
       

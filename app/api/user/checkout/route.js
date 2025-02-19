@@ -79,7 +79,7 @@ export const POST = async (req, res) => {
       serviceOrder: serviceOrder._id
     });
     await payment.save();
-    return NextResponse.json({ success: true, Payment });
+    return NextResponse.json({ success: true, payment });
   } else
     return NextResponse.json(
       { error: "Unable to process payment!" },
