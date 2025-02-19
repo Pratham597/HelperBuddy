@@ -100,7 +100,7 @@ export default function ServicePending() {
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt
               });
-            } else if (status === "Paid" && order.isPaid) {  // Fixed undefined variable
+            } else {  // Fixed undefined variable
               acc[date].push({
                 id: order._id,
                 status,

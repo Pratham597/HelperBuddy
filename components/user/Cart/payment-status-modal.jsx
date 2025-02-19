@@ -36,7 +36,7 @@ const PaymentStatusModal = ({
               </div>
               <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-green-500 animate-ping" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Payment Successful!</h3>
+            <h3 className="text-xl font-semibold mb-2">Order Successful!</h3>
             <p className="text-gray-500 text-center mb-4">Your order has been confirmed.</p>
             <Button 
               onClick={() => {
@@ -56,8 +56,8 @@ const PaymentStatusModal = ({
             <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mb-4 animate-shake">
               <X className="h-8 w-8 text-red-500" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Payment Failed</h3>
-            <p className="text-gray-500 text-center mb-4">Something went wrong with your payment. Please try again.</p>
+            <h3 className="text-xl font-semibold mb-2">Order Failed</h3>
+            <p className="text-gray-500 text-center mb-4">Something went wrong with your Order. Please try again.</p>
             <Button 
               onClick={onClose}
               variant="outline"
@@ -77,7 +77,7 @@ const PaymentStatusModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
-          <DialogTitle className="sr-only">Payment Status</DialogTitle>
+          <DialogTitle className="sr-only">Order Status</DialogTitle>
         </DialogHeader>
         {getContent()}
       </DialogContent>
