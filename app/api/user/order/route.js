@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
 import Partner from "@/models/Partner";
+import Service from "@/models/Service";
 import { generateCode } from "@/actions/user/refferalCode";
 import sendEmailToPartner from "@/actions/user/sendEmailToPartner";
 
@@ -49,7 +50,7 @@ export const POST = async (req, res) => {
   for (const service of serviceOrders) {
     const partners = await PartnerService.find({ service: service.service }).select("partner");
     const partnerIds = partners.map((item) => item.partner);
-
+    const services=await Service.findById(service.service);
     const emails = await Partner.find({
       _id: { $in: partnerIds },
       pincode: { $in: [data.pincode] },
@@ -70,7 +71,7 @@ export const POST = async (req, res) => {
       timeline: service.timeline, 
     };
 
-    await sendEmailToPartner(emails, userDetails, service.service);
+    await sendEmailToPartner(emails, userDetails, services);
   }
 
   return NextResponse.json({
