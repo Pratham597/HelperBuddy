@@ -8,7 +8,7 @@ import { Dialog } from "@/components/ui/dialog"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { ChevronDown, ChevronUp, ShoppingBag, Loader2, Calendar, Package } from "lucide-react"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { format, isSameDay, parseISO } from "date-fns"
 import { Input } from "@/components/ui/input"
+import Link from "next/link"
 import toast from "react-hot-toast"
 
 export default function ActiveOrders() {
@@ -33,7 +34,7 @@ export default function ActiveOrders() {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [verificationCode, setVerificationCode] = useState("")
 	const [selectedOrder, setSelectedOrder] = useState(null)
-	const ordersPerPage = 5
+	const ordersPerPage = 10
 
 	const handlePageChange = (pageNumber) => {
 		setCurrentPage(pageNumber)
@@ -95,14 +96,14 @@ export default function ActiveOrders() {
 					bookingId: order._id,
 					orderId: order._id,
 					totalAmount: order.service.price,
-					isPaid: true,
+					isPaid: order.isPaid,
 					paymentMethod: "Online",
 					walletUsed: 0,
 					date,
 					orders: [
 						{
 							id: order._id,
-							status: "Partner Assigned",
+							status: order.isPaid ? "Paid" : "Partner Assigned",
 							service: {
 								name: order.service.name,
 								category: order.service.category,
@@ -134,12 +135,12 @@ export default function ActiveOrders() {
 	}
 
 	const statusPercentages = {
-		Paid: 15,
-		"Partner Assigned": 50,
+		"Partner Assigned": 15,
+		"Paid": 50,
 		Completed: 100,
 	}
 
-	const bookingStages = ["Paid", "Partner Assigned", "Completed"]
+	const bookingStages = ["Partner Assigned", "Paid", "Completed"]
 
 	const filterOrders = () => {
 		const today = new Date()
@@ -224,30 +225,37 @@ export default function ActiveOrders() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-			<header className="sticky top-0 z-10 flex h-16 items-center gap-2 px-4 bg-white dark:bg-gray-800 shadow-sm">
-				<SidebarTrigger className="-ml-1" />
-				<Separator orientation="vertical" className="h-4" />
-				<Breadcrumb>
-					<BreadcrumbList>
-						<BreadcrumbItem>
-							<BreadcrumbPage className="flex items-center gap-2">
-								<Package className="w-4 h-4" />
-								Active
-							</BreadcrumbPage>
-						</BreadcrumbItem>
-					</BreadcrumbList>
-				</Breadcrumb>
+			<header className="sticky top-0 z-10 flex flex-col sm:flex-row items-center gap-2 p-4 bg-white dark:bg-gray-800 shadow-sm">
+				<div className="flex items-center w-full sm:w-auto">
+					<SidebarTrigger className="-ml-1" />
+					<Separator orientation="vertical" className="h-4 mx-2" />
+					<Breadcrumb>
+						<BreadcrumbList>
+							<BreadcrumbItem>
+								<BreadcrumbPage className="flex items-center gap-2">
+									<Link href={"/partner/dashboard"}>partner</Link>
+								</BreadcrumbPage>
+							</BreadcrumbItem>
+							<BreadcrumbSeparator />
+							<BreadcrumbItem>
+								<BreadcrumbPage className="flex items-center gap-2">
+									Active Orders
+								</BreadcrumbPage>
+							</BreadcrumbItem>
+						</BreadcrumbList>
+					</Breadcrumb>
+				</div>
 
-				<div className="ml-auto flex items-center gap-4">
-					<Input
+				<div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto sm:ml-auto">
+					<input
 						type="text"
-						placeholder="Search by last 6 digits of Booking ID"
+						placeholder="Search by ID"
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-48 px-4 py-2"
+						className="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 					/>
 					<Select value={dateFilter} onValueChange={setDateFilter}>
-						<SelectTrigger className="w-48">
+						<SelectTrigger className="w-full sm:w-48">
 							<SelectValue placeholder="Filter by date" />
 						</SelectTrigger>
 						<SelectContent>
@@ -263,8 +271,8 @@ export default function ActiveOrders() {
 					{dateFilter === "custom" && (
 						<Popover>
 							<PopoverTrigger asChild>
-								<Button variant="outline" className="w-48">
-									<Calendar className="mr-2 h-4 w-4" />
+								<Button variant="outline" className="w-full sm:w-48">
+									<Calendar className="mr-2 h-2 w-4" />
 									{customDate ? format(customDate, "PPP") : <span>Pick a date</span>}
 								</Button>
 							</PopoverTrigger>

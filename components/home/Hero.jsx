@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import ImageCollage from "./ImageCollage";
-import MobileHero from "./MobileHero";
+import ImageCollage from "./ImageCollage.jsx";
+import MobileHero from "./MobileHero.jsx";
 import Link from "next/link";
 
 export default function Hero() {

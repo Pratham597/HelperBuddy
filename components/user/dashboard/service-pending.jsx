@@ -19,6 +19,7 @@ import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input"
 import axios from "axios";
+import toast from "react-hot-toast"
 
 export default function ServicePending() {
   const [dateGroups, setDateGroups] = useState([])
@@ -29,16 +30,15 @@ export default function ServicePending() {
   const [customDate, setCustomDate] = useState(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const ordersPerPage = 5
+  const ordersPerPage = 10
   const [paymentMethod, setPaymentMethod] = useState("")
   const [walletAmount, setWalletAmount] = useState(0)
   const [walletUsed, setWalletUsed] = useState(0)
   const [walletError, setWalletError] = useState("")
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [selectedBooking, setSelectedBooking] = useState(null)
-  const [isProcessing, setIsProcessing] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false)
   const router = useRouter();
 
   useEffect(() => {
@@ -143,7 +143,6 @@ export default function ServicePending() {
             },
           }
         );
-        console.log(res);
         if (res.status === 200) {
           const { payment } = res.data;
           const orderId = payment.orderId;
@@ -344,7 +343,7 @@ export default function ServicePending() {
 
   useEffect(() => {  
     fetchOrders();
-  }, []);
+  }, [refresh]);
 
 
   const toggleDetails = (bookingId) => {
@@ -452,6 +451,32 @@ export default function ServicePending() {
         }
       })
       .filter((group) => group !== null) // Remove groups that were excluded
+  }
+
+  const handleCancelOrder = async (serviceOrderId) => {
+    const user = JSON.parse(localStorage.getItem("user"))
+    if (!user || !user.token) {
+      console.error("Error: No auth token found")
+      return
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/api/user/servicesPending/cancelOrder`,
+        { serviceOrderId },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+      console.log("Order cancelled successfully:", response.data)
+      toast.success("Service cancelled successfully")
+      setRefresh((prev) => !prev)
+    } catch (error) {
+      toast.error(error.response?.data.error)
+      console.error("Error cancelling order:", error.response?.data)
+    }
   }
 
   const filteredDateGroups = filterOrders()
@@ -732,6 +757,11 @@ export default function ServicePending() {
                                               <dt className="font-medium text-gray-600">User Code</dt>
                                               <dd className="mt-1 text-black">{booking.userCode}</dd>
                                             </div>
+                                            {!booking.isPaid && <div className="sm:col-span-1">
+                                              <Button variant="destructive" onClick={() => handleCancelOrder(booking.id)}>
+                                                Cancel Order
+                                              </Button>
+                                            </div>}
                                           </dl>
                                         </motion.div>
                                       )}

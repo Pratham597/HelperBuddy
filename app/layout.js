@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import ProgressBar from "@/components/progressBar";
+import ProgressBar from "@/components/progressBar.jsx";
 
 const inter = Inter({ subsets: ["latin"] });
 
