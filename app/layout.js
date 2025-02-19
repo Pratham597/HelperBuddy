@@ -1,12 +1,15 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import ProgressBar from "@/components/ProgressBar";
+import ProgressBar from "@/components/ProgressBar.jsx";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "HelperBuddy - Reliable Home Repair Services",
+  icons:{
+    icons:"/favicon.ico"
+  },
   description:
     "HelperBuddy is your trusted platform for home repair services. Get expert electricians, plumbers, and technicians for quick and affordable service.",
   keywords:

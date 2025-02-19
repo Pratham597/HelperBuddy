@@ -20,7 +20,7 @@ export const metadata = {
 		title: "About Us - Helper Buddy",
 		description:
 			"Learn more about Helper Buddy, your trusted platform for connecting with skilled professionals for all your service needs.",
-		url: `https://${process.env.NEXT_PUBLIC_URL}/about`,
+		url: `/about`,
 		type: "website",
 		images: [
 			{
