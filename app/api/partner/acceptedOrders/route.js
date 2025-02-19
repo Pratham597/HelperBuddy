@@ -3,7 +3,7 @@ import ServiceOrder from "@/models/ServiceOrder";
 import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
 import Service from "@/models/Service";
-import Payment from "@/models/Payment";
+import Booking from "@/models/Payment";
 import User from "@/models/User";
 
 export const POST = async (req) => {
@@ -14,9 +14,7 @@ export const POST = async (req) => {
 
   const partner = await Partner.findById(userId);
   if (!partner) return NextResponse.json({ error: "Partner not found!" }, { status: 403 })
-  const serviceOrders = await ServiceOrder.find({ partner: userId, userApproved: false ,isPaid:false}).populate("user","name email phone").populate("service").select("-usercode");
-  const serviceOrderIds = serviceOrders.map(order => order._id);
-  const payments = await Payment.find({ serviceOrder: { $in: serviceOrderIds } })
+  const serviceOrders = await ServiceOrder.find({ partner: userId, userApproved: false, isPaid: false }).populate("user", "name email phone").populate("service").select("-userCode");
 
-  return NextResponse.json({ payments,serviceOrderIds});
-}; 
+  return NextResponse.json({ serviceOrders });
+};
