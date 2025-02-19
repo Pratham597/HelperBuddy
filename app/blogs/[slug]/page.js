@@ -1,53 +1,65 @@
-import BlogPage from "@/components/blog/BlogPage.jsx";
+"use client";
+import Navbar from "@/components/navbar/Navbar";
+import React, { useState, useEffect } from "react";
+import BlogPost from "@/components/blog/BlogPost";
 import axios from "axios";
+import ReadNext from "@/components/blog/ReadNext";
+import CTA from "@/components/blog/CTA";
+import Footer from "@/components/home/Footer";
+import { Loader2 } from "lucide-react";
 
-// Fetch blog data on the server
-async function fetchBlog(slug) {
-	try {
+const BlogPage = (req) => {
+	const [blog, setBlog] = useState(null);
+	const [loading, setLoading] = useState(true);
+
+	const fetchBlog = async (slug) => {
 		const res = await axios.get(
 			`${process.env.NEXT_PUBLIC_URL}/api/blog/${slug}`
 		);
 		return res.data.blog;
-	} catch (error) {
-		console.error("Error fetching blog:", error);
-		return null;
-	}
-}
-// Generate metadata for SEO
-export async function generateMetadata({ params }) {
-	const blog = await fetchBlog(params.slug);
-
-	return {
-		title: blog?.title || "Blog Post",
-		description:
-			blog?.content ||
-			"Discover insights and tips on home services and more.",
-		openGraph: {
-			title: blog?.title || "Blog Post",
-			description:
-				blog?.content ||
-				"Discover insights and tips on home services and more.",
-			images: [
-				{
-					url: blog?.image || "/default-image.jpg",
-					alt: blog?.title || "Blog Post",
-				},
-			],
-		},
 	};
-}
 
-export default async function Page({ params }) {
-	// Fetch blog data on the server
-	// const blog = await fetchBlog(params.slug);
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const { slug } = await req.params;
+				const data = await fetchBlog(slug);
+				console.log(data);
+				setBlog(data);
+				setLoading(false);
+			} catch (error) {
+				console.error("Error fetching blog:", error);
+			}
+		};
 
-	// Format the date on the server
-	const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-	});
+		fetchData();
+	}, []);
 
-	// Pass the blog data and formatted date to the BlogPage component
-	return <BlogPage slug={params.slug} />;
-}
+	return (
+		<>
+			<Navbar />
+			{loading && (
+				<div className="flex min-h-[90vh] mt-16 items-center justify-center bg-white">
+					<div className="flex flex-col items-center space-y-4">
+						{/* Shadcn Spinner */}
+						<Loader2 className="h-12 w-12 animate-spin text-gray-800" />
+						{/* Loading Text */}
+						<p className="text-lg font-semibold text-gray-800">
+							Loading...
+						</p>
+					</div>
+				</div>
+			)}
+			{!loading && (
+				<div className="min-h-screen mt-24 bg-white">
+					<BlogPost blog={blog} />
+					<ReadNext />
+					<CTA />
+				</div>
+			)}
+			<Footer />
+		</>
+	);
+};
+
+export default BlogPage;
