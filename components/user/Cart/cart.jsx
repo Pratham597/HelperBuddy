@@ -23,6 +23,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { delay } from "framer-motion";
 import toast from "react-hot-toast";
+import { set } from "lodash";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -136,6 +137,7 @@ export default function Cart() {
         return;
       }
       console.log("Total Amount:", totalAmount);
+      console.log(cart)
       const data = {
         totalAmount,
         address: formatAddress(shippingAddress),
@@ -146,127 +148,144 @@ export default function Cart() {
           timeline:
             formatDate(item.timeline.date) + " " + item.timeline.timeSlot,
         })),
-        paymentMethod,
-        walletUsed: paymentMethod === "Wallet+Online" ? Number(walletUsed) : 0
+        // paymentMethod,
+        // walletUsed: paymentMethod === "Wallet+Online" ? Number(walletUsed) : 0
       };
-      if (paymentMethod === "COD") {
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_URL}/api/user/checkout`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
+      // if (paymentMethod === "COD") {
+      //   const res = await axios.post(
+      //     `${process.env.NEXT_PUBLIC_URL}/api/user/checkout`,
+      //     data,
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ${user.token}`,
+      //       },
+      //     }
+      //   );
+      //   if (res.data.success) {
+      //     setPaymentStatus("success");
+      //     setIsModalOpen(true);
+      //     setCart([]);
+      //     localStorage.removeItem("cart");
+      //     window.dispatchEvent(new Event("storage"));
+      //   }
+      // } else {
+      //   const res = await axios.post(
+      //     `${process.env.NEXT_PUBLIC_URL}/api/user/checkout`,
+      //     data,
+      //     {
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Authorization: `Bearer ${user.token}`,
+      //       },
+      //     }
+      //   );
+
+      //   // if (res.status === 200) {
+      //   //   const { booking } = res.data;
+      //   //   const orderId = booking.orderId;
+      //   //   const options = {
+      //   //     key: process.env.RAZORPAY_KEY_ID,
+      //   //     amount: Number(booking.totalAmount) * 100,
+      //   //     currency: "INR",
+      //   //     name: `HelperBuddy Services`,
+      //   //     description: "Order Payment",
+      //   //     image: "./avatar.gif",
+      //   //     order_id: orderId,
+      //   //     prefill: {
+      //   //       name: user.name,
+      //   //       email: user.email,
+      //   //       contact: user.phone,
+      //   //     },
+      //   //     notes: {
+      //   //       address: "Razorpay Corporate Office",
+      //   //     },
+      //   //     theme: {
+      //   //       color: "#3399cc",
+      //   //     },
+      //   //     handler: async (response) => {
+      //   //       try {
+      //   //         setPaymentStatus("processing");
+      //   //         setIsModalOpen(true);
+
+      //   //         const res = await fetch(
+      //   //           `${process.env.NEXT_PUBLIC_URL}/api/user/payment`,
+      //   //           {
+      //   //             method: "POST",
+      //   //             headers: {
+      //   //               "Content-Type": "application/json",
+      //   //               Authorization: `Bearer ${user.token}`,
+      //   //             },
+      //   //             body: JSON.stringify({
+      //   //               razorpay_payment_id: response.razorpay_payment_id,
+      //   //               razorpay_order_id: response.razorpay_order_id,
+      //   //               razorpay_signature: response.razorpay_signature,
+      //   //             }),
+      //   //           }
+      //   //         );
+
+      //   //         const data = await res.json();
+      //   //         if (data.success) {
+      //   //           setPaymentStatus("success");
+      //   //           setCart([]);
+      //   //           localStorage.removeItem("cart");
+      //   //           window.dispatchEvent(new Event("storage"));
+      //   //           try {
+      //   //             await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/postPayment`, {
+      //   //               method: "POST",
+      //   //               headers: {
+      //   //                 "Content-Type": "application/json",
+      //   //                 Authorization: `Bearer ${user.token}`,
+      //   //               },
+      //   //               body: JSON.stringify(
+      //   //                 { booking: data.booking }
+      //   //               ),
+      //   //             });
+      //   //           } catch (error) {
+      //   //             console.error("Sending emails failed!")
+      //   //           }
+      //   //         } else {
+      //   //           setPaymentStatus("error");
+      //   //         }
+      //   //       } catch (error) {
+      //   //         console.error("Payment verification error:", error);
+      //   //         setPaymentStatus("error");
+      //   //       } finally {
+      //   //         setIsLoading(false);
+      //   //       }
+      //   //     },
+      //   //     modal: {
+      //   //       ondismiss: () => {
+      //   //         setIsLoading(false); // Stop loading
+      //   //         setPaymentStatus("error"); // Mark as error since payment is canceled
+      //   //         setIsModalOpen(true); // Open the payment status modal with failure status
+      //   //       },
+      //   //     },
+      //   //   };
+
+      //   //   const rzp1 = new window.Razorpay(options);
+      //   //   rzp1.open();
+      //   // } else {
+      //   //   alert("Error Occurred! Try again later");
+      //   //   setIsLoading(false);
+      //   // }
+      // }
+      console.log(data.services);
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/api/user/order`, data  ,{
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        })
+
         if (res.data.success) {
           setPaymentStatus("success");
           setIsModalOpen(true);
           setCart([]);
           localStorage.removeItem("cart");
           window.dispatchEvent(new Event("storage"));
-        }
-      } else {
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_URL}/api/user/checkout`,
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-
-        if (res.status === 200) {
-          const { booking } = res.data;
-          const orderId = booking.orderId;
-          const options = {
-            key: process.env.RAZORPAY_KEY_ID,
-            amount: Number(booking.totalAmount) * 100,
-            currency: "INR",
-            name: `HelperBuddy Services`,
-            description: "Order Payment",
-            image: "./avatar.gif",
-            order_id: orderId,
-            prefill: {
-              name: user.name,
-              email: user.email,
-              contact: user.phone,
-            },
-            notes: {
-              address: "Razorpay Corporate Office",
-            },
-            theme: {
-              color: "#3399cc",
-            },
-            handler: async (response) => {
-              try {
-                setPaymentStatus("processing");
-                setIsModalOpen(true);
-
-                const res = await fetch(
-                  `${process.env.NEXT_PUBLIC_URL}/api/user/payment`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${user.token}`,
-                    },
-                    body: JSON.stringify({
-                      razorpay_payment_id: response.razorpay_payment_id,
-                      razorpay_order_id: response.razorpay_order_id,
-                      razorpay_signature: response.razorpay_signature,
-                    }),
-                  }
-                );
-
-                const data = await res.json();
-                if (data.success) {
-                  setPaymentStatus("success");
-                  setCart([]);
-                  localStorage.removeItem("cart");
-                  window.dispatchEvent(new Event("storage"));
-                  try {
-                    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/postPayment`, {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${user.token}`,
-                      },
-                      body: JSON.stringify(
-                        { booking: data.booking }
-                      ),
-                    });
-                  } catch (error) {
-                    console.error("Sending emails failed!")
-                  }
-                } else {
-                  setPaymentStatus("error");
-                }
-              } catch (error) {
-                console.error("Payment verification error:", error);
-                setPaymentStatus("error");
-              } finally {
-                setIsLoading(false);
-              }
-            },
-            modal: {
-              ondismiss: () => {
-                setIsLoading(false); // Stop loading
-                setPaymentStatus("error"); // Mark as error since payment is canceled
-                setIsModalOpen(true); // Open the payment status modal with failure status
-              },
-            },
-          };
-
-          const rzp1 = new window.Razorpay(options);
-          rzp1.open();
-        } else {
-          alert("Error Occurred! Try again later");
+          router.push("/user/dashboard/bookings/servicesPending");
           setIsLoading(false);
         }
-      }
     } catch (error) {
       console.error("Checkout error:", error);
       alert("An error occurred during checkout. Please try again.");
@@ -431,7 +450,7 @@ export default function Cart() {
                 status={paymentStatus}
                 onComplete={() => router.push("/user/dashboard/booking/servicesPending")}
               />
-              <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl mt-4">
+              {/* <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl mt-4">
                 <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
                 <div className="space-y-4">
                   <Select onValueChange={setPaymentMethod} value={paymentMethod}>
@@ -484,7 +503,7 @@ export default function Cart() {
                     </div>
                   )}
                 </div>
-              </Card>
+              </Card> */}
 
               <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl">
                 <h2 className="text-2xl font-semibold mb-4">Bill Summary</h2>
@@ -545,7 +564,7 @@ export default function Cart() {
                 Processing...
               </>
             ) : (
-              `Proceed to Pay ₹${calculateTotal() - walletUsed > 0 ? calculateTotal() - walletUsed : 0}`
+              `Place your Order`
             )}
           </Button>
         </div>

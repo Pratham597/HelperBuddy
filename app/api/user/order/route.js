@@ -22,10 +22,13 @@ export const POST = async (req, res) => {
   }
 
   const data = await req.json();
-
   // Validate services
-  for (const service of data.services) {
-    if (!service.serviceId || !service.timeline) {
+  if (!Array.isArray(data.services)) {
+    return NextResponse.json({ error: "Invalid data format" }, { status: 400 });
+  }
+
+  for (const { serviceId, timeline } of data.services) {
+    if (!serviceId || !timeline) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
   }
