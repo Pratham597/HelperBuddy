@@ -2,14 +2,11 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import ProgressBar from "@/components/ProgressBar.jsx";
-
+import Head from "next/head";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "HelperBuddy - Reliable Home Repair Services",
-  icons:{
-    icons:"/favicon.ico"
-  },
   description:
     "HelperBuddy is your trusted platform for home repair services. Get expert electricians, plumbers, and technicians for quick and affordable service.",
   keywords:
@@ -20,7 +17,7 @@ export const metadata = {
     title: "HelperBuddy - Get Expert Home Repair Services",
     description:
       "Need a quick fix? Book trusted professionals for home repairs, plumbing, electrical work, and more with HelperBuddy.",
-    url: "https://helperbuddy.com",
+    url: "https://helper-buddy.vercel.app",
     siteName: "HelperBuddy",
     type: "website",
     images: [
@@ -37,12 +34,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="google-site-verification" content="your-google-verification-code" />
+      <Head>
+        <meta name="google-site-verification" content="dv6I5U3SsXAiLpOcS3O7PyVPUsaNHRuTtdAisQOWWDg" />
         <meta charSet="UTF-8" />
         <meta name="theme-color" content="#007bff" />
         <link rel="icon" href="/favicon.ico" />
-      </head>
+      </Head>
       <body className={inter.className}>
         <ProgressBar />
         {children}
