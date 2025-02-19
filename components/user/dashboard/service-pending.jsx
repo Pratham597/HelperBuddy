@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Script from "next/script"
 import { ChevronDown, ChevronUp, ShoppingBag, Loader2, Calendar, Package } from "lucide-react"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,10 +17,7 @@ import { format, isSameDay, parseISO } from "date-fns"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input"
 import axios from "axios";
-import toast from "react-hot-toast"
-import Link from "next/link"
 
 export default function ServicePending() {
   const [dateGroups, setDateGroups] = useState([])
@@ -31,17 +28,17 @@ export default function ServicePending() {
   const [customDate, setCustomDate] = useState(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const ordersPerPage = 10
+  const ordersPerPage = 5
   const [paymentMethod, setPaymentMethod] = useState("")
   const [walletAmount, setWalletAmount] = useState(0)
   const [walletUsed, setWalletUsed] = useState(0)
   const [walletError, setWalletError] = useState("")
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [selectedBooking, setSelectedBooking] = useState(null)
+  const [isProcessing, setIsProcessing] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [refresh, setRefresh] = useState(false)
   const router = useRouter();
-
   useEffect(() => {
     const fetchWalletBalance = async () => {
       try {
@@ -96,16 +93,16 @@ export default function ServicePending() {
     return true
   }
 
-  const handleWalletAmountChange = (e, booking) => {
+  const handleWalletAmountChange = (e) => {
     const amount = e.target.value
     setWalletUsed(amount)
-    validateWalletAmount(amount, booking.service.price)
+    if (selectedBooking) {
+      validateWalletAmount(amount, selectedBooking.service.price)
+    }
   }
 
   const handlePayment = async (booking) => {
     try {
-      setSelectedBooking(booking)
-      setIsPaymentModalOpen(true)
       setIsLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
       const data = {
@@ -128,10 +125,6 @@ export default function ServicePending() {
         if (res.data.success) {
           setPaymentStatus("success");
           setIsModalOpen(true);
-          setTimeout(() => {
-            fetchOrders();
-          }, 600);
-
         }
       } else {
         const res = await axios.post(
@@ -144,6 +137,7 @@ export default function ServicePending() {
             },
           }
         );
+        console.log(res);
         if (res.status === 200) {
           const { payment } = res.data;
           const orderId = payment.orderId;
@@ -190,9 +184,6 @@ export default function ServicePending() {
                 const data = await res.json();
                 if (data.success) {
                   setPaymentStatus("success");
-                  setTimeout(() => {
-                    fetchOrders();
-                  }, 2000);
                 } else {
                   setPaymentStatus("error");
                 }
@@ -243,108 +234,108 @@ export default function ServicePending() {
     }
   }
 
-  const fetchOrders = async () => {
-    setIsLoading(true);
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      if (!user || !user.token) return;
-
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      };
-
-      const [acceptedRes, pendingRes] = await Promise.all([
-        axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicePartnerAccepted`, {}, { headers }),
-        axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicesPending`, {}, { headers }),
-      ]);
-
-      const processOrders = (orders, status) => {
-        return orders.reduce((acc, order) => {
-          if (!order.service) return acc; // Ensure service exists
-
-          const date = order.createdAt.split("T")[0]; // Extract date part
-
-          if (!acc[date]) {
-            acc[date] = [];
-          }
-
-          acc[date].push({
-            id: order._id,
-            status,
-            service: {
-              serviceId: order.service._id,
-              name: order.service.name,
-              category: order.service.category,
-              price: order.service.price,
-              description: order.service.description,
-              image: order.service.image,
-            },
-            timeline: order.timeline,
-            pincode: order.pincode,
-            address: order.address,
-            userCode: order.userCode,
-            userApproved: order.userApproved,
-            rating: order.rating,
-            isPaid: order.isPaid,
-            createdAt: order.createdAt,
-            updatedAt: order.updatedAt,
-          });
-
-          return acc;
-        }, {});
-      };
-
-      // Extract data safely
-      const acceptedOrders = acceptedRes?.data?.serviceOrder || [];
-      const pendingOrders = pendingRes?.data?.serviceOrder || [];
-
-      // Process orders based on their statuses
-      const acceptedGroups = processOrders(
-        acceptedOrders.filter(order => order.partner && !order.isPaid),
-        "Partner Assigned"
-      );
-
-      const pendingGroups = processOrders(
-        pendingOrders,
-        "Order Received"
-      );
-
-      const paymentDoneGroups = processOrders(
-        acceptedOrders.filter(order => order.isPaid),
-        "Payment Completed"
-      );
-
-      console.log(acceptedGroups, pendingGroups, paymentDoneGroups);
-
-      // Combine and sort dates
-      const allDates = [...new Set([
-        ...Object.keys(acceptedGroups),
-        ...Object.keys(pendingGroups),
-        ...Object.keys(paymentDoneGroups),
-      ])].sort((a, b) => new Date(b) - new Date(a));
-
-      // Format grouped data
-      const groupedByDate = allDates.map(date => ({
-        date,
-        bookings: [
-          ...(acceptedGroups[date] || []),
-          ...(pendingGroups[date] || []),
-          ...(paymentDoneGroups[date] || []),
-        ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), // Sort by createdAt
-      }));
-
-      setDateGroups(groupedByDate);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchOrders = async () => {
+      setIsLoading(true);
+      try {
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        if (!user || !user.token) return;
+
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        };
+
+        const [acceptedRes, pendingRes] = await Promise.all([
+          axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicePartnerAccepted`, {}, { headers }),
+          axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicesPending`, {}, { headers }),
+        ]);
+
+        const processOrders = (orders, status) => {
+          return orders.reduce((acc, order) => {
+            if (!order.service) return acc; // Ensure service exists
+
+            const date = order.createdAt.split("T")[0]; // Extract date part
+
+            if (!acc[date]) {
+              acc[date] = [];
+            }
+
+            acc[date].push({
+              id: order._id,
+              status,
+              service: {
+                serviceId: order.service._id,
+                name: order.service.name,
+                category: order.service.category,
+                price: order.service.price,
+                description: order.service.description,
+                image: order.service.image,
+              },
+              timeline: order.timeline,
+              pincode: order.pincode,
+              address: order.address,
+              userCode: order.userCode,
+              userApproved: order.userApproved,
+              rating: order.rating,
+              isPaid: order.isPaid,
+              createdAt: order.createdAt,
+              updatedAt: order.updatedAt,
+            });
+
+            return acc;
+          }, {});
+        };
+
+        // Extract data safely
+        const acceptedOrders = acceptedRes?.data?.serviceOrder || [];
+        const pendingOrders = pendingRes?.data?.serviceOrder || [];
+
+        // Process orders based on their statuses
+        const acceptedGroups = processOrders(
+          acceptedOrders.filter(order => order.partner && !order.isPaid),
+          "Partner Assigned"
+        );
+
+        const pendingGroups = processOrders(
+          pendingOrders,
+          "Order Received"
+        );
+
+        const paymentDoneGroups = processOrders(
+          acceptedOrders.filter(order => order.isPaid),
+          "Payment Completed"
+        );
+
+        console.log(acceptedGroups, pendingGroups, paymentDoneGroups);
+
+        // Combine and sort dates
+        const allDates = [...new Set([
+          ...Object.keys(acceptedGroups),
+          ...Object.keys(pendingGroups),
+          ...Object.keys(paymentDoneGroups),
+        ])].sort((a, b) => new Date(b) - new Date(a));
+
+        // Format grouped data
+        const groupedByDate = allDates.map(date => ({
+          date,
+          bookings: [
+            ...(acceptedGroups[date] || []),
+            ...(pendingGroups[date] || []),
+            ...(paymentDoneGroups[date] || []),
+          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), // Sort by createdAt
+        }));
+
+        setDateGroups(groupedByDate);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchOrders();
-  }, [refresh]);
+  }, []);
 
 
   const toggleDetails = (bookingId) => {
@@ -454,32 +445,6 @@ export default function ServicePending() {
       .filter((group) => group !== null) // Remove groups that were excluded
   }
 
-  const handleCancelOrder = async (serviceOrderId) => {
-    const user = JSON.parse(localStorage.getItem("user"))
-    if (!user || !user.token) {
-      console.error("Error: No auth token found")
-      return
-    }
-
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_URL}/api/user/servicesPending/cancelOrder`,
-        { serviceOrderId },
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
-      console.log("Order cancelled successfully:", response.data)
-      toast.success("Service cancelled successfully")
-      setRefresh((prev) => !prev)
-    } catch (error) {
-      toast.error(error.response?.data.error)
-      console.error("Error cancelling order:", error.response?.data)
-    }
-  }
-
   const filteredDateGroups = filterOrders()
   return (
     <>
@@ -493,12 +458,7 @@ export default function ServicePending() {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbPage className="flex items-center gap-2">
-                    <Link href={"/user/dashboard/profile/userInformation"}>User</Link>
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="flex items-center gap-2">
+                    <Package className="w-4 h-4" />
                     Order History
                   </BreadcrumbPage>
                 </BreadcrumbItem>
@@ -665,8 +625,8 @@ export default function ServicePending() {
                                             <Input
                                               type="number"
                                               value={walletUsed}
-                                              onChange={(e) => handleWalletAmountChange(e, booking)}
-                                              max={Math.min(walletAmount, booking.service.price - 1)}
+                                              onChange={handleWalletAmountChange}
+                                              max={Math.min(walletAmount, calculateTotal())}
                                               min={0}
                                               className="w-full"
                                             />
@@ -682,7 +642,7 @@ export default function ServicePending() {
                                           <div className="space-y-2">
                                             <div className="flex justify-between text-sm">
                                               <span>Total Amount:</span>
-                                              <span>₹{booking.service.price}</span>
+                                              <span>₹{calculateTotal()}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                               <span>Wallet Amount Used:</span>
@@ -691,7 +651,7 @@ export default function ServicePending() {
                                             <Separator />
                                             <div className="flex justify-between font-semibold">
                                               <span>Amount to Pay Online:</span>
-                                              <span>₹{booking.service.price - walletUsed}</span>
+                                              <span>₹{calculateTotal() - walletUsed}</span>
                                             </div>
                                           </div>
                                         )}
@@ -763,11 +723,6 @@ export default function ServicePending() {
                                               <dt className="font-medium text-gray-600">User Code</dt>
                                               <dd className="mt-1 text-black">{booking.userCode}</dd>
                                             </div>
-                                            {!booking.isPaid && <div className="sm:col-span-1">
-                                              <Button variant="destructive" onClick={() => handleCancelOrder(booking.id)}>
-                                                Cancel Order
-                                              </Button>
-                                            </div>}
                                           </dl>
                                         </motion.div>
                                       )}
@@ -803,4 +758,3 @@ export default function ServicePending() {
     </>
   )
 }
-
