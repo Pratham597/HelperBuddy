@@ -26,7 +26,8 @@ export default function PartnerProfilePage() {
   const [selectedPincode, setSelectedPincode] = useState("");
   const [pincodeList, setPincodeList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [removingPincode, setRemovingPincode] = useState("");
 
   useEffect(() => {
     const storedProfile = JSON.parse(localStorage.getItem("partner"));
@@ -54,7 +55,6 @@ export default function PartnerProfilePage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError("");
 
     try {
       const partner = JSON.parse(localStorage.getItem("partner"));
@@ -77,7 +77,6 @@ export default function PartnerProfilePage() {
       setIsChanged(false);
       toast.success("Profile updated successfully!");
     } catch (error) {
-      setError(error.response?.data?.error || error.message || "Failed to update profile");
       toast.error("Failed to update profile.");
     } finally {
       setLoading(false);
@@ -90,8 +89,7 @@ export default function PartnerProfilePage() {
 
   const handlePincodeUpdate = async () => {
     if (!selectedPincode || pincodeList.includes(selectedPincode)) return;
-    setLoading(true);
-    setError("");
+    setPincodeLoading(true);
 
     try {
       const partner = JSON.parse(localStorage.getItem("partner"));
@@ -109,16 +107,14 @@ export default function PartnerProfilePage() {
       setSelectedPincode("");
       toast.success("Pincode added!");
     } catch (error) {
-      setError(error.response?.data?.error || error.message || "Failed to add pincode");
       toast.error("Failed to add pincode.");
     } finally {
-      setLoading(false);
+      setPincodeLoading(false);
     }
   };
 
   const handlePincodeRemove = async (pincode) => {
-    setLoading(true);
-    setError("");
+    setRemovingPincode(pincode);
 
     try {
       const partner = JSON.parse(localStorage.getItem("partner"));
@@ -135,10 +131,9 @@ export default function PartnerProfilePage() {
       localStorage.setItem("partner", JSON.stringify({ ...profile, pincode: updatedPincodes }));
       toast.success("Pincode removed!");
     } catch (error) {
-      setError(error.response?.data?.error || error.message || "Failed to remove pincode");
       toast.error("Failed to remove pincode.");
     } finally {
-      setLoading(false);
+      setRemovingPincode("");
     }
   };
 
@@ -206,15 +201,15 @@ export default function PartnerProfilePage() {
           </CardHeader>
           <CardContent className="p-6 space-y-4">
             <Input placeholder="Enter a pincode" value={selectedPincode} onChange={handlePincodeChange} />
-            <Button onClick={handlePincodeUpdate} disabled={!selectedPincode || loading}>
-              {loading ? "Adding..." : "Add Pincode"}
+            <Button onClick={handlePincodeUpdate} disabled={!selectedPincode || pincodeLoading}>
+              {pincodeLoading ? "Adding..." : "Add Pincode"}
             </Button>
             <ul className="mt-4 space-y-2">
               {pincodeList.map((pincode) => (
                 <li key={pincode} className="flex justify-between">
                   <span>{pincode}</span>
-                  <Button onClick={() => handlePincodeRemove(pincode)} disabled={loading}>
-                    {loading ? "Removing..." : "Remove"}
+                  <Button onClick={() => handlePincodeRemove(pincode)} disabled={removingPincode === pincode}>
+                    {removingPincode === pincode ? "Removing..." : "Remove"}
                   </Button>
                 </li>
               ))}

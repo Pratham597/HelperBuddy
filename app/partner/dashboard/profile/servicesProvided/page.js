@@ -16,13 +16,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from 'react-hot-toast'
+import { toast } from "react-hot-toast";
 
 export default function ServiceManagement() {
   const [availableServices, setAvailableServices] = useState([]);
   const [servicesProvided, setServicesProvided] = useState([]);
   const [selectedService, setSelectedService] = useState("");
   const [loading, setLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [removingServiceId, setRemovingServiceId] = useState(null); // Track which service is being removed
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -38,7 +40,7 @@ export default function ServiceManagement() {
         });
         setServicesProvided(res.data.services || []);
       } catch (error) {
-        toast.error("Error fetching services:")
+        toast.error("Error fetching services");
       } finally {
         setLoading(false);
       }
@@ -48,6 +50,7 @@ export default function ServiceManagement() {
 
   const handleAddService = async () => {
     if (!selectedService) return;
+    setButtonLoading(true);
 
     try {
       const partner = JSON.parse(localStorage.getItem("partner"));
@@ -67,13 +70,17 @@ export default function ServiceManagement() {
 
       // Reset selection
       setSelectedService("");
-      toast.success("Service added Successfully")
+      toast.success("Service added Successfully");
     } catch (error) {
-      toast.error(error.response.data.error)
+      toast.error(error.response?.data?.error || "Error adding service");
+    } finally {
+      setButtonLoading(false);
     }
   };
 
   const handleRemoveService = async (serviceId) => {
+    setRemovingServiceId(serviceId); // Set the loading state for the specific service being removed
+
     try {
       const partner = JSON.parse(localStorage.getItem("partner"));
       const { token } = partner;
@@ -88,9 +95,11 @@ export default function ServiceManagement() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setServicesProvided(res.data.services || []);
-      toast.success("Service removed successfully")
+      toast.success("Service removed successfully");
     } catch (error) {
-      toast.error("Error removing service:")
+      toast.error("Error removing service");
+    } finally {
+      setRemovingServiceId(null); // Reset loading state
     }
   };
 
@@ -143,9 +152,9 @@ export default function ServiceManagement() {
             <Button
               className="mt-6"
               onClick={handleAddService}
-              disabled={!selectedService}
+              disabled={!selectedService || buttonLoading}
             >
-              Add Service
+              {buttonLoading ? "Adding..." : "Add Service"}
             </Button>
           </CardContent>
         </Card>
@@ -177,8 +186,9 @@ export default function ServiceManagement() {
                     size="sm"
                     className="text-gray-600"
                     onClick={() => handleRemoveService(service.service._id)}
+                    disabled={removingServiceId === service.service._id}
                   >
-                    Remove
+                    {removingServiceId === service.service._id ? "Removing..." : "Remove"}
                   </Button>
                 </div>
               ))}

@@ -129,7 +129,6 @@ export default function OrderHistory() {
 							<BreadcrumbSeparator className="hidden md:block" />
 							<BreadcrumbItem>
 								<BreadcrumbPage className="flex items-center gap-2">
-									<Package className="w-4 h-4" />
 									Order History
 								</BreadcrumbPage>
 							</BreadcrumbItem>
