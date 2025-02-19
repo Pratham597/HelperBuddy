@@ -3,10 +3,14 @@ import { NextResponse } from "next/server";
 import connectDB from "@/db/connect";
 import generateToken from "@/lib/generateToken";
 
-
-/** Controller for creating admin */
+/** Controller for creating new  admin */
 export const POST = async (req) => {
   await connectDB();
+  const userId =req.headers.get("userId");
+  if(!userId) return NextResponse.json({error:'Admin only allowed!'},{status:403});
+  const user=await Admin.findById(userId);
+  if(!user && user.email==="helperbuddy@gmail.com") return NextResponse.json({error:'Admin only allowed!'},{status:403});
+  
   let data = await req.json();
   if (!data.email || !data.name || !data.password || !data.phone) {
     return NextResponse.json(
@@ -17,10 +21,6 @@ export const POST = async (req) => {
   const admin = new Admin(data);
   await admin.save();
   return NextResponse.json({
-    name: admin.name,
-    email: admin.email,
-    id: admin._id,
-    token: await generateToken(admin._id),
-    phone: admin.phone
+    admin,
   });
 };
