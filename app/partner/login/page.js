@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import LoginForm from "@/components/partner/LoginFormPartner.jsx";
+import LoginForm from "@/components/partner/loginFormPartner.jsx";
 import SignupForm from "@/components/partner/SignupFormPartner.jsx";
 import LoginPageImage from "@/components/LoginPageImage.jsx";
 import { useRouter } from "next/navigation"
