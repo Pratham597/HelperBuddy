@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,8 +18,6 @@ import Link from "next/link";
 
 export default function AdminProfilePage() {
   const [profile, setProfile] = useState(null);
-  const [isChanged, setIsChanged] = useState(false);
-  const [originalProfile, setOriginalProfile] = useState(null);
 
   useEffect(() => {
     const storedProfile = JSON.parse(localStorage.getItem("admin"));
@@ -30,25 +27,8 @@ export default function AdminProfilePage() {
         email: storedProfile.email || "",
         phone: storedProfile.phone || "",
       });
-      setOriginalProfile({ ...storedProfile });
     }
   }, []);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setProfile((prevProfile) => ({
-      ...prevProfile,
-      [name]: value,
-    }));
-    setIsChanged(value !== originalProfile[name]);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    localStorage.setItem("admin", JSON.stringify(profile));
-    setIsChanged(false);
-    setOriginalProfile({ ...profile });
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -73,29 +53,24 @@ export default function AdminProfilePage() {
       <main className="max-w-3xl mx-auto px-6 py-8">
         <Card className="shadow-md border border-gray-200">
           <CardHeader className="border-b p-4">
-            <CardTitle className="text-lg font-semibold">Edit Profile</CardTitle>
-            <CardDescription>Update your personal information</CardDescription>
+            <CardTitle className="text-lg font-semibold">Admin Profile</CardTitle>
+            <CardDescription>Your personal information</CardDescription>
           </CardHeader>
           {profile ? (
-            <form onSubmit={handleSubmit} className="space-y-4 p-4">
+            <CardContent className="space-y-4 p-4">
               <div className="space-y-2">
                 <Label>Name</Label>
-                <Input id="name" name="name" value={profile.name} onChange={handleChange} required />
+                <Input id="name" name="name" value={profile.name} disabled />
               </div>
               <div className="space-y-2">
                 <Label>Email</Label>
-                <Input id="email" name="email" type="email" value={profile.email} onChange={handleChange} required />
+                <Input id="email" name="email" type="email" value={profile.email} disabled />
               </div>
               <div className="space-y-2">
                 <Label>Phone</Label>
-                <Input id="phone" name="phone" type="tel" value={profile.phone} onChange={handleChange} required />
+                <Input id="phone" name="phone" type="tel" value={profile.phone} disabled />
               </div>
-              <CardFooter className="flex justify-end border-t p-4">
-                <Button type="submit" disabled={!isChanged} className="bg-black">
-                  Update Profile
-                </Button>
-              </CardFooter>
-            </form>
+            </CardContent>
           ) : (
             <div className="p-6 space-y-6">
               <Skeleton className="h-10 w-full" />
