@@ -45,11 +45,9 @@ export default function Form({ isLogin, setIsLogin }) {
 		e.preventDefault();
 
 		setIsSubmitting(true);
-		console.log("issubmitting", isSubmitting);
 
 		if (!form.firstName || !form.email || !form.phone || !form.password) {
 			toast.error("All fields are required.");
-			console.log("All fields are required.");
 			setIsSubmitting(false);
 			return;
 		}
@@ -93,7 +91,6 @@ export default function Form({ isLogin, setIsLogin }) {
 			});
 
 			const data = await res.json();
-			console.log("res", data);
 			if (!res.ok) {
 				toast.error(data.error || "Signup failed.");
 				setIsSubmitting(false);

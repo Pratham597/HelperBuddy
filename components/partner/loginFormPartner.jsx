@@ -71,7 +71,6 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 
 			if (res.ok) {
 				const data = await res.json();
-				console.log(data);
 				// Save token in local storage
 				localStorage.setItem("partner", JSON.stringify(data));
 				const salt = crypto.randomBytes(16).toString("hex");

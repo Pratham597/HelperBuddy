@@ -32,7 +32,6 @@ export default function ManageServicePage() {
     const fetchServices = async () => {
       try {
         const response = await axios.get("/api/service");
-        console.log(response.data);
         setServices(response.data);
       } catch (error) {
         toast.error("Failed to fetch services");

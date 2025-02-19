@@ -52,7 +52,6 @@ async function sendEmailToPartner(emails, userDetails, service) {
 
   try {
     let info = await transporter.sendMail(mailOptions);
-    console.log("Emails sent: ", info.response);
   } catch (error) {
     console.error("Error sending email: ", error);
   }

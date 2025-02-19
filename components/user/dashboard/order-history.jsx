@@ -76,7 +76,7 @@ export default function OrderHistory() {
       }
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/serviceDone`, {}, { headers })
-      console.log(response.data)
+      // console.log(response.data)
 
       // Group service orders by booking ID
       const groupedOrders = response.data.serviceOrder.reduce((acc, order) => {

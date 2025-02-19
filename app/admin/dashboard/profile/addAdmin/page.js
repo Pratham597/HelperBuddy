@@ -49,7 +49,6 @@ export default function Page() {
         }
       );
 
-      console.log("Admin added successfully:", response.data);
       setLoading(false);
       toast.success("Admin created successfully!");
       setEmail("");

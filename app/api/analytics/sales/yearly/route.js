@@ -5,7 +5,6 @@ import Admin from "@/models/Admin";
 
 export const POST = async (req) => {
   const userId = req.headers.get("userId");
-  console.log(userId)
   if (!userId)
     return NextResponse.json({ error: "User unauthorized!" }, { status: 403 });
 
