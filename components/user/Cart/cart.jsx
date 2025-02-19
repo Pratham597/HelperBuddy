@@ -136,8 +136,6 @@ export default function Cart() {
         router.push("/user/login");
         return;
       }
-      console.log("Total Amount:", totalAmount);
-      console.log(cart)
       const data = {
         totalAmount,
         address: formatAddress(shippingAddress),
@@ -441,15 +439,6 @@ export default function Cart() {
                   </ScrollArea>
                 )}
               </Card>
-              <PaymentStatusModal
-                isOpen={isModalOpen}
-                onClose={() => {
-                  setIsModalOpen(false);
-                  setPaymentStatus(null);
-                }}
-                status={paymentStatus}
-                onComplete={() => router.push("/user/dashboard/booking/servicesPending")}
-              />
               {/* <Card className="shadow-lg rounded-lg bg-white p-6 transition-all duration-300 hover:shadow-xl mt-4">
                 <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
                 <div className="space-y-4">
