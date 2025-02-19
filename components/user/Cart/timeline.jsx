@@ -30,32 +30,41 @@ export function Timeline({ timeline, onChange }) {
   }
 
   return (
-    <div className="flex flex-col space-y-4">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className={!date && "text-muted-foreground"}>
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar mode="single" selected={date} onSelect={handleDateChange} initialFocus />
-        </PopoverContent>
-      </Popover>
+		<div className="flex flex-col space-y-4">
+			<Popover>
+				<PopoverTrigger asChild>
+					<Button
+						variant="outline"
+						className={!date && "text-muted-foreground"}
+					>
+						<CalendarIcon className="mr-2 h-4 w-4" />
+						{date ? format(date, "PPP") : <span>Pick a date</span>}
+					</Button>
+				</PopoverTrigger>
+				<PopoverContent className="w-auto p-0" align="start">
+					<Calendar
+						mode="single"
+						selected={date}
+						onSelect={handleDateChange}
+						initialFocus
+						disabled={(day) => day < new Date()}
+					/>
+				</PopoverContent>
+			</Popover>
 
-      <Select value={timeSlot} onValueChange={handleTimeSlotChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a time slot" />
-        </SelectTrigger>
-        <SelectContent>
-          {timeSlots.map((slot) => (
-            <SelectItem key={slot.value} value={slot.value}>
-              {slot.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  )
+			<Select value={timeSlot} onValueChange={handleTimeSlotChange}>
+				<SelectTrigger>
+					<SelectValue placeholder="Select a time slot" />
+				</SelectTrigger>
+				<SelectContent>
+					{timeSlots.map((slot) => (
+						<SelectItem key={slot.value} value={slot.value}>
+							{slot.label}
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
+		</div>
+  );
 }
 
