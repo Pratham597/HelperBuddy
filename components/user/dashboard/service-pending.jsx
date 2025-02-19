@@ -95,7 +95,7 @@ export default function ServicePending() {
     return true
   }
 
-  const handleWalletAmountChange = (e) => {
+  const handleWalletAmountChange = (e,booking) => {
     const amount = e.target.value
     setWalletUsed(amount)
     validateWalletAmount(amount, booking.service.price)
@@ -128,8 +128,9 @@ export default function ServicePending() {
           setPaymentStatus("success");
           setIsModalOpen(true);
           setTimeout(() => {
-            router.refresh();
-          }, 2000);
+            fetchOrders();
+          }, 600);
+          
         }
       } else {
         const res = await axios.post(
@@ -189,7 +190,7 @@ export default function ServicePending() {
                 if (data.success) {
                   setPaymentStatus("success");
                   setTimeout(() => {
-                    router.refresh();
+                    fetchOrders();
                   }, 2000);
                 } else {
                   setPaymentStatus("error");
@@ -241,106 +242,106 @@ export default function ServicePending() {
     }
   }
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setIsLoading(true);
-      try {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        if (!user || !user.token) return;
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      if (!user || !user.token) return;
 
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        };
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      };
 
-        const [acceptedRes, pendingRes] = await Promise.all([
-          axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicePartnerAccepted`, {}, { headers }),
-          axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicesPending`, {}, { headers }),
-        ]);
+      const [acceptedRes, pendingRes] = await Promise.all([
+        axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicePartnerAccepted`, {}, { headers }),
+        axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/servicesPending`, {}, { headers }),
+      ]);
 
-        const processOrders = (orders, status) => {
-          return orders.reduce((acc, order) => {
-            if (!order.service) return acc; // Ensure service exists
+      const processOrders = (orders, status) => {
+        return orders.reduce((acc, order) => {
+          if (!order.service) return acc; // Ensure service exists
 
-            const date = order.createdAt.split("T")[0]; // Extract date part
+          const date = order.createdAt.split("T")[0]; // Extract date part
 
-            if (!acc[date]) {
-              acc[date] = [];
-            }
+          if (!acc[date]) {
+            acc[date] = [];
+          }
 
-            acc[date].push({
-              id: order._id,
-              status,
-              service: {
-                serviceId: order.service._id,
-                name: order.service.name,
-                category: order.service.category,
-                price: order.service.price,
-                description: order.service.description,
-                image: order.service.image,
-              },
-              timeline: order.timeline,
-              pincode: order.pincode,
-              address: order.address,
-              userCode: order.userCode,
-              userApproved: order.userApproved,
-              rating: order.rating,
-              isPaid: order.isPaid,
-              createdAt: order.createdAt,
-              updatedAt: order.updatedAt,
-            });
+          acc[date].push({
+            id: order._id,
+            status,
+            service: {
+              serviceId: order.service._id,
+              name: order.service.name,
+              category: order.service.category,
+              price: order.service.price,
+              description: order.service.description,
+              image: order.service.image,
+            },
+            timeline: order.timeline,
+            pincode: order.pincode,
+            address: order.address,
+            userCode: order.userCode,
+            userApproved: order.userApproved,
+            rating: order.rating,
+            isPaid: order.isPaid,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+          });
 
-            return acc;
-          }, {});
-        };
+          return acc;
+        }, {});
+      };
 
-        // Extract data safely
-        const acceptedOrders = acceptedRes?.data?.serviceOrder || [];
-        const pendingOrders = pendingRes?.data?.serviceOrder || [];
+      // Extract data safely
+      const acceptedOrders = acceptedRes?.data?.serviceOrder || [];
+      const pendingOrders = pendingRes?.data?.serviceOrder || [];
 
-        // Process orders based on their statuses
-        const acceptedGroups = processOrders(
-          acceptedOrders.filter(order => order.partner && !order.isPaid),
-          "Partner Assigned"
-        );
+      // Process orders based on their statuses
+      const acceptedGroups = processOrders(
+        acceptedOrders.filter(order => order.partner && !order.isPaid),
+        "Partner Assigned"
+      );
 
-        const pendingGroups = processOrders(
-          pendingOrders,
-          "Order Received"
-        );
+      const pendingGroups = processOrders(
+        pendingOrders,
+        "Order Received"
+      );
 
-        const paymentDoneGroups = processOrders(
-          acceptedOrders.filter(order => order.isPaid),
-          "Payment Completed"
-        );
+      const paymentDoneGroups = processOrders(
+        acceptedOrders.filter(order => order.isPaid),
+        "Payment Completed"
+      );
 
-        console.log(acceptedGroups, pendingGroups, paymentDoneGroups);
+      console.log(acceptedGroups, pendingGroups, paymentDoneGroups);
 
-        // Combine and sort dates
-        const allDates = [...new Set([
-          ...Object.keys(acceptedGroups),
-          ...Object.keys(pendingGroups),
-          ...Object.keys(paymentDoneGroups),
-        ])].sort((a, b) => new Date(b) - new Date(a));
+      // Combine and sort dates
+      const allDates = [...new Set([
+        ...Object.keys(acceptedGroups),
+        ...Object.keys(pendingGroups),
+        ...Object.keys(paymentDoneGroups),
+      ])].sort((a, b) => new Date(b) - new Date(a));
 
-        // Format grouped data
-        const groupedByDate = allDates.map(date => ({
-          date,
-          bookings: [
-            ...(acceptedGroups[date] || []),
-            ...(pendingGroups[date] || []),
-            ...(paymentDoneGroups[date] || []),
-          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), // Sort by createdAt
-        }));
+      // Format grouped data
+      const groupedByDate = allDates.map(date => ({
+        date,
+        bookings: [
+          ...(acceptedGroups[date] || []),
+          ...(pendingGroups[date] || []),
+          ...(paymentDoneGroups[date] || []),
+        ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), // Sort by createdAt
+      }));
 
-        setDateGroups(groupedByDate);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      setDateGroups(groupedByDate);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {  
     fetchOrders();
   }, [refresh]);
 
