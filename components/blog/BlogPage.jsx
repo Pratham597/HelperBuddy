@@ -5,8 +5,28 @@ import ReadNext from "@/components/blog/ReadNext";
 import CTA from "@/components/blog/CTA";
 import Footer from "@/components/home/Footer";
 import { Loader2 } from "lucide-react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-const BlogPage = ({ blog }) => {
+const BlogPage = (slug) => {
+	console.log(slug);
+	const slug1 = slug.slug;
+	const [blog, setBlog] = useState(null);
+
+	useEffect(() => {
+		const fetchBlog = async () => {
+			try {
+				const res = await axios.get(
+					`${process.env.NEXT_PUBLIC_URL}/api/blog/${slug1}`
+				);
+				setBlog(res.data.blog);
+			} catch (error) {
+				console.error("Error fetching blog:", error);
+			}
+		};
+
+		fetchBlog();
+	}, [slug1]);
 	return (
 		<>
 			<Navbar />

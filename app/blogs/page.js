@@ -2,16 +2,16 @@ import BlogGrid from "@/components/blog/BlogGrid.jsx";
 import Footer from "@/components/home/Footer.jsx";
 import Navbar from "@/components/navbar/Navbar.jsx";
 
-async function fetchBlogs() {
-	try {
-		const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/blog`);
-		const data = await res.json();
-		return data.blogs;
-	} catch (error) {
-		console.error("Failed to fetch blogs:", error);
-		return [];
-	}
-}
+// async function fetchBlogs() {
+// 	try {
+// 		const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/blog`);
+// 		const data = await res.json();
+// 		return data.blogs;
+// 	} catch (error) {
+// 		console.error("Failed to fetch blogs:", error);
+// 		return [];
+// 	}
+// }
 
 export const metadata = {
 	title: "Blogs | HelperBuddy",
@@ -41,7 +41,7 @@ export const metadata = {
 
 
 export default async function BlogListingPage() {
-	const blogs = await fetchBlogs();
+	// const blogs = await fetchBlogs();
 	return (
 		<>
 			<Navbar/>
@@ -56,7 +56,7 @@ export default async function BlogListingPage() {
 						Discover tips, trends, and expert advice on home
 						services and more.
 					</p>
-					<BlogGrid blogs = {blogs} />
+					<BlogGrid  />
 				</div>
 			</div>
 			<Footer />

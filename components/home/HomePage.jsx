@@ -10,7 +10,8 @@ import Navbar from "@/components/navbar/Navbar";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function Home( { services, trustSection } ) {
+export default function Home(  ) {
+	
 	const [loading, setLoading] = useState(true);
 	const [progress, setProgress] = useState(5);
 
@@ -52,9 +53,9 @@ export default function Home( { services, trustSection } ) {
 		<main className="bg-white text-black">
 			<Navbar />
 			<Hero />
-			<TrendingServices services={services} />
+			<TrendingServices  />
 			<ServiceCategories />
-			<TrustSection data={trustSection} />
+			<TrustSection  />
 			<Testimonials />
 			{/* <CallToAction /> */}
 			<Footer />

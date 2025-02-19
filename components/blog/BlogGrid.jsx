@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import BlogCard from "./BlogCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Pagination,
@@ -11,9 +11,8 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Skeleton } from "../ui/skeleton";
+import axios from "axios";
 import Link from "next/link";
-import { useEffect } from "react";
 
 const shuffleArray = (array) => {
 	for (let i = array.length - 1; i > 0; i--) {
@@ -22,14 +21,29 @@ const shuffleArray = (array) => {
 	}
 	return array;
 };
-export default function BlogGrid({ blogs }) {
+
+export default function BlogGrid() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [shuffledBlogs, setShuffledBlogs] = useState([]);
+	const [loading, setLoading] = useState(true);
 	const blogsPerPage = 9;
 
 	useEffect(() => {
-		setShuffledBlogs(shuffleArray([...blogs]));
-	}, [blogs]);
+		const fetchBlogs = async () => {
+			try {
+				const res = await axios.get(
+					`${process.env.NEXT_PUBLIC_URL}/api/blog`
+				);
+				setShuffledBlogs(shuffleArray(res.data.blogs));
+			} catch (error) {
+				console.error("Error fetching blogs:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchBlogs();
+	}, []);
 
 	const indexOfLastBlog = currentPage * blogsPerPage;
 	const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
@@ -53,21 +67,28 @@ export default function BlogGrid({ blogs }) {
 				transition={{ duration: 0.5 }}
 				className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
 			>
-				{currentBlogs.map((blog, index) => (
-					<Link key={blog._id} href={`/blogs/${blog.slug}`}>
-						<motion.div
-							key={blog._id}
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{
-								duration: 0.5,
-								delay: index * 0.1,
-							}}
-						>
-							<BlogCard blog={blog} />
-						</motion.div>
-					</Link>
-				))}
+				{loading
+					? [...Array(6)].map((_, index) => (
+							<div
+								key={index}
+								className="w-full h-96 bg-gray-300 animate-pulse rounded-xl"
+							/>
+					  ))
+					: currentBlogs.map((blog, index) => (
+							<Link key={blog._id} href={`/blogs/${blog.slug}`}>
+								<motion.div
+									key={blog._id}
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{
+										duration: 0.5,
+										delay: index * 0.1,
+									}}
+								>
+									<BlogCard blog={blog} />
+								</motion.div>
+							</Link>
+					  ))}
 			</motion.div>
 
 			{/* Pagination */}

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
@@ -8,11 +9,28 @@ import Link from "next/link";
 import Image from "next/image";
 import useServiceStore from "@/Store/useServiceStore";
 
-const TrendingServices = ({ services }) => {
+const TrendingServices = () => {
+	const [services, setServices] = useState([]);
+	const [loading, setLoading] = useState(true);
 	const containerRef = useRef(null);
 	const scrollRef = useRef(null);
 	const { setSelectedServiceId } = useServiceStore();
 
+	useEffect(() => {
+		const fetchTrendingServices = async () => {
+			try {
+				const res = await axios.get(
+					`${process.env.NEXT_PUBLIC_URL}/api/analytics/most-sold-services`
+				);
+				setServices(res.data.services);
+			} catch (error) {
+				console.error("Error fetching trending services:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchTrendingServices();
+	}, []);
 
 	// Auto-scrolling effect
 	useEffect(() => {
