@@ -27,7 +27,7 @@ const sendEmailToUser = async (userEmail, userName, serviceOrder, partner) => {
   Thank you for choosing us!  
   
   Best regards,  
-  [Your Company Name] Support Team`,
+  Helper Buddy Support Team`,
     html: `
           <p>Dear <strong>${userName}</strong>,</p>
           <p>Your service request has been successfully assigned to a professional partner.</p>

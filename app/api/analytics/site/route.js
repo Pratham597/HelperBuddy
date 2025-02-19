@@ -1,5 +1,5 @@
 import connectDB from "@/db/connect";
-import Booking from "@/models/Booking";
+import Booking from "@/models/Payment";
 import Partner from "@/models/Partner";
 import Service from "@/models/Service";
 import User from "@/models/User";

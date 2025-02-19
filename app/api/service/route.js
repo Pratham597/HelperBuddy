@@ -12,7 +12,7 @@ export const POST = async (req) => {
     if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     let data = await req.json();
 
-    if (!data.name || !data.description || !data.price || !data.category || !data.image)
+    if (!data.name || !data.description || !data.price || !data.category || !data.image || !data.threshold)
         return NextResponse.json({ error: "All fields are required" }, { status: 400 });
 
     const service = await Service.create(data);

@@ -29,7 +29,7 @@ async function sendEmailToPartner(emails, userDetails, service) {
   Please review the request and respond at your earliest convenience.
   
   Best regards,  
-  [Your Company Name] Support Team`,
+  Helper Buddy Support Team`,
     html: `
       <p>Hello,</p>
       <p>You have received a new service request.</p>

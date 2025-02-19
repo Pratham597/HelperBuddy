@@ -2,7 +2,7 @@ import connectDB from "@/db/connect";
 import Partner from "@/models/Partner";
 import PartnerService from "@/models/PartnerService";
 import ServiceOrder from "@/models/ServiceOrder";
-import Booking from "@/models/Booking";
+import Booking from "@/models/Payment";
 import { NextResponse } from "next/server";
 import Service from "@/models/Service";
 
@@ -36,20 +36,6 @@ export const POST = async (req) => {
     },
     {
       $lookup: {
-        from: "bookings",
-        localField: "booking",
-        foreignField: "_id",
-        as: "bookingDetails"
-      }
-    },
-    { $unwind: "$bookingDetails" }, 
-    {
-      $match: {
-        $or: [{ "bookingDetails.isPaid": true }, { "bookingDetails.paymentMethod": "COD" }]
-      }
-    },
-    {
-      $lookup: {
         from: "services",
         localField: "service",
         foreignField: "_id",
@@ -59,5 +45,5 @@ export const POST = async (req) => {
     { $unwind: "$service" }
   ]);
 
-  return NextResponse.json({ serviceOrders });
+  return NextResponse.json({ success: true, serviceOrders });
 };
