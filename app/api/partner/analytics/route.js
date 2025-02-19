@@ -1,77 +1,71 @@
-import { connectDB } from "@/utils/db";
-import ServiceOrder from "@/models/ServiceOrder";
-import Payment from "@/models/Payment";
+import connectDB from "@/db/connect";
+import serviceOrder from "@/models/ServiceOrder";
+import payment from "@/models/Payment";
+import Partner from "@/models/Partner";
 import { NextResponse } from "next/server";
+import { status } from "nprogress";
 
-
-
-export async function POST(req, { params }) {
+export const POST = async (req) => {
+  try {
     await connectDB();
-	try {
-		
+    const userId = req.headers.get("userId");
+    if (!userId)
+      return NextResponse.json({ error: "User unauthorized" }, { status: 401 });
 
-		if (!partnerId) {
-			return NextResponse.json({ error: "Partner ID is required" }, { status: 400 });
-		}
+    const partner = await Partner.findById(userId);
+    if (!partner) return NextResponse.json({ error: "Partner not found!" }, { status: 403 })
 
-		// Fetch completed orders for the partner
-		const completedOrders = await ServiceOrder.find({
-			partner: partnerId,
-			userApproved: true,
-			cancel: false,
-		});
+    // Fetch completed and pending orders
+    const completedOrders = await serviceOrder.find({
+      partner: partner._id,
+      userApproved: true,
+      cancel: false
+    }).select("rating");
 
-		// Calculate total revenue from completed orders
-		const totalRevenue = await Payment.aggregate([
-			{
-				$match: {
-					serviceOrder: { $in: completedOrders.map((order) => order._id) },
-				},
-			},
-			{
-				$group: {
-					_id: null,
-					totalRevenue: { $sum: "$totalAmount" },
-				},
-			},
-		]);
+    const pendingOrders = await serviceOrder.countDocuments({
+      partner: partner._id,
+      userApproved: false,
+      cancel: false
+    });
 
-		// Fetch pending orders for the partner
-		const pendingOrdersCount = await ServiceOrder.countDocuments({
-			partner: partnerId,
-			userApproved: false,
-			cancel: false,
-		});
+    // Calculate total revenue
+    const payments = await payment.aggregate([
+      {
+        $lookup: {
+          from: "serviceorders",
+          localField: "serviceOrder",
+          foreignField: "_id",
+          as: "order"
+        }
+      },
+      {
+        $match: { "order.partner": partner._id }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
 
-		// Calculate average rating for the partner
-		const ratingStats = await ServiceOrder.aggregate([
-			{
-				$match: {
-					partner: partnerId,
-					userApproved: true,
-				},
-			},
-			{
-				$group: {
-					_id: null,
-					averageRating: { $avg: "$rating" },
-				},
-			},
-		]);
+    const totalRevenue = payments.length > 0 ? payments[0].totalRevenue : 0;
 
-		const averageRating = ratingStats.length > 0 ? ratingStats[0].averageRating.toFixed(2) : "N/A";
+    // Calculate average rating
+    const totalRatings = completedOrders.length;
+    const avgRating = totalRatings > 0
+      ? completedOrders.reduce((acc, order) => acc + order.rating, 0) / totalRatings
+      : 0;
 
-		return NextResponse.json({
-			success: true,
-			data: {
-				totalOrdersCompleted: completedOrders.length,
-				totalRevenue: totalRevenue.length > 0 ? totalRevenue[0].totalRevenue : 0,
-				pendingOrders: pendingOrdersCount,
-				averageRating,
-			},
-		});
-	} catch (error) {
-		console.error("Error fetching partner analytics:", error);
-		return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-	}
+    return NextResponse.json({
+      completedOrders: totalRatings,
+      totalRevenue,
+      pendingOrders,
+      avgRating: avgRating.toFixed(1),
+    });
+
+  } catch (error) {
+    console.error("Error fetching partner analytics:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+  }
 }
