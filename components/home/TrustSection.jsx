@@ -4,7 +4,7 @@ import AnimatedCounter from "./AnimatedCounter";
 import { Users, Building, ShoppingBag, Package } from "lucide-react";
 
 export default function TrustSection(data) {
-	const bookings = data.data.bookings;
+	const bookings = data.data.payments;
 	const users = data.data.users;
 	const partners = data.data.partners;
 	const services = data.data.services;
