@@ -7,7 +7,7 @@ export const POST = async (req) => {
 	try {
 		await connectDB();
 		const { firstName, lastName, email, message } = await req.json();
-		console.log(req.body);
+		console.log(req);
 		if (!firstName || !email || !message) {
 			return NextResponse.json(
 				{ error: "All fields are required" },
@@ -37,3 +37,17 @@ export const POST = async (req) => {
 	}
 };
 
+export const GET = async (req) => {
+
+	try {
+		await connectDB();
+		const complaints = await Complaint.find();
+		return NextResponse.json({ complaints }, { status: 200 });
+	} catch (error) {
+		console.log(error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 }
+		);
+	}
+};

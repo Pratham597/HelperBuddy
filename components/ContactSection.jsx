@@ -36,6 +36,7 @@ export default function ContactSection() {
 				toast.success("Submitted successfully");
 				setFormData({ firstName: "", lastName: "", email: "", message: "" });
 			} catch (error) {
+				console.log(error);
 				toast.error("Something went wrong");
 			}
 		}

@@ -106,18 +106,18 @@ export default function BlogPost({ blog }) {
 							dangerouslySetInnerHTML={{
 								__html: marked.parse(blog.content),
 							}}
-							className="prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
+							className="prose-headings:font-sans prose-h1:text-5xl prose-headings:font-bold prose-headings:tracking-tight
                          prose-p:leading-relaxed prose-p:text-gray-800 prose-p:text-justify
                          prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
                          prose-strong:text-gray-900 prose-strong:font-semibold
                          prose-blockquote:border-l-4 prose-blockquote:border-gray-300
                          prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-xl
-                         prose-blockquote:text-gray-700 prose-blockquote:font-serif
+                         prose-blockquote:text-gray-700 prose-blockquote:font-sans
                          prose-img:rounded-lg prose-img:shadow-xl prose-img:mx-auto
                          prose-h2:text-4xl prose-h3:text-3xl
                          prose-pre:bg-gray-50 prose-pre:shadow-inner prose-pre:rounded-xl
                          [&>p:first-of-type]:text-xl [&>p:first-of-type]:leading-relaxed
-                         [&>p:first-of-type]:text-gray-700 [&>p:first-of-type]:font-serif"
+                         [&>p:first-of-type]:text-gray-700 [&>p:first-of-type]:font-sans"
 						/>
 					</div>
 				</motion.div>
@@ -129,9 +129,7 @@ export default function BlogPost({ blog }) {
 				animate={{ opacity: 1, x: 0 }}
 				transition={{ delay: 1 }}
 				className="fixed right-8 bottom-8 z-40"
-			>
-				
-			</motion.div>
+			></motion.div>
 		</article>
 	);
 }

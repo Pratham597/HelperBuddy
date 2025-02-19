@@ -38,6 +38,7 @@ export default function RootLayout({ children }) {
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta charSet="UTF-8" />
         <meta name="theme-color" content="#007bff" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={inter.className}>
         <ProgressBar />
@@ -47,4 +48,5 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
 

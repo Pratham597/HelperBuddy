@@ -1,6 +1,47 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
+	const [email, setEmail] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [message, setMessage] = useState("");
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setLoading(true);
+		setMessage("");
+
+		// check if email is valid or not
+		if (!/\S+@\S+\.\S+/.test(email)) {
+			setMessage("Email is invalid.");
+			setLoading(false);
+			return;
+		}
+
+		try {
+			const res = await fetch("/api/newsletter", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ email }),
+			});
+
+			const data = await res.json();
+			if (res.ok) {
+				setMessage(data.message);
+				setEmail("");
+			} else {
+				setMessage(data.error);
+			}
+		} catch (error) {
+			setMessage("Network error. Please try again.");
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	return (
 		<footer className="bg-slate-950 text-white pt-10 pb-5 px-6">
 			<div className="max-w-6xl mx-auto flex flex-wrap justify-between gap-8 text-sm">
@@ -152,12 +193,19 @@ export default function Footer() {
 						<input
 							type="email"
 							placeholder="Enter your email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
 							className="px-3 py-2 w-full rounded-l-md bg-gray-800 text-white outline-none"
 						/>
-						<button className="px-4 py-2 bg-blue-600 hover:bg-blue-500 transition rounded-r-md">
-							Subscribe
+						<button
+							className="px-4 py-2 bg-blue-600 hover:bg-blue-500 transition rounded-r-md"
+							onClick={handleSubmit}
+							disabled={loading}
+						>
+							{loading ? "Subscribing..." : "Subscribe"}
 						</button>
 					</div>
+						{message && <p className="text-sm">{message}</p>}
 				</div>
 			</div>
 

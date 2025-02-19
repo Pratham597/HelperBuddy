@@ -9,5 +9,5 @@ const complaintSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.service ||
+export default mongoose.models.complaint ||
   mongoose.model("complaint", complaintSchema);

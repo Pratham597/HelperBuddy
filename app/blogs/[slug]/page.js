@@ -20,12 +20,12 @@ export async function generateMetadata({ params }) {
 	return {
 		title: blog?.title || "Blog Post",
 		description:
-			blog?.description ||
+			blog?.content ||
 			"Discover insights and tips on home services and more.",
 		openGraph: {
 			title: blog?.title || "Blog Post",
 			description:
-				blog?.description ||
+				blog?.content ||
 				"Discover insights and tips on home services and more.",
 			images: [
 				{

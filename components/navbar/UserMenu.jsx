@@ -63,7 +63,7 @@ const UserMenu = ({ isLoggedIn }) => {
 			</Link>
 			<Link
 				href="/user/cart"
-				className="text-slate-100 hover:text-slate-400"
+				className="text-slate-100 hover:text-slate-400 "
 			>
 				<svg
 					className="h-6 w-6"
@@ -79,7 +79,7 @@ const UserMenu = ({ isLoggedIn }) => {
 					/>
 				</svg>
 			{cartCount > 0 && (
-				<span className={`absolute top-6 ${isLoggedIn? "right-32" : "right-40"} bg-red-500 text-white cartNumber px-1 py-[.5] rounded-full`}>
+				<span className={`absolute top-4 ${isLoggedIn? "right-28" : "right-36"} bg-red-500 text-white cartNumber px-1 py-[.5] rounded-full`}>
 					{cartCount}
 				</span>
 			)}
