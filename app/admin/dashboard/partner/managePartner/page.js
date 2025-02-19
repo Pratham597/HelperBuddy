@@ -42,7 +42,7 @@ export default function PendingPartnersPage() {
         const { token } = JSON.parse(admin);
         if (!token) throw new Error("No authentication token found.");
 
-        const response = await axios.get("http://localhost:3000/api/partner", {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/partner`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -59,7 +59,7 @@ export default function PendingPartnersPage() {
 
   const handleRemovePartner = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/partner/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/partner/${id}`);
       setPendingPartners((prev) => prev.filter((partner) => partner._id !== id));
       setSelectedPartner(null);
       setConfirmDelete(false);
