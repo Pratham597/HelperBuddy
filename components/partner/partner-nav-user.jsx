@@ -72,7 +72,7 @@ export function NavUser({ user }) {
 						align="end"
 						sideOffset={4}
 					>
-						<Link href={`/partner/dashboard/notifications`}>
+						{/* <Link href={`/partner/dashboard/notifications`}>
 							<DropdownMenuGroup>
 								<DropdownMenuItem>
 									<Bell />
@@ -80,7 +80,7 @@ export function NavUser({ user }) {
 								</DropdownMenuItem>
 							</DropdownMenuGroup>
 						</Link>
-						<DropdownMenuSeparator />
+						<DropdownMenuSeparator /> */}
 						<DropdownMenuItem onClick={handleLogOut}>
 							<LogOut />
 							Log out
