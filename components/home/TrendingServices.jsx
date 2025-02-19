@@ -74,24 +74,24 @@ const TrendingServices = ({ services }) => {
 							<Link
 								href={`/services`}
 								onClick={() => {
-									setSelectedServiceId(service._id._id);
+									setSelectedServiceId(service._id);
 								}}
 								passHref
-								key={`${service._id._id}-${index}`}
+								key={`${service._id}-${index}`}
 							>
 								<Card
 									className="w-72 flex-shrink-0 hover:shadow-xl transition-all duration-300 bg-gray-50 backdrop-blur-sm border-0 hover:cursor-pointer hover:scale-105"
-									aria-label={`View ${service._id.name}`}
+									aria-label={`View ${service.name}`}
 								>
 									<div className="relative h-48 overflow-hidden rounded-t-lg">
 										<Image
 											src={
-												service._id.image.trim() ||
+												service.image.trim() ||
 												"/placeholder.svg"
 											}
 											width={300}
 											height={200}
-											alt={service._id.name}
+											alt={service.name}
 											className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
 										/>
 										<div className="absolute top-2 right-2">
@@ -99,19 +99,19 @@ const TrendingServices = ({ services }) => {
 												variant="secondary"
 												className="bg-white/90 backdrop-blur-sm"
 											>
-												Rs.{service._id.price}
+												Rs.{service.price}
 											</Badge>
 										</div>
 									</div>
 
 									<CardContent className="p-4">
 										<h3 className="font-semibold text-lg mb-2">
-											{service._id.name}
+											{service.name}
 										</h3>
 										<div className="flex items-center gap-1">
 											<Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
 											<span className="text-sm text-gray-600">
-												4.5
+												{service.rating.toFixed(1)}
 											</span>
 										</div>
 									</CardContent>

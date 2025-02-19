@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import LoginForm from "@/components/user/loginFormUser";
-import SignupForm from "@/components/user/SignupFormUser";
-import LoginPageImage from "@/components/LoginPageImage";
+import LoginForm from "@/components/user/loginFormUser.jsx";
+import SignupForm from "@/components/user/SignupFormUser.jsx";
+import LoginPageImage from "@/components/LoginPageImage.jsx";
 
 const colors = {
 	primary: "#060606",

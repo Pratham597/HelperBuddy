@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Logo from "./Logo";
-import SearchBar from "./SearchBar";
-import UserMenu from "./UserMenu";
-import MobileMenu from "./MobileMenu";
+import Logo from "./Logo.jsx";
+import SearchBar from "./SearchBar.jsx";
+import UserMenu from "./UserMenu.jsx";
+import MobileMenu from "./MobileMenu.jsx";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
