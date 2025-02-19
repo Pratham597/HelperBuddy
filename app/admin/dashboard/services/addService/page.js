@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function AddServicePage() {
-  const [service, setService] = useState({ name: "", description: "", price: "", category: "", image: "" });
+  const [service, setService] = useState({ name: "", description: "", price: "", category: "", image: "", threshold: "" });
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
@@ -28,7 +28,7 @@ export default function AddServicePage() {
   };
 
   const validateFields = () => {
-    if (!service.name || !service.description || !service.price || !service.category) {
+    if (!service.name || !service.description || !service.price || !service.category || !service.threshold) {
       toast.error("Please fill in all required fields.");
       return false;
     }
@@ -48,7 +48,7 @@ export default function AddServicePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 200) {
-        setService({ name: "", description: "", price: "", category: "", image: "" });
+        setService({ name: "", description: "", price: "", category: "", image: "", threshold: "" });
         toast.success("Service added successfully!");
       }
     } catch (error) {
@@ -103,9 +103,15 @@ export default function AddServicePage() {
                 <Input id="price" name="price" type="number" placeholder="Enter service price" value={service.price} onChange={handleInputChange} required />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input id="image" name="image" type="text" placeholder="Enter image URL" value={service.image} onChange={handleInputChange} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="threshold">Threshold Period (hours)</Label>
+                <Input id="threshold" name="threshold" type="number" placeholder="Enter threshold period" value={service.threshold} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="image">Image URL</Label>
+                <Input id="image" name="image" type="text" placeholder="Enter image URL" value={service.image} onChange={handleInputChange} />
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row justify-between gap-2">
