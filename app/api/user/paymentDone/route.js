@@ -15,6 +15,7 @@ export const POST = async (req) => {
     user: userId,
     partner: { $ne: null },
     userApproved: false,
+    isPaid:true
   }).populate("service").populate("payment");
   return NextResponse.json({ serviceOrder });
 };
