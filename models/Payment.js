@@ -21,6 +21,11 @@ const paymentSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  serviceOrder:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"serviceOrder",
+    required:true,
+  }
 }, {
   timestamps: true
 });

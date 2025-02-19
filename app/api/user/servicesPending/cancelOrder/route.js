@@ -23,6 +23,9 @@ export const POST = async (req) => {
     if (!serviceOrder)
       return NextResponse.json({ error: "Service Order not found!" }, { status: 404 });
 
+    if (!serviceOrder.user.equals(userId)) {
+      throw new UnauthorizedException("You are not allowed to access this order");
+    }
     if (serviceOrder.partner)
       return NextResponse.json({ error: "Partner is already assigned!" }, { status: 403 });
 

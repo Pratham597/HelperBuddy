@@ -51,7 +51,7 @@ const serviceOrderSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  booking: {
+  payment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "payment"
   }
