@@ -15,7 +15,7 @@ const Logo = () => {
 				priority // Loads the image faster
 			/>
 			<span
-				className={`${inter.className} font-bold text-2xl inter text-slate-100`}
+				className={`${inter.className}  xxs:block hidden font-bold text-2xl inter text-slate-100`}
 			>
 				HelperBuddy
 			</span>
