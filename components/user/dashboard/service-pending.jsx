@@ -19,6 +19,7 @@ import PaymentStatusModal from "@/components/user/Cart/payment-status-modal";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link"
+import toast from "react-hot-toast"
 
 export default function ServicePending() {
   const [dateGroups, setDateGroups] = useState([])
@@ -465,7 +466,6 @@ export default function ServicePending() {
       )
       console.log("Order cancelled successfully:", response.data)
       toast.success("Service cancelled successfully")
-      setRefresh((prev) => !prev)
     } catch (error) {
       toast.error(error.response?.data.error)
       console.error("Error cancelling order:", error.response?.data)

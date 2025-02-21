@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+
 const partnerSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -17,12 +18,14 @@ partnerSchema.methods.matchPassword = function (enteredPassword) {
 };
 
 partnerSchema.pre("save", async function (next) {
-  if (this.modified) {
+  if (!this.isModified("password")) {
     return next();
   }
   const salt = bcrypt.genSaltSync(10);
   this.password = bcrypt.hashSync(this.password, salt);
+  next();
 });
 
 export default mongoose.models.partner ||
   mongoose.model("partner", partnerSchema);
+

@@ -14,7 +14,8 @@ export const POST = async (req) => {
   const serviceOrder = await ServiceOrder.find({
     partner: null,
     user: userId,
-    isPaid: false
+    isPaid: false,
+    cancel: false,
   }).populate("service")
   return NextResponse.json({ serviceOrder });
 }
