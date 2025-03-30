@@ -148,7 +148,7 @@ const ReferralButton = () => {
   
   return (
     <>
-      <div className="fixed bottom-16 sm:bottom-20 my-3 right-4 sm:right-6 z-30 flex flex-col items-end space-y-2">
+      <div className="fixed bottom-16 sm:bottom-20 my-4 right-4 sm:right-6 z-30 flex flex-col items-end space-y-2">
         {/* Tooltip */}
         {showTooltip && (
           <div className="bg-white text-gray-800 p-2 rounded-lg shadow-md max-w-xs animate-bounce-gentle relative">
@@ -168,7 +168,7 @@ const ReferralButton = () => {
         {/* Button */}
         <button
           onClick={handleClick}
-          className="bg-blue-600 text-white rounded-full p-2 sm:p-3 shadow-lg hover:bg-blue-700 transition-colors"
+          className="bg-blue-600 text-white rounded-full p-3 sm:p-3 shadow-lg hover:bg-blue-700 transition-colors"
         >
           <Gift size={20} className="sm:hidden" />
           <Gift size={24} className="hidden sm:block" />
