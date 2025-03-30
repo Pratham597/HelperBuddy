@@ -72,8 +72,8 @@ export default function Form({ isLogin, setIsLogin }) {
 		try {
 			// Call your API to send OTP to email
 			// Example API call:
-			/*
-			const res = await fetch("/api/send-otp", {
+			
+			const res = await fetch("/api/partner/send-otp", {
 				method: "POST",
 				body: JSON.stringify({ email: form.email }),
 				headers: {
@@ -81,7 +81,7 @@ export default function Form({ isLogin, setIsLogin }) {
 				},
 			});
 			if (!res.ok) throw new Error("Failed to send OTP");
-			*/
+			
 
 			// Simulate success for demo
 			toast.success("OTP sent to your email");
@@ -105,8 +105,8 @@ export default function Form({ isLogin, setIsLogin }) {
 		try {
 			// Call your API to verify OTP
 			// Example API call:
-			/*
-			const res = await fetch("/api/verify-otp", {
+			
+			const res = await fetch("/api/partner/verify-otp", {
 				method: "POST",
 				body: JSON.stringify({ 
 				email: form.email,
@@ -117,8 +117,6 @@ export default function Form({ isLogin, setIsLogin }) {
 				},
 			});
 			if (!res.ok) throw new Error("Invalid OTP");
-      		*/
-
 			// Simulate success for demo
 			toast.success("OTP verified successfully");
 			setOtpVerified(true);

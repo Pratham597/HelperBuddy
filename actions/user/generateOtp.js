@@ -35,5 +35,5 @@ const sendOtpEmail = async (email, otp) => {
   await transporter.sendMail(mailOptions);
 };
 
-export default sendOtpEmail; 
+export default sendOtpEmail;
 

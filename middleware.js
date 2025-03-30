@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import auth from "@/middlewares/auth.js";
+import { redis } from "@/lib/redis.js";
 import {
   verifyUser,
   verifyPartner,
@@ -9,10 +10,7 @@ import {
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+
 
 const ratelimit = new Ratelimit({
   redis,
