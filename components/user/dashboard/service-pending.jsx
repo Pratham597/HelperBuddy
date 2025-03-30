@@ -9,6 +9,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Input } from "@/components/ui/input"
 import { motion, AnimatePresence } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -97,7 +98,12 @@ export default function ServicePending() {
 
   const handleWalletAmountChange = (e) => {
     const amount = e.target.value
+    if (amount > walletAmount) {
+      toast.error("Not enough wallet amount")
+      return
+    }
     setWalletUsed(amount)
+    console.log(e.target.parent)
     if (selectedBooking) {
       validateWalletAmount(amount, selectedBooking.service.price)
     }
@@ -139,7 +145,6 @@ export default function ServicePending() {
             },
           }
         );
-        console.log(res);
         if (res.status === 200) {
           const { payment } = res.data;
           const orderId = payment.orderId;
@@ -218,24 +223,6 @@ export default function ServicePending() {
     }
   }
 
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
-
-  const formatDate = (dateString) => {
-    try {
-      const date = new Date(dateString)
-      if (isNaN(date.getTime())) {
-        return new Date().toISOString().split("T")[0]
-      }
-      return date.toISOString().split("T")[0]
-    } catch (error) {
-      console.error("Date parsing error:", error)
-      return new Date().toISOString().split("T")[0]
-    }
-  }
-
   useEffect(() => {
     const fetchOrders = async () => {
       setIsLoading(true);
@@ -308,8 +295,6 @@ export default function ServicePending() {
           acceptedOrders.filter(order => order.isPaid),
           "Payment Completed"
         );
-
-        console.log(acceptedGroups, pendingGroups, paymentDoneGroups);
 
         // Combine and sort dates
         const allDates = [...new Set([
@@ -464,7 +449,6 @@ export default function ServicePending() {
           },
         }
       )
-      console.log("Order cancelled successfully:", response.data)
       toast.success("Service cancelled successfully")
     } catch (error) {
       toast.error(error.response?.data.error)
@@ -658,7 +642,7 @@ export default function ServicePending() {
                                               type="number"
                                               value={walletUsed}
                                               onChange={handleWalletAmountChange}
-                                              max={Math.min(walletAmount, calculateTotal())}
+                                              max={Math.min(walletAmount, booking.service.price)}
                                               min={0}
                                               className="w-full"
                                             />
@@ -674,7 +658,7 @@ export default function ServicePending() {
                                           <div className="space-y-2">
                                             <div className="flex justify-between text-sm">
                                               <span>Total Amount:</span>
-                                              <span>₹{calculateTotal()}</span>
+                                              <span>₹{booking.service.price}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                               <span>Wallet Amount Used:</span>
@@ -683,7 +667,7 @@ export default function ServicePending() {
                                             <Separator />
                                             <div className="flex justify-between font-semibold">
                                               <span>Amount to Pay Online:</span>
-                                              <span>₹{calculateTotal() - walletUsed}</span>
+                                              <span>₹{booking.service.price - walletUsed}</span>
                                             </div>
                                           </div>
                                         )}

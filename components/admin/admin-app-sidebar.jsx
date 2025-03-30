@@ -76,7 +76,7 @@ const data = {
 			isActive: false,
 			items: [
 				{
-					title: "Add Partner",
+					title: "Approve Partner",
 					url: "/admin/dashboard/partner/addPartner",
 				},
 				{

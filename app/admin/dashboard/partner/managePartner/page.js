@@ -59,7 +59,12 @@ export default function PendingPartnersPage() {
 
   const handleRemovePartner = async (id) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/partner/${id}`);
+      const admin = localStorage.getItem("admin");
+      const { token } = JSON.parse(admin);
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/partner/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log(response)
       setPendingPartners((prev) => prev.filter((partner) => partner._id !== id));
       setSelectedPartner(null);
       setConfirmDelete(false);

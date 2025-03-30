@@ -70,8 +70,32 @@ export default function ActiveOrders() {
 
 			const response = await axios.post("/api/partner/acceptedOrders", {}, { headers })
 
-			const processedOrders = processOrders(response.data.serviceOrders)
-			setDateGroups(processedOrders)
+			const Orders = response.data.serviceOrders
+			const acceptedGroups = processOrders(
+				Orders.filter(order => order.partner && !order.isPaid),
+				"Partner Assigned"
+			);
+
+			const paymentDoneGroups = processOrders(
+				Orders.filter(order => order.isPaid),
+				"Paid"
+			);
+
+			const allDates = [...new Set([
+				...Object.keys(acceptedGroups),
+				...Object.keys(paymentDoneGroups),
+			])].sort((a, b) => new Date(b) - new Date(a));
+
+			const groupedByDate = allDates.map(date => ({
+				date,
+				bookings: [
+					...(acceptedGroups[date] || []),
+					...(paymentDoneGroups[date] || []),
+				].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), // Sort by createdAt
+			}));
+
+			setDateGroups(groupedByDate)
+			setIsLoading(false)
 		} catch (error) {
 			console.error("Error fetching active orders:", error)
 		} finally {
@@ -79,52 +103,41 @@ export default function ActiveOrders() {
 		}
 	}
 
-	const processOrders = (orders) => {
-		const ordersByDate = orders.reduce((acc, order) => {
-			const date = formatDate(order.timeline)
-			if (!acc[date]) {
-				acc[date] = []
-			}
-			acc[date].push(order)
-			return acc
-		}, {})
+	const processOrders = (orders, status) => {
+		return orders.reduce((acc, order) => {
+			if (!order.service) return acc; // Ensure service exists
 
-		return Object.entries(ordersByDate)
-			.map(([date, orders]) => ({
-				date,
-				bookings: orders.map((order) => ({
-					bookingId: order._id,
-					orderId: order._id,
-					totalAmount: order.service.price,
-					isPaid: order.isPaid,
-					paymentMethod: "Online",
-					walletUsed: 0,
-					date,
-					orders: [
-						{
-							id: order._id,
-							status: order.isPaid ? "Paid" : "Partner Assigned",
-							service: {
-								name: order.service.name,
-								category: order.service.category,
-								price: order.service.price,
-								description: order.service.description,
-								image: order.service.image,
-							},
-							timeline: order.timeline,
-							pincode: order.pincode,
-							address: order.address,
-							userCode: order.userCode,
-							userApproved: order.userApproved,
-							rating: order.rating,
-							createdAt: order.createdAt,
-							updatedAt: order.updatedAt,
-						},
-					],
-				})),
-			}))
-			.sort((a, b) => new Date(b.date) - new Date(a.date))
-	}
+			const date = order.createdAt.split("T")[0]; // Extract date part
+
+			if (!acc[date]) {
+				acc[date] = [];
+			}
+
+			acc[date].push({
+				id: order._id,
+				status,
+				service: {
+					serviceId: order.service._id,
+					name: order.service.name,
+					category: order.service.category,
+					price: order.service.price,
+					description: order.service.description,
+					image: order.service.image,
+				},
+				timeline: order.timeline,
+				pincode: order.pincode,
+				address: order.address,
+				userCode: order.userCode,
+				userApproved: order.userApproved,
+				rating: order.rating,
+				isPaid: order.isPaid,
+				createdAt: order.createdAt,
+				updatedAt: order.updatedAt,
+			});
+
+			return acc;
+		}, {});
+	};
 
 	const toggleDetails = (bookingId) => {
 		setExpandedOrders((prev) => ({ ...prev, [bookingId]: !prev[bookingId] }))
@@ -137,7 +150,7 @@ export default function ActiveOrders() {
 	const statusPercentages = {
 		"Partner Assigned": 15,
 		"Paid": 50,
-		Completed: 100,
+		"Completed": 100,
 	}
 
 	const bookingStages = ["Partner Assigned", "Paid", "Completed"]
@@ -155,6 +168,7 @@ export default function ActiveOrders() {
 			.map((group) => {
 				const groupDate = new Date(group.date)
 
+				// Filter by date
 				let dateMatch = true
 				switch (dateFilter) {
 					case "today":
@@ -179,26 +193,29 @@ export default function ActiveOrders() {
 						dateMatch = true
 				}
 
+				// If the group date doesn't match, exclude the entire group
 				if (!dateMatch) return null
 
+				// Filter bookings within the group based on searchQuery
 				const filteredBookings = group.bookings.filter((booking) => {
 					const bookingIdMatch = searchQuery
-						? booking.bookingId.toLowerCase().includes(searchQuery.toLowerCase())
+						? booking.id.toLowerCase().includes(searchQuery.toLowerCase())
 						: true
 
 					return bookingIdMatch
 				})
 
+				// If no bookings match the search query, exclude the group
 				if (filteredBookings.length === 0) return null
 
+				// Return the group with filtered bookings
 				return {
 					...group,
 					bookings: filteredBookings,
 				}
 			})
-			.filter((group) => group !== null)
+			.filter((group) => group !== null) // Remove groups that were excluded
 	}
-
 	const filteredDateGroups = filterOrders()
 
 	const handleVerifyCode = async (orderId) => {
@@ -295,235 +312,157 @@ export default function ActiveOrders() {
 							<Loader2 className="w-8 h-8 animate-spin text-gray-500" />
 						</div>
 					) : filteredDateGroups.length > 0 ? (
-						<div className="space-y-12">
-							{(() => {
-								const allBookings = filteredDateGroups.flatMap((dateGroup) =>
-									dateGroup.bookings.map((booking) => ({
-										...booking,
-										groupDate: dateGroup.date,
-									})),
-								)
-
-								const totalBookings = allBookings.length
-								const totalPages = Math.ceil(totalBookings / ordersPerPage)
-
-								const indexOfLastBooking = currentPage * ordersPerPage
-								const indexOfFirstBooking = indexOfLastBooking - ordersPerPage
-								const currentBookings = allBookings.slice(indexOfFirstBooking, indexOfLastBooking)
-
-								const groupedBookings = currentBookings.reduce((acc, booking) => {
-									const date = booking.groupDate
-									if (!acc[date]) {
-										acc[date] = []
-									}
-									acc[date].push(booking)
-									return acc
-								}, {})
-
-								return (
-									<>
-										{Object.entries(groupedBookings).map(([date, bookings]) => (
-											<div key={date} className="space-y-6">
-												<h2 className="text-xl font-semibold text-black border-b border-gray-200 pb-2">
-													{format(parseISO(date), "EEEE, MMMM d, yyyy")}
-												</h2>
-												<div className="space-y-4">
-													{bookings.map((booking) => (
-														<Card
-															key={booking.bookingId}
-															className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+						<div className="space-y-8">
+							{filteredDateGroups.map((dateGroup) => {
+								return (<div key={dateGroup.date} className="space-y-6">
+									<h2 className="text-lg sm:text-xl font-semibold text-black border-b border-gray-200 pb-2">
+										{format(parseISO(dateGroup.date), "EEEE, MMMM d, yyyy")}
+									</h2>
+									<div className="space-y-4">
+										{dateGroup.bookings.map((booking, index) => (
+											<Card
+												key={booking.id}
+												className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+											>
+												<CardHeader className="bg-white px-4 sm:px-6 py-4 sm:py-5">
+													<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between sm:flex-nowrap">
+														<div>
+															<CardTitle className="text-base sm:text-lg font-semibold text-black">
+																Order {booking.id.slice(-6)}
+															</CardTitle>
+															<CardDescription className="mt-1 text-xs sm:text-sm text-gray-600">
+																Total Amount: ₹{booking.service.price.toLocaleString()}
+																<br />
+																Booking ID: {booking.id}
+															</CardDescription>
+														</div>
+														<Button
+															onClick={() => toggleDetails(booking.id)}
+															variant="outline"
+															size="sm"
+															className="mt-2 sm:mt-0 w-full sm:w-auto flex items-center justify-center border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
 														>
-															<CardHeader className="bg-white px-6 py-5">
-																<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between sm:flex-nowrap">
-																	<div>
-																		<CardTitle className="text-lg font-semibold text-black">
-																			Order {booking.bookingId.slice(-6)}
-																		</CardTitle>
-																		<CardDescription className="mt-1 text-sm text-gray-600">
-																			Total Amount: ₹{booking.totalAmount.toLocaleString()}
-																			<br />
-																			Booking ID: {booking.bookingId}
-																		</CardDescription>
-																	</div>
-																	<div className="mt-4 sm:mt-0 sm:ml-4 flex-shrink-0">
-																		<Button
-																			onClick={() => toggleDetails(booking.bookingId)}
-																			variant="outline"
-																			size="sm"
-																			className="flex items-center border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
-																		>
-																			{expandedOrders[booking.bookingId] ? "Hide" : "View"} Details
-																			{expandedOrders[booking.bookingId] ? (
-																				<ChevronUp className="ml-2 h-4 w-4" />
-																			) : (
-																				<ChevronDown className="ml-2 h-4 w-4" />
-																			)}
-																		</Button>
-																	</div>
-																</div>
-															</CardHeader>
+															{expandedOrders[booking.id] ? "Hide" : "View"} Details
+															{expandedOrders[booking.id] ? (
+																<ChevronUp className="ml-2 h-4 w-4" />
+															) : (
+																<ChevronDown className="ml-2 h-4 w-4" />
+															)}
+														</Button>
+													</div>
+												</CardHeader>
 
-															<CardContent className="px-6 py-5">
-																<AnimatePresence>
-																	{expandedOrders[booking.bookingId] && (
-																		<motion.div
-																			initial={{ opacity: 0, height: 0 }}
-																			animate={{ opacity: 1, height: "auto" }}
-																			exit={{ opacity: 0, height: 0 }}
-																			transition={{ duration: 0.3 }}
-																		>
-																			{booking.orders.map((order, index) => (
-																				<div
-																					key={order.id}
-																					className={index > 0 ? "mt-8 pt-8 border-t border-gray-200" : ""}
-																				>
-																					<div className="flex items-center justify-between">
-																						<h3 className="text-lg font-medium text-black">
-																							Service {index + 1}: {order.service.name}
-																						</h3>
-																						<Button
-																							onClick={() => toggleServiceDetails(order.id)}
-																							variant="outline"
-																							size="sm"
-																							className="flex items-center my-3 border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
-																						>
-																							{expandedServices[order.id] ? (
-																								<ChevronUp className=" h-4 w-4" />
-																							) : (
-																								<ChevronDown className="h-4 w-4" />
-																							)}
-																						</Button>
-																					</div>
-																					<div className="mb-6">
-																						<div className="relative">
-																							<Progress
-																								value={statusPercentages[order.status]}
-																								className="h-2 bg-gray-100"
-																							/>
-																							<div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2">
-																								{bookingStages.map((status) => (
-																									<div key={status} className="relative">
-																										<div
-																											className={`w-4 h-4 rounded-full border-2 ${status === order.status
-																												? "bg-black border-black"
-																												: "bg-white border-gray-300"
-																												}`}
-																										></div>
-																									</div>
-																								))}
-																							</div>
-																						</div>
-																						<div className="flex justify-between text-xs mt-2">
-																							{bookingStages.map((status) => (
-																								<div
-																									key={status}
-																									className={`w-1/3 text-center ${status === order.status ? "text-black font-medium" : "text-gray-500"
-																										}`}
-																								>
-																									{status}
-																								</div>
-																							))}
-																						</div>
-																					</div>
-																					<AnimatePresence>
-																						{expandedServices[order.id] && (
-																							<motion.div
-																								initial={{ opacity: 0, height: 0 }}
-																								animate={{ opacity: 1, height: "auto" }}
-																								exit={{ opacity: 0, height: 0 }}
-																								transition={{ duration: 0.3 }}
-																							>
-																								<dl className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-																									<div className="sm:col-span-1">
-																										<dt className="text-sm font-medium text-gray-600">Category</dt>
-																										<dd className="mt-1 text-sm text-black">
-																											{order.service.category}
-																										</dd>
-																									</div>
-																									<div className="sm:col-span-1">
-																										<dt className="text-sm font-medium text-gray-600">Price</dt>
-																										<dd className="mt-1 text-sm text-black">
-																											₹{order.service.price.toLocaleString()}
-																										</dd>
-																									</div>
-																									<div className="sm:col-span-1">
-																										<dt className="text-sm font-medium text-gray-600">Timeline</dt>
-																										<dd className="mt-1 text-sm text-black">{order.timeline}</dd>
-																									</div>
-																									<div className="sm:col-span-1">
-																										<dt className="text-sm font-medium text-gray-600">Pincode</dt>
-																										<dd className="mt-1 text-sm text-black">{order.pincode}</dd>
-																									</div>
-																									<div className="sm:col-span-2">
-																										<dt className="text-sm font-medium text-gray-600">Address</dt>
-																										<dd className="mt-1 text-sm text-black">{order.address}</dd>
-																									</div>
-																								</dl>
-																								<div className="mt-4">
-																									<Button
-																										onClick={() => setSelectedOrder(order)}
-																										variant="outline"
-																										size="sm"
-																									>
-																										Verify Code
-																									</Button>
-																								</div>
-																							</motion.div>
-																						)}
-																					</AnimatePresence>
+												<CardContent className="px-4 sm:px-6 py-4 sm:py-5">
+													<AnimatePresence>
+														{expandedOrders[booking.id] && (
+															<motion.div
+																initial={{ opacity: 0, height: 0 }}
+																animate={{ opacity: 1, height: "auto" }}
+																exit={{ opacity: 0, height: 0 }}
+																transition={{ duration: 0.3 }}
+															>
+																<div className="mb-4 sm:mb-6">
+																	<div className="relative">
+																		<Progress value={statusPercentages[booking.status]} className="h-2 bg-gray-100" />
+																		<div className="absolute top-1/2 left-0 w-full flex justify-between transform -translate-y-1/2">
+																			{bookingStages.map((status) => (
+																				<div key={status} className="relative">
+																					<div
+																						className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 ${bookingStages.indexOf(status) <= bookingStages.indexOf(booking.status)
+																							? "bg-black border-black"
+																							: "bg-white border-gray-300"
+																							}`}
+																					></div>
 																				</div>
 																			))}
-																		</motion.div>
-																	)}
-																</AnimatePresence>
-															</CardContent>
-														</Card>
-													))}
-												</div>
-											</div>
+																		</div>
+																	</div>
+																	<div className="flex justify-between text-xs mt-2">
+																		{bookingStages.map((status) => (
+																			<div
+																				key={status}
+																				className={`w-1/3 text-center ${bookingStages.indexOf(status) <= bookingStages.indexOf(booking.status)
+																					? "text-black font-medium"
+																					: "text-gray-500"
+																					}`}
+																			>
+																				{status}
+																			</div>
+																		))}
+																	</div>
+																</div>
+																<div className="mt-6 pt-6 border-t border-gray-200">
+																	<div className="flex items-center justify-between">
+																		<h3 className="text-base sm:text-lg font-medium text-black">
+																			Service {index + 1}: {booking.service.name}
+																		</h3>
+																		<Button
+																			onClick={() => toggleServiceDetails(booking.id)}
+																			variant="outline"
+																			size="sm"
+																			className="flex items-center my-2 border-gray-400 text-gray-800 hover:bg-gray-50 hover:text-black hover:border-gray-600"
+																		>
+																			{expandedServices[booking.id] ? (
+																				<ChevronUp className="h-4 w-4" />
+																			) : (
+																				<ChevronDown className="h-4 w-4" />
+																			)}
+																		</Button>
+
+																	</div>
+																	<AnimatePresence>
+																		{expandedServices[booking.id] && (
+																			<motion.div
+																				initial={{ opacity: 0, height: 0 }}
+																				animate={{ opacity: 1, height: "auto" }}
+																				exit={{ opacity: 0, height: 0 }}
+																				transition={{ duration: 0.3 }}
+																			>
+																				<dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 text-sm">
+																					<div className="sm:col-span-1">
+																						<dt className="font-medium text-gray-600">Status</dt>
+																						<dd className="mt-1 text-black">{booking.status}</dd>
+																					</div>
+																					<div className="sm:col-span-1">
+																						<dt className="font-medium text-gray-600">Category</dt>
+																						<dd className="mt-1 text-black">{booking.service.category}</dd>
+																					</div>
+																					<div className="sm:col-span-1">
+																						<dt className="font-medium text-gray-600">Price</dt>
+																						<dd className="mt-1 text-black">
+																							₹{booking.service.price.toLocaleString()}
+																						</dd>
+																					</div>
+																					<div className="sm:col-span-1">
+																						<dt className="font-medium text-gray-600">Timeline</dt>
+																						<dd className="mt-1 text-black">{booking.timeline}</dd>
+																					</div>
+																					<div className="sm:col-span-1">
+																						<dt className="font-medium text-gray-600">Pincode</dt>
+																						<dd className="mt-1 text-black">{booking.pincode}</dd>
+																					</div>
+																					<div className="sm:col-span-2">
+																						<dt className="font-medium text-gray-600">Address</dt>
+																						<dd className="mt-1 text-black">{booking.address}</dd>
+																					</div>
+
+																				</dl>
+																			</motion.div>
+																		)}
+																	</AnimatePresence>
+																</div>
+															</motion.div>
+
+														)}
+
+													</AnimatePresence>
+												</CardContent>
+											</Card>
 										))}
-
-										{/* Pagination Controls */}
-										<div className="flex flex-wrap justify-center items-center gap-2">
-											<Button
-												variant="outline"
-												size="sm"
-												onClick={() => handlePageChange(currentPage - 1)}
-												disabled={currentPage === 1}
-											>
-												Previous
-											</Button>
-
-											{[...Array(totalPages)].map((_, index) => (
-												<Button
-													key={index + 1}
-													variant={currentPage === index + 1 ? "default" : "outline"}
-													size="sm"
-													onClick={() => handlePageChange(index + 1)}
-													className={currentPage === index + 1 ? "bg-black text-white" : ""}
-												>
-													{index + 1}
-												</Button>
-											))}
-
-											<Button
-												variant="outline"
-												size="sm"
-												onClick={() => handlePageChange(currentPage + 1)}
-												disabled={currentPage === totalPages}
-											>
-												Next
-											</Button>
-										</div>
-
-										{/* Page information */}
-										<div className="text-center text-sm text-gray-600 mt-2">
-											Showing {indexOfFirstBooking + 1} to {Math.min(indexOfLastBooking, totalBookings)} of{" "}
-											{totalBookings} orders
-										</div>
-									</>
+									</div>
+								</div>
 								)
-							})()}
+							})}
 						</div>
 					) : (
 						<Card className="text-center py-12 border border-gray-200">

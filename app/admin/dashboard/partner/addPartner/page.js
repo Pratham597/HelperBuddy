@@ -84,6 +84,7 @@ export default function PendingPartnersPage() {
       }
     } catch (error) {
       console.log(error);
+      toast.error("Error approving partner")
     }
 
     setSelectedPartner(null);
