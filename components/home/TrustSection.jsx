@@ -15,7 +15,6 @@ export default function TrustSection() {
 	useEffect(() => {
 		const fetchData = async () => {
 			const { data } = await axios.get("/api/analytics/site");
-			console.log(data);
 			setBookings(data.payments);
 			setUsers(data.users);
 			setPartners(data.partners);

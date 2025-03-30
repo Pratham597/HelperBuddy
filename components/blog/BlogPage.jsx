@@ -9,7 +9,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 const BlogPage = (slug) => {
-	console.log(slug);
+	// console.log(slug);
 	const slug1 = slug.slug;
 	const [blog, setBlog] = useState(null);
 

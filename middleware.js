@@ -98,6 +98,11 @@ export async function middleware(req) {
 	return NextResponse.redirect(new URL("/", req.url));
 }
 
+// export const config = {
+// 	matcher: ["/:path*"],
+// };
 export const config = {
-	matcher: ["/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|images|logo.png).*)",
+  ],
 };

@@ -34,7 +34,8 @@ export default function MobileHero() {
 				className=" absolute inset-0 bg-cover bg-center"
 				style={{
 					backgroundImage:
-						'url("https://cdn.prod.website-files.com/5fbde3dc76aea24cb3b0ae52/6017bb2859b475c6f95ef05f_home-cleaning-hero-p-2000.jpeg")',
+						'url("https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/AzGeNv8QxRTqXJan/people-taking-care-office-cleaning-AzG3G22GvPhxw7eO.jpg")',
+					backgroundPosition: "calc(65%) center",
 				}}
 			/>
 
@@ -66,14 +67,14 @@ export default function MobileHero() {
 				</motion.p>
 				<Link href="/services">
 					<motion.button
-						className="bg-white text-black px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-200 transition-colors duration-300"
+						className=" bg-white bg-transparent text-black px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-200 transition-colors duration-300"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8, delay: 0.6 }}
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
 					>
-						Get Started
+						Book Now
 					</motion.button>
 				</Link>
 			</motion.div>
@@ -89,7 +90,7 @@ export default function MobileHero() {
 					repeatType: "reverse",
 				}}
 			>
-				<ChevronDown className="text-white w-8 h-8" />
+				<ChevronDown className="text-black w-8 h-8" />
 			</motion.div>
 		</div>
 	);
