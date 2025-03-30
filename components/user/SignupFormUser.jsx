@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import { set } from "mongoose";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import crypto from "crypto";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_ROLE_KEY;
 
@@ -20,7 +20,6 @@ const hashRole = (role, salt) => {
 		.update(role + salt)
 		.digest("hex");
 };
-
 
 const colors = {
 	primary: "#060606",
@@ -32,6 +31,11 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [otpSent, setOtpSent] = useState(false);
+	const [otpVerified, setOtpVerified] = useState(false);
+	const [isSendingOtp, setIsSendingOtp] = useState(false);
+	const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+	const [countdown, setCountdown] = useState(0);
 	const [form, setForm] = useState({
 		firstName: "",
 		lastName: "",
@@ -39,10 +43,98 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 		phone: "",
 		password: "",
 		referralCode: "",
+		otp: "",
 	});
+
+	// Handle countdown timer
+	useEffect(() => {
+		let timer;
+		if (countdown > 0) {
+			timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+		}
+		return () => {
+			if (timer) clearTimeout(timer);
+		};
+	}, [countdown]);
+
+	const validateEmail = (email) => {
+		return /\S+@\S+\.\S+/.test(email);
+	};
+
+	const handleSendOtp = async () => {
+		if (!form.email || !validateEmail(form.email)) {
+			toast.error("Please enter a valid email address first");
+			return;
+		}
+
+		setIsSendingOtp(true);
+		try {
+			// Call your API to send OTP to email
+			// Example API call:
+			/*
+			const res = await fetch("/api/send-otp", {
+				method: "POST",
+				body: JSON.stringify({ email: form.email }),
+				headers: {
+				"Content-Type": "application/json",
+				},
+			});
+			if (!res.ok) throw new Error("Failed to send OTP");
+			*/
+
+			// Simulate success for demo
+			toast.success("OTP sent to your email");
+			setOtpSent(true);
+			setCountdown(120); // 2 minutes in seconds
+		} catch (error) {
+			toast.error("Failed to send OTP");
+			console.error(error);
+		} finally {
+			setIsSendingOtp(false);
+		}
+	};
+
+	const handleVerifyOtp = async () => {
+		if (!form.otp || form.otp.length !== 6) {
+			toast.error("Please enter a valid 6-digit OTP");
+			return;
+		}
+
+		setIsVerifyingOtp(true);
+		try {
+			// Call your API to verify OTP
+			// Example API call:
+			/*
+			const res = await fetch("/api/verify-otp", {
+				method: "POST",
+				body: JSON.stringify({ 
+				email: form.email,
+				otp: form.otp 
+				}),
+				headers: {
+				"Content-Type": "application/json",
+				},
+			});
+			if (!res.ok) throw new Error("Invalid OTP");
+      		*/
+
+			// Simulate success for demo
+			toast.success("OTP verified successfully");
+			setOtpVerified(true);
+		} catch (error) {
+			toast.error("Invalid OTP. Please try again.");
+			console.error(error);
+		} finally {
+			setIsVerifyingOtp(false);
+		}
+	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (!otpVerified) {
+			toast.error("Please verify your phone number with OTP first");
+			return;
+		}
 
 		setIsSubmitting(true);
 
@@ -188,6 +280,80 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 					</div>
 				</div>
 
+				{/* OTP Input and Verification */}
+				<div className="space-y-2">
+					<div className="flex items-center justify-between">
+						<Label htmlFor="otp">OTP Verification</Label>
+						{otpVerified && (
+							<span className="text-xs text-green-600">
+								Verified
+							</span>
+						)}
+					</div>
+					<div className="flex gap-2">
+						<Input
+							id="otp"
+							type="text"
+							placeholder="Enter 6-digit OTP"
+							value={form.otp}
+							maxLength={6}
+							onChange={(e) => {
+								const numericValue = e.target.value.replace(
+									/\D/g,
+									""
+								);
+								setForm({ ...form, otp: numericValue });
+							}}
+							disabled={!otpSent || otpVerified}
+						/>
+						{!otpVerified ? (
+							<Button
+								type="button"
+								onClick={
+									otpSent ? handleVerifyOtp : handleSendOtp
+								}
+								disabled={
+									(otpSent && isVerifyingOtp) ||
+									(!otpSent &&
+										(isSendingOtp ||
+											!form.email ||
+											!validateEmail(form.email)))
+								}
+								className="min-w-[120px]"
+							>
+								{isSendingOtp || isVerifyingOtp ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : otpSent ? (
+									"Verify OTP"
+								) : (
+									"Send OTP"
+								)}
+							</Button>
+						) : null}
+					</div>
+					{otpSent && !otpVerified && (
+						<div className="flex justify-between items-center">
+							<p className="text-xs text-muted-foreground">
+								Enter the 6-digit OTP sent to your email
+							</p>
+							<button
+								type="button"
+								onClick={handleSendOtp}
+								disabled={countdown > 0}
+								className="text-xs text-primary disabled:text-muted-foreground"
+							>
+								{countdown > 0
+									? `Resend in ${Math.floor(
+											countdown / 60
+									  )}:${(countdown % 60)
+											.toString()
+											.padStart(2, "0")}`
+									: "Resend OTP"}
+							</button>
+						</div>
+					)}
+				</div>
+
 				{/* Password Input */}
 				<div className="space-y-2 relative">
 					<Label htmlFor="password">Password</Label>
@@ -213,7 +379,7 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 					</button>
 				</div>
 
-				{/* ✅ Fixed Referral Code */}
+				{/*  Referral Code */}
 				<div className="space-y-2">
 					<Label htmlFor="referralCode">Referral Code</Label>
 					<Input
