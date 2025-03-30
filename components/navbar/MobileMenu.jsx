@@ -73,15 +73,23 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 				<Link
 					href="/blogs"
 					className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
-						isActive("/blogs") ? "bg-gray-100" : ""
+						isActive("/blogs") ? "bg-gray-100 text-slate-950" : ""
 					}`}
 				>
 					Blogs
 				</Link>
 				<Link
+					href="/about"
+					className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
+						isActive("/about") ? "bg-gray-100 text-slate-950" : ""
+					}`}
+				>
+					About
+				</Link>
+				<Link
 					href="/user/cart"
 					className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
-						isActive("/cart") ? "bg-gray-100" : ""
+						isActive("/user/cart") ? "bg-gray-100 text-slate-950" : ""
 					}`}
 				>
 					Cart
@@ -91,17 +99,18 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 						{cartCount}
 					</span>
 				)}
-			  {isLoggedIn && (
-				  <>
-					  <Link
-						  href="/user/dashboard/profile/userInformation"
-						  className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${isActive("/profile") ? "bg-gray-100" : ""
-							  }`}
-					  >
-						  Profile
-					  </Link>
-				  </>
-			  )}
+				{isLoggedIn && (
+					<>
+						<Link
+							href="/user/dashboard/profile/userInformation"
+							className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
+								isActive("/profile") ? "bg-gray-100" : ""
+							}`}
+						>
+							Profile
+						</Link>
+					</>
+				)}
 			</div>
 		</div>
   );

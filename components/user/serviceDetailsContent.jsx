@@ -40,7 +40,7 @@ export default function ServiceDetailsContent({ slug, onClose }) {
         <Button
           variant="outline"
           onClick={onClose}
-          className="absolute -top-10 right-0 text-white bg-red-600 hover:bg-red-700 border-none p-1 rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10"
+          className="absolute top-5 right-5 text-white bg-red-600 hover:bg-red-700 border-none p-1 rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10"
         >
           ✖
         </Button>

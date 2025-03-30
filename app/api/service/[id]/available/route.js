@@ -16,9 +16,10 @@ export const GET = async (req, { params }) => {
     .populate("partner", "pincode")
     .select("partner");
 
-  const isServiceAvailable = partnerServices.some(
-    (service) => service.partner.pincode.includes(pincode)
-  );
+    const isServiceAvailable = partnerServices.some(
+      (service) => service.partner?.pincode?.includes(pincode)
+    );
+  
 
   return NextResponse.json({ available: isServiceAvailable }, { status: 200 });
 };

@@ -24,7 +24,7 @@ const BlogPage = (req) => {
 			try {
 				const { slug } = await req.params;
 				const data = await fetchBlog(slug);
-				console.log(data);
+				// console.log(data);
 				setBlog(data);
 				setLoading(false);
 			} catch (error) {
@@ -51,7 +51,7 @@ const BlogPage = (req) => {
 				</div>
 			)}
 			{!loading && (
-				<div className="min-h-screen mt-24 bg-white">
+				<div className="min-h-screen mt-16 bg-white">
 					<BlogPost blog={blog} />
 					<ReadNext />
 					<CTA />

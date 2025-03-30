@@ -31,7 +31,6 @@ function parseCookies(req) {
   );
 }
 
-// Middleware which authenticates any type of user!
 export async function middleware(req) {
   // Rate limiting
   const ip =
@@ -42,7 +41,7 @@ export async function middleware(req) {
 
   // If rate limit exceeded, return a 429 Too Many Requests response
   if (!success || remaining === 0) {
-    return new NextResponse.json(
+    return  NextResponse.json(
       { error: "Too many requests, please try again later." },
       {
         status: 429,
@@ -98,6 +97,8 @@ export async function middleware(req) {
     "/partner/login",
     "/admin/login",
     "/about",
+		"/terms",
+		"/policies",
   ];
 
   if (
@@ -135,6 +136,11 @@ export async function middleware(req) {
   return NextResponse.redirect(new URL("/", req.url));
 }
 
+// export const config = {
+// 	matcher: ["/:path*"],
+// };
 export const config = {
-  matcher: ["/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|images|logo.png).*)",
+  ],
 };

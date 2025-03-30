@@ -43,20 +43,42 @@ export default function Footer() {
 	};
 
 	return (
-		<footer className="bg-slate-950 text-white pt-10 pb-5 px-6">
+		<footer className="bg-black text-white pt-10 pb-5 px-6">
 			<div className="max-w-6xl mx-auto flex flex-wrap justify-between gap-8 text-sm">
-				{/* Company Info */}
-				<div className="w-full md:w-1/4">
-					<h3 className="text-xl font-semibold mb-3">Helper Buddy</h3>
-					<p className="text-gray-400">
-						Your go-to platform for hassle-free services. Connect,
-						book, and get things done effortlessly.
-					</p>
+				{/* Company*/}
+				<div className="w-full md:w-auto">
+					<h3 className="text-lg font-semibold mb-3">Company</h3>
+					<ul className="space-y-2">
+						<li>
+							<Link
+								href="/about"
+								className="hover:text-gray-300 transition"
+							>
+								About Us
+							</Link>
+						</li>
+						<li>
+							<Link
+								href="/terms"
+								className="hover:text-gray-300 transition"
+							>
+								Terms & Conditions
+							</Link>
+						</li>
+						<li>
+							<Link
+								href="/policies"
+								className="hover:text-gray-300 transition"
+							>
+								Privacy Policy
+							</Link>
+						</li>
+					</ul>
 				</div>
 
-				{/* Quick Links */}
+				{/* User */}
 				<div className="w-full md:w-auto">
-					<h3 className="text-lg font-semibold mb-3">Quick Links</h3>
+					<h3 className="text-lg font-semibold mb-3">For Users</h3>
 					<ul className="space-y-2">
 						<li>
 							<Link
@@ -68,26 +90,33 @@ export default function Footer() {
 						</li>
 						<li>
 							<Link
-								href="/about"
-								className="hover:text-gray-300 transition"
-							>
-								About
-							</Link>
-						</li>
-						<li>
-							<Link
-								href="/about"
-								className="hover:text-gray-300 transition"
-							>
-								Contact
-							</Link>
-						</li>
-						<li>
-							<Link
 								href="blogs"
 								className="hover:text-gray-300 transition"
 							>
 								Blog
+							</Link>
+						</li>
+						<li>
+							<Link
+								href="about"
+								className="hover:text-gray-300 transition"
+							>
+								Contact Us
+							</Link>
+						</li>
+					</ul>
+				</div>
+
+				{/* Partners*/}
+				<div className="w-full md:w-auto">
+					<h3 className="text-lg font-semibold mb-3">For Partners</h3>
+					<ul className="space-y-2">
+						<li>
+							<Link
+								href="/partner/login"
+								className="hover:text-gray-300 transition"
+							>
+								Register as a Partner
 							</Link>
 						</li>
 					</ul>
@@ -205,7 +234,7 @@ export default function Footer() {
 							{loading ? "Subscribing..." : "Subscribe"}
 						</button>
 					</div>
-						{message && <p className="text-sm">{message}</p>}
+					{message && <p className="text-sm">{message}</p>}
 				</div>
 			</div>
 

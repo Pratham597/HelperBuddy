@@ -169,7 +169,7 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 				{/* Render only if isAdmin is false */}
 				{!isAdmin && (
 					<>
-						<div className="relative">
+						{/* <div className="relative">
 							<div className="absolute inset-0 flex items-center">
 								<div className="w-full border-t border-gray-200" />
 							</div>
@@ -178,8 +178,8 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 									or
 								</span>
 							</div>
-						</div>
-						<Button variant="outline" className="w-full">
+						</div> */}
+						{/* <Button variant="outline" className="w-full">
 							<svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
 								<path
 									d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -199,7 +199,7 @@ export default function LoginForm({ isLogin, setIsLogin, isAdmin }) {
 								/>
 							</svg>
 							Continue with Google
-						</Button>
+						</Button> */}
 						<div className="text-center text-sm">
 							Don&apos;t have an account?{" "}
 							<button

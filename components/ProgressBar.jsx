@@ -58,6 +58,13 @@ export default function ProgressBar() {
 			return;
 		}
 
+		if (
+			pathname === targetPath ||
+			(targetPath.startsWith("/services") && pathname.startsWith("/services"))
+		) {
+			return;
+		}
+
 		setLoading(true);
 	};
 

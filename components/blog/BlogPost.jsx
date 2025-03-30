@@ -87,7 +87,7 @@ export default function BlogPost({ blog }) {
 							</span>
 							<span className="w-2 h-2 rounded-full bg-white/70" />
 							<span className="text-xl md:text-2xl font-light">
-								{blog.formattedDate}
+								{blog.createdAt.split("T")[0]}
 							</span>
 						</motion.div>
 					</motion.div>
@@ -101,7 +101,7 @@ export default function BlogPost({ blog }) {
 					className="grid grid-cols-1 gap-12"
 				>
 					{/* Main Content with Enhanced Typography */}
-					<div className="blog-content prose prose-xl md:prose-2xl mx-auto w-full max-w-4xl">
+					<div className="blog-content prose prose-xl md:prose-2xl px-5 mx-auto w-full max-w-4xl">
 						<div
 							dangerouslySetInnerHTML={{
 								__html: marked.parse(blog.content),

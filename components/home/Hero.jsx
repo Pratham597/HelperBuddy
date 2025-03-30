@@ -23,7 +23,7 @@ export default function Hero() {
 	}
 
 	return (
-		<section className="relative mt-24 bg-gradient-to-br px-10 from-white to-gray-100 overflow-hidden flex items-center justify-center">
+		<section className="relative mt-16 bg-gradient-to-br px-10 pt-5 from-white to-gray-100 overflow-hidden flex items-center justify-center">
 			{isMobile && (
 				<div className="absolute inset-0 z-0">
 					<motion.div
@@ -67,7 +67,7 @@ export default function Hero() {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 						>
-							Get Started
+							Book Now
 						</motion.button>
 					</Link>
 				</motion.div>

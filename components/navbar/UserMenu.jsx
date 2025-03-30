@@ -108,7 +108,7 @@ const UserMenu = ({ isLoggedIn }) => {
 			) : (
 				<div className="mr-4 bg-gray-800 p-2 rounded-md">
 					<DropdownMenu className="">
-						<DropdownMenuTrigger> Get Started</DropdownMenuTrigger>
+						<DropdownMenuTrigger>Get Started</DropdownMenuTrigger>
 						<DropdownMenuContent>
 							<DropdownMenuLabel>Continue as</DropdownMenuLabel>
 							<DropdownMenuSeparator />

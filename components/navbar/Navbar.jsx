@@ -34,7 +34,7 @@ const Navbar = () => {
 		<>
 			<div className="fixed w-full top-0 z-50">
 				<nav
-					className={" bg-slate-950 text-white shadow-md "
+					className={" bg-black text-white shadow-md "
 						//  isMobileMenuOpen ? "rounded-3xl" : "rounded-full" m-2
 						}
 				>
@@ -52,7 +52,7 @@ const Navbar = () => {
 
 							<div className="lg:hidden flex items-center">
 								{!isLoggedIn && (
-									<div className=" lg:hidden mr-4 bg-gray-800 p-2 rounded-md">
+									<div className=" lg:hidden mr-4 bg-gray-900 p-2 rounded-md">
 										<DropdownMenu className="">
 											<DropdownMenuTrigger>
 												{" "}
