@@ -37,7 +37,7 @@ export default function TrustSection() {
 		{
 			title: "Happy Customers",
 			description: "Satisfied clients",
-			value: Math.round((users + 9 )/ 10) * 10,
+			value: Math.round((users + 9) / 10) * 10,
 			Icon: Users,
 		},
 		{
@@ -106,7 +106,7 @@ export default function TrustSection() {
 											0
 										)}
 										{item.title === "Happy Customers" ||
-										item.title === "Services Delivered"
+											item.title === "Services Delivered"
 											? "+"
 											: ""}
 									</p>
