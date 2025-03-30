@@ -59,6 +59,8 @@ export async function middleware(req) {
 		"/partner/login",
 		"/admin/login",
 		"/about",
+		"/terms",
+		"/policies",
 	];
 
 	if (
