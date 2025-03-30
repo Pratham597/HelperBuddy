@@ -40,28 +40,27 @@ export default function ServiceDetails({ service, onAddToCart }) {
 	}, [service?._id]);
 
 	const checkAvailability = async () => {
-		setLoading(true);
+		setLoading(true)
 		try {
-			const res = await fetch(
-				`/api/service/${service._id}/available?pincode=${pincode}`
-			);
-			if (!res.ok) {
-				toast.error("Please enter a valid pincode");
-			}
-
-			const data = await res.json();
-			setAvailabilityMessage(
-				data.available
-					? "Service available in this area"
-					: "Service not available in this area"
-			);
+		  const res = await fetch(`/api/service/${service._id}/available?pincode=${pincode}`)
+		  if (!res.ok) {
+			toast.error("Please enter pincode")
+		  }
+	
+		  const data = await res.json()
+	
+		  if (data.error) {
+			setAvailabilityMessage(data.error)
+		  } else {
+			setAvailabilityMessage(data.available ? "Service available in this area" : "Service not available in this area")
+		  }
 		} catch (error) {
-			console.error(error);
-			setAvailabilityMessage("Error checking availability");
+		  console.error(error)
+		  setAvailabilityMessage("Error checking availability")
 		} finally {
-			setLoading(false);
+		  setLoading(false)
 		}
-	};
+	  }
 
 	const addToCart = () => {
 		if (!service) return;
