@@ -1,7 +1,7 @@
 "use client";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
-
+import Illustration from "@/app/assets/indian-cities.png"
 const CitiesWeServe = () => {
   const cities = [
     "Mumbai", 
@@ -34,8 +34,8 @@ const CitiesWeServe = () => {
           {/* Right side - Illustration */}
           <div className="w-full md:w-1/2 flex justify-center">
             <div className="relative w-full max-w-lg h-74 md:h-100">
-              <img 
-                src="https://img.freepik.com/free-vector/colorful-landmarks-skyline_23-2148423985.jpg" 
+              <Image 
+                src={Illustration} 
                 alt="India cities illustration"
                 className="w-full h-full object-contain rounded-lg shadow-md"
               />
