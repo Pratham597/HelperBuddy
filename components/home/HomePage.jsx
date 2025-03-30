@@ -8,6 +8,8 @@ import CallToAction from "@/components/home/CallToAction";
 import Footer from "@/components/home/Footer";
 import Navbar from "@/components/navbar/Navbar";
 import Image from "next/image";
+import {ReferralButton} from "@/components/home/ReferralPopup";
+import CitiesServing from "@/components/home/CitiesServing.jsx";
 import { useEffect, useState } from "react";
 
 export default function Home(  ) {
@@ -56,9 +58,11 @@ export default function Home(  ) {
 			<TrendingServices  />
 			<ServiceCategories />
 			<TrustSection  />
+			<CitiesServing />
 			<Testimonials />
 			{/* <CallToAction /> */}
 			<Footer />
+			<ReferralButton />
 		</main>
 	);
 }
