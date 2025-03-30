@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { redis } from "@/lib/redis";
 
-export default async function handler(req, res) {
-  const { email, otp } = req.body;
-
+export const POST= async(req, res)=>{
+  const { email, otp } = await req.json();
   if (!email || !otp)
     return NextResponse.json(
       { error: "Email and OTP are required" },
@@ -29,7 +28,7 @@ export default async function handler(req, res) {
     );
   }
 
-  if (storedOtp !== otp) {
+  if (storedOtp !== parseInt(otp)) {
     return NextResponse.json(
       { error: "Invalid OTP" },
       { status: 400 }

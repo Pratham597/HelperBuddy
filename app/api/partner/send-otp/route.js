@@ -10,23 +10,21 @@ export const POST = async (req) => {
   let data = await req.json();
 
   // Check if all required fields are present
-  if (!data.email || !data.name || !data.password || !data.phone) {
+  if (!data.email) {
     return NextResponse.json(
       { error: "All fields are required" },
       { status: 400 }
     );
   }
   // Check if email or phone already exists
-  const existingUser = await Partner.findOne({
-    $or: [{ email: data.email }, { phone: data.phone }],
-  });
+  const existingUser = await Partner.findOne({email:data.email});
   if (existingUser) {
     return NextResponse.json(
       { error: "Email or phone number already exists!" },
       { status: 400 }
     );
   }
-  const { email } = req.body;
+  const email=data.email;
   // Cooldown: 60 seconds
   const cooldown = await redis.get(`otp:cooldown:${email}`);
   if (cooldown) {
@@ -45,9 +43,9 @@ export const POST = async (req) => {
       .json({ error: "Too many OTP requests. Try again later." });
   
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  await redis.set(`otp:${email}`, otp, { ex: 600 }); // 10 min expiry
+  await redis.set(`otp:${email}`, otp, { ex: 600 });
   await redis.set(`otp:cooldown:${email}`, "1", { ex: 60 }); // 60 sec cooldown
-  sendEmail(email, otp); // Send OTP to user's email
+  await sendEmail(email, otp); // Send OTP to user's email
   return NextResponse.json(
     { message: "OTP sent successfully" },
     { status: 200 }

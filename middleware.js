@@ -16,7 +16,7 @@ const ratelimit = new Ratelimit({
   redis,
   timeout: 10000,
   analytics: true,
-  limiter: Ratelimit.slidingWindow(5, "20 s"),
+  limiter: Ratelimit.slidingWindow(50, "60 s"),
 });
 
 function parseCookies(req) {
@@ -58,6 +58,10 @@ export async function middleware(req) {
     "/api/user/sign-up",
     "/api/partner/sign-up",
     "/api/newsletter",
+    "/api/user/send-otp",
+    "/api/user/verify-otp",
+    "/api/partner/send-otp",
+    "/api/partner/verify-otp"
   ];
 
   // API Authentication

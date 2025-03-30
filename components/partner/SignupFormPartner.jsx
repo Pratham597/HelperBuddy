@@ -44,7 +44,6 @@ export default function Form({ isLogin, setIsLogin }) {
 		phone: "",
 		password: "",
 		referralCode: "",
-		otp: "",
 	});
 
 	// Handle countdown timer
