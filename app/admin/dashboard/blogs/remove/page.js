@@ -42,11 +42,11 @@ export default function RemoveBlogPage() {
 				if (data.success) {
 					setBlogs(data.blogs);
 				} else {
-					toast.error("Failed to fetch blogs.");
+					toast.error("Failed to load blogs.");
 				}
 			} catch (error) {
 				console.error(error);
-				toast.error("Error fetching blogs.");
+				toast.error("Error loading blogs.");
 			}
 		};
 		fetchBlogs();
