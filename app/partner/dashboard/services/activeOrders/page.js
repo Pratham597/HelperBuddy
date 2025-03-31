@@ -391,6 +391,25 @@ export default function ActiveOrders() {
 																		))}
 																	</div>
 																</div>
+
+																<div className="p-4 bg-white rounded-lg shadow-md w-full">
+																	<h2 className="text-lg font-semibold mb-3 text-gray-900">Verify Order Code</h2>
+																	<input
+																		type="text"
+																		placeholder="Enter verification code"
+																		value={verificationCode}
+																		onChange={(e) => setVerificationCode(e.target.value)}
+																		className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+																	/>
+																	<div className="flex justify-end mt-3">
+																		<button
+																			className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 w-30"
+																			onClick={() => handleVerifyCode(booking.id)}
+																		>
+																			Verify
+																		</button>
+																	</div>
+																</div>
 																<div className="mt-6 pt-6 border-t border-gray-200">
 																	<div className="flex items-center justify-between">
 																		<h3 className="text-base sm:text-lg font-medium text-black">
@@ -475,23 +494,6 @@ export default function ActiveOrders() {
 					)}
 				</div>
 			</main>
-
-			<Dialog open={selectedOrder !== null} onOpenChange={() => setSelectedOrder(null)}>
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle>Verify Order Code</DialogTitle>
-					</DialogHeader>
-					<Input
-						type="text"
-						placeholder="Enter verification code"
-						value={verificationCode}
-						onChange={(e) => setVerificationCode(e.target.value)}
-					/>
-					<DialogFooter>
-						<Button onClick={() => handleVerifyCode(selectedOrder?.id)}>Verify</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
 		</div>
 	)
 }
