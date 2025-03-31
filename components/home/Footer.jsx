@@ -90,7 +90,7 @@ export default function Footer() {
 						</li>
 						<li>
 							<Link
-								href="blogs"
+								href="/blogs"
 								className="hover:text-gray-300 transition"
 							>
 								Blog
@@ -98,7 +98,7 @@ export default function Footer() {
 						</li>
 						<li>
 							<Link
-								href="about"
+								href="/about"
 								className="hover:text-gray-300 transition"
 							>
 								Contact Us
