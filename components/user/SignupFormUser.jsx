@@ -78,7 +78,7 @@ export default function Form({ isLogin, setIsLogin, isPartner }) {
 			if (!res.ok) throw new Error("Failed to send OTP");
 			toast.success("OTP sent to your email");
 			setOtpSent(true);
-			setCountdown(120); // 2 minutes in seconds
+			setCountdown(60); // 1 minutes in seconds
 		} catch (error) {
 			toast.error("Failed to send OTP");
 			console.error(error);
