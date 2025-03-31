@@ -220,25 +220,42 @@ export default function ActiveOrders() {
 
 	const handleVerifyCode = async (orderId) => {
 		try {
-			const partner = JSON.parse(localStorage.getItem("partner"))
-			if (!partner || !partner.token) throw new Error("No authentication token found.")
-
-			await axios.post(
+			const partner = JSON.parse(localStorage.getItem("partner"));
+			if (!partner || !partner.token) {
+				toast.error("No authentication token found.");
+				return;
+			}
+	
+			const response = await axios.post(
 				"/api/partner/acceptOrder/verifyUserCode",
 				{ serviceorder_id: orderId, userCode: verificationCode },
 				{
 					headers: { Authorization: `Bearer ${partner.token}` },
-				},
-			)
-
-			toast.success("Order verified successfully")
-			fetchOrders() // Refresh orders after verification
-			setSelectedOrder(null)
+				}
+			);
+	
+			if (response.data.success) {
+				toast.success(response.data.message || "Order verified successfully");
+				fetchOrders(); // Refresh orders after verification
+				setSelectedOrder(null);
+			}
 		} catch (error) {
-			console.error("Error verifying order:", error)
-			toast.error("Invalid verification code")
+			if (error.response) {
+				const { status, data } = error.response;
+				if (status === 403) {
+					toast.error(data.error || "Unauthorized access!");
+				} else if (status === 404) {
+					toast.error(data.error || "Order not found!");
+				} else {
+					toast.error(data.error || "Verification failed!");
+				}
+			} else {
+				toast.error("Something went wrong. Please try again.");
+			}
+			console.error("Error verifying order:", error);
 		}
-	}
+	};
+		
 
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
