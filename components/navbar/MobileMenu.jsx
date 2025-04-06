@@ -79,20 +79,20 @@ const MobileMenu = ({ isOpen, isLoggedIn }) => {
 					Blogs
 				</Link>
 				<Link
-					href="/about"
-					className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
-						isActive("/about") ? "bg-gray-100 text-slate-950" : ""
-					}`}
-				>
-					About
-				</Link>
-				<Link
 					href="/user/cart"
 					className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
 						isActive("/user/cart") ? "bg-gray-100 text-slate-950" : ""
 					}`}
 				>
 					Cart
+				</Link>
+				<Link
+					href="/about"
+					className={`text-slate-100 hover:text-gray-600 block px-3 py-2 rounded-md text-base font-medium ${
+						isActive("/about") ? "bg-gray-100 text-slate-950" : ""
+					}`}
+				>
+					About
 				</Link>
 				{cartCount > 0 && (
 					<span className="absolute top-56 right-5 bg-red-500 text-white cartNumber py-1 px-2 rounded-full">
