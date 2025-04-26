@@ -3,6 +3,8 @@ import User from "@/models/User";
 import connectDB from "@/db/connect";
 import { NextResponse } from "next/server";
 import { generateUniqueReferralCode } from "@/actions/user/refferalCode";
+import { redis } from "@/lib/redis";
+
 
 /** Controller to create a new user */
 export const POST = async (req) => {
@@ -13,7 +15,12 @@ export const POST = async (req) => {
     if (!data.email || !data.name || !data.password || !data.phone) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
-
+    
+    const verifyEmail=await redis.get(`email:verified:${data.email}`);
+    if(!verifyEmail || verifyEmail==="false"){
+      return NextResponse.json({ error: "Verification Failed" }, { status: 400 });
+    }
+    
     // Check if email or phone already exists
     const existingUser = await User.findOne({ 
       $or: [{ email: data.email }, { phone: data.phone }] 
@@ -29,9 +36,9 @@ export const POST = async (req) => {
       }
       data.referredBy = currUser._id;
     }
+    
     data.referralCode = await generateUniqueReferralCode();
-
-
+    data.wallet=100;
     const user = new User(data);
     await user.save();
 
